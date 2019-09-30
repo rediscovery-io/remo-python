@@ -1,8 +1,34 @@
 from .. import utils
 
+class data:
+    @staticmethod
+    def repr(obj):
+        items = []
+        for prop, value in obj.__dict__.items():
+            try:
+                item = "%s = %r" % (prop, value)
+                assert len(item) < 20
+            except:
+                item = "%s: <%s>" % (prop, value.__class__.__name__)
+            items.append(item)
 
+        return "%s(%s)" % (obj.__class__.__name__, ', '.join(items))
+
+    def __init__(self, cls):
+        cls.__repr__ = data.repr
+        self.cls = cls
+
+    def __call__(self, *args, **kwargs):
+        return self.cls(*args, **kwargs)
+    
+#@data
 class Dataset:
-
+    """remo long desc """
+    __doc__ = "dataset from remo!"
+    
+    def __repr__(self):
+        return "Dataset {} - '{}'".format(self.id, self.name)
+        
     def __init__(self, sdk, **kwargs):
         self.sdk = sdk
         self.id = kwargs.get('id')
@@ -15,7 +41,7 @@ class Dataset:
         self.top3_classes = kwargs.get('top3_classes')
         self.total_classes = kwargs.get('total_classes')
         self.total_annotation_objects = kwargs.get('total_annotation_objects')
-
+   
     def __str__(self):
         return 'Dataset (id={}, name={})'.format(self.id, self.name)
 

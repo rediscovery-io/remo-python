@@ -75,7 +75,7 @@ class API:
     def create_dataset(self, name, public=False):
         return self.post(self.url('/api/dataset'),
                          json={"name": name, "is_public": public}).json()
-
+    
     def upload_file(self, dataset_id, path, annotation_task=None, folder_id=None):
         name = os.path.basename(path)
         files = {'files': (name, open(path, 'rb'), filetype.guess_mime(path))}
@@ -141,6 +141,12 @@ class API:
         url = self.url('/api/dataset/{}/upload'.format(dataset_id))
         return self.post(url, json=payload).json()
 
+    def list_annotation_sets(self, dataset_id):
+        url = self.url('/api/v1/ui/datasets/{}/annotation-sets'.format(dataset_id))
+        
+        return self.get(url).json()
+
+            
     def get_dataset(self, id):
         url = self.url('/api/dataset/{}'.format(id))
         return self.get(url).json()
