@@ -154,7 +154,16 @@ class API:
     def list_datasets(self, **kwargs):
         url = self.url('/api/dataset', **kwargs)
         return self.get(url).json()
-
-    def list_dataset_contents(self, id, folder_id, **kwargs):
-        url = self.url('/api/user-dataset/{}/contents/{}'.format(id, folder_id), **kwargs)
+    
+    def list_dataset_contents(self, dataset_id, **kwargs):
+        url = self.url('/api/v1/ui/datasets/{}/images'.format(dataset_id), **kwargs)
         return self.get(url).json()
+
+
+    def list_dataset_contents_by_folder(self, dataset_id, folder_id, **kwargs):
+        url = self.url('/api/user-dataset/{}/contents/{}'.format(dataset_id, folder_id), **kwargs)
+        return self.get(url).json()
+
+    
+    
+    
