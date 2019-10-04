@@ -6,11 +6,14 @@ from .ui import UI
 class SDK:
     def __init__(self, server, user_email=None, user_password=None):
         self.api = API(server)
-        self.con = self.api.con
+        #self.con = self.api.con
         self.ui = UI(server)
         if user_email and user_password:
             self.api.login(user_email, user_password)
 
+    def search_images(self, search_terms_dictionary):
+        result = self.api.search_images(search_terms_dictionary) 
+        
     def login(self, user_email, user_pwd):
         self.api.login(user_email, user_pwd)
 
@@ -24,7 +27,7 @@ class SDK:
         result = self.api.create_dataset(name, public)
         print(result)
         my_dataset = Dataset(self, **result)
-        my_dataset.upload(files, urls, annotation_task, folder_id)
+        my_dataset.add_data(files, urls, annotation_task, folder_id)
             
         return my_dataset
    
@@ -45,12 +48,12 @@ class SDK:
     
     def get_dataset(self, id) -> Dataset:
         '''
-        Given a dataset id returns the dataset
+        Given a dataset id, returns the dataset
         '''
         result = self.api.get_dataset(id) 
         return Dataset(self, **result)
 
-    def upload_dataset(self, dataset_id, files=[], urls=[], annotation_task=None, folder_id=None):
+    def add_data_to_dataset(self, dataset_id, files=[], urls=[], annotation_task=None, folder_id=None):
         # JSONDecodeError: Expecting value: line 1 column 1 (char 0)
         '''
         adds data to existing dataset

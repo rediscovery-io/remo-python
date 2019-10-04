@@ -50,10 +50,25 @@ class Dataset:
     def __str__(self):
         return 'Dataset (id={}, name={})'.format(self.id, self.name)
 
-    def upload(self, files=[], urls=[], annotation_task=None, folder_id=None):
-        '''
-        uploads the dataset to existing one
-        '''
+    def add_data(self, files=[], urls=[], annotation_task=None, folder_id=None):
+        """
+        Adds images and optionally annotations to a Dataset
+
+        Longer Description
+
+        Args:
+            files: 
+            urls: 
+            annotation_task: 
+            folder_id:
+
+        Returns:
+
+
+        Raises:
+
+        """
+        
         return self.sdk.upload_dataset(self.id, files, urls, annotation_task, folder_id)
 
     def fetch(self):
@@ -80,7 +95,7 @@ class Dataset:
     def ann_statistics(self):
         #cur = self.sdk.con.cursor()
         # we won't need this after arranging endpoints
-        con = psycopg2.connect(database=.., user=.., password=.. host=.., port=..)
+      #  con = psycopg2.connect(database=.., user=.., password=.. host=.., port=..)
         cur = con.cursor()
         query = "SELECT t.* FROM public.annotation_set_statistics t where dataset_id = %s"
         cur.execute(query % self.id)

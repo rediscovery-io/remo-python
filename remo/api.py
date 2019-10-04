@@ -78,7 +78,8 @@ class API:
         return self.post(self.url('/api/dataset'),
                          json={"name": name, "is_public": public}).json()
     
-    # better to merge with upload_files()
+    # MC: better to merge with upload_files()
+    # ALR: I think it's ok to keep individual end points clear in api.py
     def upload_file(self, dataset_id, path, annotation_task=None, folder_id=None):
         name = os.path.basename(path)
         files = {'files': (name, open(path, 'rb'), filetype.guess_mime(path))}
@@ -87,7 +88,7 @@ class API:
             data['annotation_task'] = annotation_task.value
 
         url = self.url('/api/dataset/{}/upload'.format(dataset_id), folder_id=folder_id)
-        return self.post(url, files=files, data=data).json(
+        return self.post(url, files=files, data=data).json()
     
     def bulk_files_upload(self, dataset_id: int, pathes: list, annotation_task: AnnotationTask = None,
                           folder_id: int = None, status: UploadStatus = None):
@@ -147,7 +148,6 @@ class API:
     def list_annotation_sets(self, dataset_id):
         url = self.url('/api/v1/ui/datasets/{}/annotation-sets'.format(dataset_id))
         return self.get(url).json()
-
             
     def get_dataset(self, id):
         url = self.url('/api/dataset/{}'.format(id))
@@ -160,7 +160,6 @@ class API:
     def list_dataset_contents(self, dataset_id, **kwargs):
         url = self.url('/api/v1/ui/datasets/{}/images'.format(dataset_id), **kwargs)
         return self.get(url).json()
-
 
     def list_dataset_contents_by_folder(self, dataset_id, folder_id, **kwargs):
         url = self.url('/api/user-dataset/{}/contents/{}'.format(dataset_id, folder_id), **kwargs)
