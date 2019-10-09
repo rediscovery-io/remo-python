@@ -26,27 +26,58 @@ class data:
     def __call__(self, *args, **kwargs):
         return self.cls(*args, **kwargs)
     
+    
+class Image:
+    id = None
+    dataset = None
+    path_to_image = None
+    annotation_sets = []
+    
+    def __init__(self, **kwargs):
+        self.id = kwargs.get('id')
+        self.dataset = kwargs.get('dataset')
+        self.path_to_image = kwargs.get('path')
+        #print(id, dataset,path_to_image, '\n')
+    
 #@data
 class Dataset:
     """remo long desc """
     __doc__ = "dataset from remo!"
+    images = []
+    annotation_sets = []
     
     def __repr__(self):
         return "Dataset {} - '{}'".format(self.id, self.name)
         
     def __init__(self, sdk, **kwargs):
         self.sdk = sdk
-        self.id = kwargs.get('id')
         self.name = kwargs.get('name')
-        self.annotation_sets = kwargs.get('annotation_sets')
+        self.id = kwargs.get('id')
         self.created_at = kwargs.get('created_at')
         self.license = kwargs.get('license')
-        self.is_public = kwargs.get('is_public')
-        self.users_shared = kwargs.get('users_shared')
-        self.top3_classes = kwargs.get('top3_classes')
-        self.total_classes = kwargs.get('total_classes')
-        self.total_annotation_objects = kwargs.get('total_annotation_objects')
-   
+        
+     #   self.is_public = kwargs.get('is_public')
+      # self.annotation_sets = kwargs.get('annotation_sets')
+     #   self.users_shared = kwargs.get('users_shared')
+    #    self.top3_classes = kwargs.get('top3_classes')
+     #   self.total_classes = kwargs.get('total_classes')
+      #  self.total_annotation_objects = kwargs.get('total_annotation_objects')
+           
+        if 'id' in kwargs:
+               self.initialise_images()
+            
+    def initialise_images(self):
+        list_of_images = self.list_images()
+        
+        for i_image in list_of_images:
+            my_image = Image(id = None, path = i_image, dataset = self.name)
+            print(i_image, self.name)
+            self.images.append(my_image)
+        
+        
+    def list_images(self, folder_id = None, **kwargs):
+        return self.sdk.list_dataset_images(self.id, folder_id = None, **kwargs)
+    
     def __str__(self):
         return 'Dataset (id={}, name={})'.format(self.id, self.name)
 
@@ -86,8 +117,7 @@ class Dataset:
         else:
             print("No annotation sets in dataset " + self.name)
 
-    def images(self, folder_id = None, **kwargs):
-        return self.sdk.list_dataset_images(self.id,folder_id = None, **kwargs)
+
 
     def search(self, **kwargs):
         pass

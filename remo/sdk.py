@@ -34,23 +34,26 @@ class SDK:
     def list_datasets(self, **kwargs) -> [Dataset]:
         '''
         returns the name and id of datasets
+        NB: we don't return an actual dataset
         '''
         result = self.api.list_datasets(**kwargs)
         
         datasets = []
         for dataset_json in result['results']:
-            datasets.append(Dataset(self, **dataset_json))
+            i_result = "Dataset " + str(dataset_json.get('id')) + " - '" + dataset_json.get('name') + "'"
+            datasets.append(i_result)
+            #datasets.append(Dataset(self, **dataset_json))
         return datasets
     
     def all_info_datasets(self, **kwargs) -> [Dataset]:
         result = self.api.list_datasets(**kwargs)
         return result
     
-    def get_dataset(self, id) -> Dataset:
+    def get_dataset(self, dataset_id) -> Dataset:
         '''
         Given a dataset id, returns the dataset
         '''
-        result = self.api.get_dataset(id) 
+        result = self.api.get_dataset(dataset_id) 
         return Dataset(self, **result)
 
     def add_data_to_dataset(self, dataset_id, files=[], urls=[], annotation_task=None, folder_id=None):
