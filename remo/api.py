@@ -150,7 +150,13 @@ class API:
         url = self.url('/api/v1/ui/datasets/{}/annotation-sets'.format(dataset_id))
         return self.get(url).json()
     
-    def get_dataset_info(self, endpoint=None):
+    def list_datasets(self, endpoint=None):
+        '''
+        TODO: change end point used, once we have it
+        returns the name and id of datasets
+        NB: we don't return an actual dataset
+        '''
+            
         url = None
         if not endpoint:
             return dset_info()

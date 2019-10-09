@@ -29,25 +29,10 @@ class SDK:
             
         return my_dataset
     
-    def get_dataset_info(self):
-        dataset_info = self.api.get_dataset_info()
+    def list_datasets(self):
+        dataset_info = self.api.list_datasets()
         return dataset_info
-    
-    def list_datasets(self, **kwargs) -> [Dataset]:
-        '''
-        TODO: change end point used, once we have it
-        returns the name and id of datasets
-        NB: we don't return an actual dataset
-        '''
-        result = self.api.list_datasets(**kwargs)
         
-        datasets = []
-        for dataset_json in result['results']:
-            i_result = "Dataset " + str(dataset_json.get('id')) + " - '" + dataset_json.get('name') + "'"
-            datasets.append(i_result)
-            #datasets.append(Dataset(self, **dataset_json))
-        return datasets
-    
     def all_info_datasets(self, **kwargs) -> [Dataset]:
         result = self.api.all_info_datasets(**kwargs)
         return result

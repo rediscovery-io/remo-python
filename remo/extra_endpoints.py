@@ -1,6 +1,16 @@
 from peewee import *
+from playhouse.postgres_ext import PostgresqlExtDatabase
 
-db = PostgresqlExtDatabase('postgres', user='postgres', password='admin',host='localhost', port=5432)
+#db = PostgresqlExtDatabase('postgres', user='postgres', password='admin',host='localhost', port=5432,
+#                            autocommit=True, autorollback=True)
+
+
+try:
+    db
+except NameError:
+    print("\nERROR! Initialise 'db' to be")
+    print("'=PostgresqlExtDatabase('x', user='x', password='x',host='x', port=x,autocommit=True,autorollback=True)'\n")
+    
 db.connect()
 
 
