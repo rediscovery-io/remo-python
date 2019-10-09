@@ -2,11 +2,9 @@ from .api import API
 from .domain.dataset import Dataset
 from .ui import UI
 
-
 class SDK:
     def __init__(self, server, user_email=None, user_password=None):
         self.api = API(server)
-        #self.con = self.api.con
         self.ui = UI(server)
         if user_email and user_password:
             self.api.login(user_email, user_password)
@@ -30,7 +28,11 @@ class SDK:
         my_dataset.add_data(files, urls, annotation_task, folder_id)
             
         return my_dataset
-   
+    
+    def get_dataset_info(self):
+        dataset_info = self.api.get_dataset_info()
+        return dataset_info
+    
     def list_datasets(self, **kwargs) -> [Dataset]:
         '''
         TODO: change end point used, once we have it
