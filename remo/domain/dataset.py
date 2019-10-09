@@ -45,6 +45,7 @@ class Dataset:
     __doc__ = "dataset from remo!"
     images = []
     annotation_sets = []
+    default_annotation_set = None
     
     def __repr__(self):
         return "Dataset {} - '{}'".format(self.id, self.name)

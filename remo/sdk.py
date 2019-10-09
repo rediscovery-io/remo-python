@@ -33,6 +33,7 @@ class SDK:
    
     def list_datasets(self, **kwargs) -> [Dataset]:
         '''
+        TODO: change end point used, once we have it
         returns the name and id of datasets
         NB: we don't return an actual dataset
         '''
@@ -46,7 +47,7 @@ class SDK:
         return datasets
     
     def all_info_datasets(self, **kwargs) -> [Dataset]:
-        result = self.api.list_datasets(**kwargs)
+        result = self.api.all_info_datasets(**kwargs)
         return result
     
     def get_dataset(self, dataset_id) -> Dataset:

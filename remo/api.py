@@ -153,7 +153,7 @@ class API:
         url = self.url('/api/dataset/{}'.format(id))
         return self.get(url).json()
 
-    def list_datasets(self, **kwargs):
+    def all_info_datasets(self, **kwargs):
         url = self.url('/api/dataset', **kwargs)
         return self.get(url).json()
 
