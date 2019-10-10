@@ -7,7 +7,7 @@ import requests
 #import psycopg2
 from .domain.task import AnnotationTask
 from .utils import FileResolver, build_url
-from .extra_endpoints import get_dataset_info as dset_info
+from .extra_endpoints import get_dataset_info as dset_info, list_annotation_sets as list_ann_sets, get_annotation_set as get_ann_set
 
 
 class UploadStatus:
@@ -146,9 +146,12 @@ class API:
         url = self.url('/api/dataset/{}/upload'.format(dataset_id))
         return self.post(url, json=payload).json()
 
-    def list_annotation_sets(self, dataset_id):
+    def list_annotation_sets(self, dataset_id, endpoint=None):
         url = self.url('/api/v1/ui/datasets/{}/annotation-sets'.format(dataset_id))
-        return self.get(url).json()
+        if not endpoint:
+            return list_ann_sets(dataset_id)
+        else:
+            return self.get(url).json()
     
     def list_datasets(self, endpoint=None):
         '''
@@ -160,6 +163,13 @@ class API:
         url = None
         if not endpoint:
             return dset_info()
+        else:
+            return self.get(url).json()
+        
+    def get_annotation_set(self, ann_set_id, endpoint=None):
+        url = None
+        if not endpoint:
+            return get_ann_set(ann_set_id)
         else:
             return self.get(url).json()
             

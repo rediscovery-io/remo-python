@@ -4,7 +4,6 @@ from playhouse.postgres_ext import PostgresqlExtDatabase
 #db = PostgresqlExtDatabase('postgres', user='postgres', password='admin',host='localhost', port=5432,
 #                            autocommit=True, autorollback=True)
 
-
 try:
     db
 except NameError:
@@ -14,20 +13,35 @@ except NameError:
 db.connect()
 
 
-class Table(Model):
+class BaseModel(Model):
+    class Meta:
+        database = db
+
+class Table(BaseModel):
     id = AutoField()
     name = CharField()
     license_id = IntegerField()
     
+class AnnotationSets(BaseModel):
+    id = AutoField()
+    name = CharField()
+    dataset_id = IntegerField()
+    task_id = IntegerField()
+    user_id = IntegerField()
     
-    def get_attributes_dict():
-        my_dict_keys = ['id','name', 'license_id']
-        return my_dict_keys
-    
-    class Meta:
-        database = db
-
-         
+class Annotation(BaseModel):
+    id = AutoField()
+    # MC: Some of them are actually binary json but
+    # BinaryJSONField() is not recognized in the package
+    classes = CharField()
+    tags = CharField()
+    task = CharField()
+    data = CharField()
+    annotation_set_id = IntegerField()
+    dataset_id = IntegerField()
+    image_id = IntegerField()
+    annotation_sets = ForeignKeyField(AnnotationSets)
+      
 def get_dataset_info(table_name = 'datasets'):
     new_table = Table
     if table_name is not None:
@@ -37,3 +51,43 @@ def get_dataset_info(table_name = 'datasets'):
     for q in query:
         dataset_info.append({'id':q.id, 'name':q.name, 'license_id':q.license_id})
     return dataset_info
+
+def list_annotation_sets(dataset_id):
+    '''
+    Given a dataset_id returns information of its annotation sets
+    '''
+    annotation = Annotation
+    annotation._meta.set_table_name('new_annotations')
+    annotationSets = AnnotationSets
+    annotationSets._meta.set_table_name('annotation_sets')
+ 
+    base_query = annotation.select(annotation.id, annotation.classes, annotation.tags, annotation.task, annotation.data, 
+                                   annotation.annotation_set_id, 
+                              annotationSets.name, annotation.dataset_id, annotation.image_id).join(annotationSets, 
+                                                        on=(annotation.annotation_set_id==annotationSets.id))
+    annotation_sets = []
+    for q in base_query.where(annotation.dataset_id == dataset_id):
+        annotation_sets.append({'id':q.id, 'classes':q.classes, 'tags':q.tags, 'task':q.task, 'data':q.data, 
+                             'annotation_set_id':q.annotation_set_id, 'annotation_set_name': q.annotation_sets.name,
+                                'dataset_id':q.dataset_id, 'image_id':q.image_id})
+    return annotation_sets
+
+def get_annotation_set(ann_set_id):
+    '''
+    Given an annotation_set_id returns its information
+    '''
+    annotation = Annotation
+    annotation._meta.set_table_name('new_annotations')
+    annotationSets = AnnotationSets
+    annotationSets._meta.set_table_name('annotation_sets')
+    
+    base_query = annotation.select(annotation.id, annotation.classes, annotation.tags, annotation.task, annotation.data, 
+                                   annotation.annotation_set_id, 
+                              annotationSets.name, annotation.dataset_id, annotation.image_id).join(annotationSets, 
+                                                        on=(annotation.annotation_set_id==annotationSets.id))
+    annotation_set = []
+    for q in base_query.where(annotation.annotation_set_id == ann_set_id):
+        annotation_set.append({'id':q.id, 'classes':q.classes, 'tags':q.tags, 'task':q.task, 'data':q.data, 
+                             'annotation_set_id':q.annotation_set_id, 'annotation_set_name': q.annotation_sets.name,
+                               'dataset_id':q.dataset_id, 'image_id':q.image_id})
+    return annotation_set

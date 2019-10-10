@@ -64,6 +64,9 @@ class SDK:
             result['urls_upload_result'] = urls_upload_result
         return result 
     
+    def get_annotation_set(self, ann_set_id):
+        result = self.api.get_annotation_set(ann_set_id)
+        return result
     
     def list_annotation_sets(self, dataset_id):
         result = self.api.list_annotation_sets(dataset_id)
