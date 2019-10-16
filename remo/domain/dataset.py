@@ -122,28 +122,6 @@ class Dataset:
 
     def search(self, **kwargs):
         pass
-    
-    def ann_statistics(self):
-        #cur = self.sdk.con.cursor()
-        # we won't need this after arranging endpoints
-      #  con = psycopg2.connect(database=.., user=.., password=.. host=.., port=..)
-        cur = con.cursor()
-        query = "SELECT t.* FROM public.annotation_set_statistics t where dataset_id = %s"
-        cur.execute(query % self.id)
-        rows = cur.fetchall()
-
-        statistics = dict()
-        for row in rows:
-            statistics["Annotation SET ID "] = row[1]
-            statistics["Classes"] = row[2]
-            statistics["Tags"] = row[4]
-            statistics["Top3 Classes"] = row[5]
-            statistics["Total Classes"] = row[6]
-            statistics["Total Annotated Images"] = row[7]
-            statistics["Total Annotation Objects"] = row[8]
-      
-        self.sdk.con.close()
-        return statistics 
         
         
     def get_images(self, cls=None, tag=None):
@@ -153,17 +131,22 @@ class Dataset:
         for res in dataset_details['results']:
             if res['id'] == self.id:
                 dataset_info = res
-        url_ = dataset_info.get('image_thumbnails')[0]['image']
-        bytes_ = (requests.get(url_)).content
-        # TODO: get list of the images
-        rawIO = BytesIO(bytes_)
-
-        return rawIO
+        url_list = []
+        image_thumbnails = dataset_info.get('image_thumbnails')
+        for i in range(len(image_thumbnails)):
+            url_ = image_thumbnails[i]['image']
+            url_list.append(url_)
+        return url_list
     
     def show_images(self, cls=None, tag=None):
         # TODO: redirect to ui with endpoints
-        img = self.get_images(cls, tag)
-        return Image.open(img)
+        image_urls = self.get_images(cls=None, tag=None)
+        imgs = []
+        for url in image_urls:
+            bytes_ = requests.get(url).content
+            rawIO = BytesIO(bytes_)
+            imgs.append(rawIO)
+        return imgs
   
     
     def show_objects(self, cls, tag):

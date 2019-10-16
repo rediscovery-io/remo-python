@@ -72,7 +72,7 @@ class SDK:
         result = self.api.list_annotation_sets(dataset_id)
         return result
     
-    def list_dataset_images(self, dataset_id, folder_id = None, **kwargs):
+    def list_dataset_images(self, dataset_id, folder_id = None, endpoint=None, **kwargs):
         if folder_id is not None:
             result = self.api.list_dataset_contents_by_folder(dataset_id, folder_id, **kwargs)
         else:
@@ -85,4 +85,7 @@ class SDK:
             images.append(name)
 
         return images
-   
+    
+    def ann_statistics(self, dataset_id):
+        result = self.api.get_annotation_statistics(dataset_id)
+        return result

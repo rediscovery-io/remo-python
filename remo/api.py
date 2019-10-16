@@ -7,7 +7,7 @@ import requests
 #import psycopg2
 from .domain.task import AnnotationTask
 from .utils import FileResolver, build_url
-from .extra_endpoints import get_dataset_info as dset_info, list_annotation_sets as list_ann_sets, get_annotation_set as get_ann_set
+from .extra_endpoints import get_dataset_info as dset_info, list_annotation_sets as list_ann_sets, get_annotation_set as get_ann_set, get_annotation_statistics as get_ann_stats
 
 
 class UploadStatus:
@@ -79,8 +79,6 @@ class API:
         return self.post(self.url('/api/dataset'),
                          json={"name": name, "is_public": public}).json()
     
-    # MC: better to merge with upload_files()
-    # ALR: I think it's ok to keep individual end points clear in api.py
     def upload_file(self, dataset_id, path, annotation_task=None, folder_id=None):
         name = os.path.basename(path)
         files = {'files': (name, open(path, 'rb'), filetype.guess_mime(path))}
@@ -172,6 +170,13 @@ class API:
             return get_ann_set(ann_set_id)
         else:
             return self.get(url).json()
+        
+    def get_annotation_statistics(self, dataset_id, endpoint=None):
+        url = None
+        if not endpoint:
+            return get_ann_stats(dataset_id)
+        else:
+            return self.get(url).json()
             
     def get_dataset(self, id):
         url = self.url('/api/dataset/{}'.format(id))
@@ -188,3 +193,4 @@ class API:
     def list_dataset_contents_by_folder(self, dataset_id, folder_id, **kwargs):
         url = self.url('/api/user-dataset/{}/contents/{}'.format(dataset_id, folder_id), **kwargs)
         return self.get(url).json()
+    
