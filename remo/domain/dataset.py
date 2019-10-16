@@ -101,7 +101,7 @@ class Dataset:
 
         """
         
-        return self.sdk.upload_dataset(self.id, files, urls, annotation_task, folder_id)
+        return self.sdk.add_data_to_dataset(self.id, files, urls, annotation_task, folder_id)
 
     def fetch(self):
         dataset = self.sdk.get_dataset(self.id)

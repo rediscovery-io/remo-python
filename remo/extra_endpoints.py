@@ -13,23 +13,23 @@ except NameError:
 db.connect()
 
 
-class BaseModel(Model):
+class pewee_BaseModel(Model):
     class Meta:
         database = db
 
-class Table(BaseModel):
+class pewee_Table(pewee_BaseModel):
     id = AutoField()
     name = CharField()
     license_id = IntegerField()
     
-class AnnotationSets(BaseModel):
+class pewee_AnnotationSets(pewee_BaseModel):
     id = AutoField()
     name = CharField()
     dataset_id = IntegerField()
     task_id = IntegerField()
     user_id = IntegerField()
     
-class Annotation(BaseModel):
+class pewee_Annotation(pewee_BaseModel):
     id = AutoField()
     # MC: Some of them are actually binary json but
     # BinaryJSONField() is not recognized in the package
@@ -40,9 +40,9 @@ class Annotation(BaseModel):
     annotation_set_id = IntegerField()
     dataset_id = IntegerField()
     image_id = IntegerField()
-    annotation_sets = ForeignKeyField(AnnotationSets)
+    annotation_sets = ForeignKeyField(pewee_AnnotationSets)
 
-class AnnotationStats(BaseModel):
+class pewee_AnnotationStats(pewee_BaseModel):
     id = AutoField()
     annotation_set_id = IntegerField()
     classes = CharField()
@@ -55,7 +55,7 @@ class AnnotationStats(BaseModel):
     
 
 def get_dataset_info(table_name = 'datasets'):
-    new_table = Table
+    new_table = pewee_Table
     if table_name is not None:
         new_table._meta.set_table_name(table_name)
     query = new_table.select()
@@ -68,9 +68,9 @@ def list_annotation_sets(dataset_id):
     '''
     Given a dataset_id returns information of its annotation sets
     '''
-    annotation = Annotation
+    annotation = pewee_Annotation
     annotation._meta.set_table_name('new_annotations')
-    annotationSets = AnnotationSets
+    annotationSets = pewee_AnnotationSets
     annotationSets._meta.set_table_name('annotation_sets')
  
     base_query = annotation.select(annotation.id, annotation.classes, annotation.tags, annotation.task, annotation.data, 
@@ -88,9 +88,9 @@ def get_annotation_set(ann_set_id):
     '''
     Given an annotation_set_id returns its information
     '''
-    annotation = Annotation
+    annotation = pewee_Annotation
     annotation._meta.set_table_name('new_annotations')
-    annotationSets = AnnotationSets
+    annotationSets = pewee_AnnotationSets
     annotationSets._meta.set_table_name('annotation_sets')
     
     base_query = annotation.select(annotation.id, annotation.classes, annotation.tags, annotation.task, annotation.data, 

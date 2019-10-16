@@ -144,6 +144,7 @@ class API:
         url = self.url('/api/dataset/{}/upload'.format(dataset_id))
         return self.post(url, json=payload).json()
 
+    #TODO: should return only limited information on annotation sets
     def list_annotation_sets(self, dataset_id, endpoint=None):
         url = self.url('/api/v1/ui/datasets/{}/annotation-sets'.format(dataset_id))
         if not endpoint:
