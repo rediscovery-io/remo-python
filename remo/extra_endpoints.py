@@ -41,7 +41,19 @@ class Annotation(BaseModel):
     dataset_id = IntegerField()
     image_id = IntegerField()
     annotation_sets = ForeignKeyField(AnnotationSets)
-      
+
+class AnnotationStats(BaseModel):
+    id = AutoField()
+    annotation_set_id = IntegerField()
+    classes = CharField()
+    tags = CharField()
+    top3_classes = CharField()
+    total_classes = IntegerField()
+    total_annotated_images = IntegerField()
+    total_annotation_objects = IntegerField()
+    dataset_id = IntegerField()
+    
+
 def get_dataset_info(table_name = 'datasets'):
     new_table = Table
     if table_name is not None:
@@ -91,3 +103,18 @@ def get_annotation_set(ann_set_id):
                              'annotation_set_id':q.annotation_set_id, 'annotation_set_name': q.annotation_sets.name,
                                'dataset_id':q.dataset_id, 'image_id':q.image_id})
     return annotation_set
+
+def get_annotation_statistics(dataset_id):
+    '''
+    Given a dataset id returns its annotation set statistics
+    '''
+    annotation_statistics = AnnotationStats
+    annotation_statistics._meta.set_table_name('annotation_set_statistics')
+    query = annotation_statistics.select(annotation_statistics.id, annotation_statistics.annotation_set_id, annotation_statistics.classes, 
+                                             annotation_statistics.tags, annotation_statistics.top3_classes, annotation_statistics.total_classes, annotation_statistics.total_annotated_images, annotation_statistics.total_annotation_objects).where(annotation_statistics.dataset_id == dataset_id)
+    ann_stats = []
+    for q in query:
+        ann_stats.append({'id': q.id, 'annotation_set_id': q.annotation_set_id, 'classes':q.classes, 'tags': q.tags, 'top3_classes': q.top3_classes, 'total_classses': q.total_classes, 'total_annotated_images': q.total_annotated_images, 'total_annotation_objects': q.total_annotation_objects})
+    return ann_stats
+        
+    
