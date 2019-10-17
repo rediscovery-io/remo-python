@@ -4,6 +4,9 @@ from playhouse.postgres_ext import PostgresqlExtDatabase
 #db = PostgresqlExtDatabase('postgres', user='postgres', password='admin',host='localhost', port=5432,
 #                            autocommit=True, autorollback=True)
 
+db_path = 'C:/Users/Andrea.LaRosa/.remo/remo_db.sqlite3'
+db = SqliteDatabase(db_path, autocommit=True, autorollback=True)
+
 try:
     db
 except NameError:

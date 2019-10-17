@@ -66,10 +66,10 @@ class Dataset:
            
         if 'id' in kwargs:
                self.initialise_images()
+
             
     def initialise_images(self):
         list_of_images = self.list_images()
-        
         for i_image in list_of_images:
             my_image = Image(id = None, path = i_image, dataset = self.name)
             print(i_image, self.name)
@@ -82,7 +82,7 @@ class Dataset:
     def __str__(self):
         return 'Dataset (id={}, name={})'.format(self.id, self.name)
 
-    def add_data(self, files=[], urls=[], annotation_task=None, folder_id=None):
+    def add_data(self, paths_to_add=[], paths_to_upload = [], urls=[], annotation_task=None, folder_id=None):
         """
         Adds images and optionally annotations to a Dataset
 
@@ -100,8 +100,14 @@ class Dataset:
         Raises:
 
         """
-        
-        return self.sdk.add_data_to_dataset(self.id, files, urls, annotation_task, folder_id)
+
+            
+        return self.sdk.add_data_to_dataset(dataset_id = self.id, 
+                                            paths_to_add = paths_to_add, 
+                                            paths_to_upload = paths_to_upload, 
+                                            urls = urls, 
+                                            annotation_task = annotation_task, 
+                                            folder_id = folder_id)
 
     def fetch(self):
         dataset = self.sdk.get_dataset(self.id)

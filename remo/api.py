@@ -89,35 +89,69 @@ class API:
         url = self.url('/api/dataset/{}/upload'.format(dataset_id), folder_id=folder_id)
         return self.post(url, files=files, data=data).json()
     
-    def bulk_files_upload(self, dataset_id: int, pathes: list, annotation_task: AnnotationTask = None,
-                          folder_id: int = None, status: UploadStatus = None):
+    
+    #TODO: fix progress to include both local files and uploads
+    def upload_files(self, dataset_id: int, 
+                     paths_to_add: list = [], 
+                     paths_to_upload: list = [], 
+                     annotation_task: AnnotationTask = None,
+                     folder_id: int = None, 
+                     status: UploadStatus = None):
         
-        files = [('files', (os.path.basename(path), open(path, 'rb'), filetype.guess_mime(path))) for path in pathes]
-        data = {}
+        files = [('files', (os.path.basename(path), open(path, 'rb'), filetype.guess_mime(path))) for path in paths_to_upload]
+        
+        
+        data = {'local_files': paths_to_add }
         if annotation_task:
             data['annotation_task'] = annotation_task.value
-
+                                
         url = self.url('/api/dataset/{}/upload'.format(dataset_id), folder_id=folder_id)
+        
         r = self.post(url, files=files, data=data)
+                     
         if r.status_code != http.HTTPStatus.OK:
-            print('Response:', r.text, 'files:', pathes)
+            print('Possible Error - Response:', r.text, 'files:', paths_to_add)
 
-        status.update(len(pathes))
-        status.progress()
+        #status.update(len(paths_to_upload))
+        #status.progress()
         return r.json()
 
-    def upload_files(self, dataset_id: int, files: list, annotation_task: AnnotationTask = None,
+    #TODO: fix progress to include both local files and uploads
+    def bulk_upload_files(self, dataset_id: int, paths_to_add: list, paths_to_upload: list,
+                          annotation_task: AnnotationTask = None,
                      folder_id: int = None):
         
-        files = FileResolver(files, annotation_task is not None).resolve()
-        groups = self.split_files_on_groups(files)
+        # files to link
+        files = FileResolver(paths_to_add, annotation_task is not None).resolve()
+        groups = self.chunks(files)
         status = UploadStatus(len(files))
-        with ThreadPoolExecutor(5) as ex:
-            res = ex.map(lambda bulk: self.bulk_files_upload(dataset_id, bulk, annotation_task, folder_id, status),
+        res_1 = {}
+        res_2 = {}  
+        with ThreadPoolExecutor(1) as ex:
+            res_1 = ex.map(lambda bulk: self.upload_files(dataset_id, bulk, annotation_task, folder_id, status),
                          groups)
-        return list(res)
+       
+                      
+        # files to upload              
+        files = FileResolver(paths_to_upload, annotation_task is not None).resolve()
+        groups = self.split_files_by_size(files)
+        status = UploadStatus(len(files))
+        with ThreadPoolExecutor(1) as ex:
+            res_2 = ex.map(lambda bulk: self.upload_files(dataset_id, bulk, annotation_task, folder_id, status),
+                         groups)
+        
+        results = list(res_1).extend(list(res_2))
+        return results
 
-    def split_files_on_groups(self, files: list) -> list:
+    def chunks(self, my_list, chunk_size = 2000):
+        groups = []
+        """Yield successive n-sized chunks from l."""
+        for i in range(0, len(my_list), chunk_size):
+            groups.append(my_list[i:i + chunk_size])
+
+        return groups
+        
+    def split_files_by_size(self, files: list) -> list:
         groups = []
         bulk = []
         total_size = 0
