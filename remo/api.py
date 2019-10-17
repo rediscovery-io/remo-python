@@ -168,6 +168,16 @@ class API:
             groups.append(bulk)
         return groups
 
+    def upload_local_files(self, dataset_id, local_files, annotation_task=None, folder_id=None):
+        payload = {"local_files": local_files}
+        if annotation_task:
+            payload['annotation_task'] = annotation_task.value
+        if folder_id:
+            payload['folder_id'] = folder_id
+
+        url = self.url('/api/dataset/{}/upload'.format(dataset_id))
+        return self.post(url, json=payload).json()
+
     def upload_urls(self, dataset_id, urls, annotation_task=None, folder_id=None):
         payload = {"urls": urls}
         if annotation_task:

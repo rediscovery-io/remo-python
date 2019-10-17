@@ -16,7 +16,7 @@ class SDK:
         self.api.login(user_email, user_pwd)
 
     # ALR: do we need folder_id here?
-    def create_dataset(self, name, paths_to_add=[], paths_to_upload=[], urls=[], annotation_task=None, 
+    def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None,
                        folder_id=None, public=False) -> Dataset:
         
         #TODO: add documentation on annotation tasks and urls upload
@@ -35,7 +35,7 @@ class SDK:
         result = self.api.create_dataset(name, public)
         print(result)
         my_dataset = Dataset(self, **result)
-        my_dataset.add_data(paths_to_add, paths_to_upload, urls, annotation_task, folder_id)
+        my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task, folder_id)
         return my_dataset
     
     def list_datasets(self):
@@ -53,7 +53,7 @@ class SDK:
         result = self.api.get_dataset(dataset_id) 
         return Dataset(self, **result)
 
-    def add_data_to_dataset(self, dataset_id, paths_to_add = [],
+    def add_data_to_dataset(self, dataset_id, local_files = [],
                             paths_to_upload=[], urls=[], annotation_task=None, folder_id=None):
         # JSONDecodeError: Expecting value: line 1 column 1 (char 0)
         '''
@@ -69,19 +69,15 @@ class SDK:
         
         
         result = {}
-        if len(paths_to_add):
-            if type(paths_to_add) is not list:
-                raise ValueError ('Function parameter "paths_to_add" should be a list of file or directory paths, but instead is a ' + str(type(paths_to_add)))
-                            
-            files_upload_result = self.api.upload_files(dataset_id = dataset_id, 
-                                                        paths_to_add = paths_to_add, 
-                                                        paths_to_upload = [],
-                                                        annotation_task = annotation_task, 
-                                                        folder_id = folder_id,
-                                                       status = None)
-            
-            result['files_link_result'] = files_upload_result  
-            
+        if len(local_files):
+            if type(local_files) is not list:
+                raise ValueError(
+                    'Function parameter "paths_to_add" should be a list of file or directory paths, but instead is a ' + str(
+                        type(local_files)))
+
+            files_upload_result = self.api.upload_local_files(dataset_id, local_files, annotation_task, folder_id)
+            result['files_link_result'] = files_upload_result
+
         if len(paths_to_upload):
             if type(paths_to_upload) is not list:
                 raise ValueError ('Function parameter "paths_to_upload" should be a list of file or directory paths, but instead is a ' + str(type(paths_to_upload)))

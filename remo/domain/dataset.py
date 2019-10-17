@@ -1,6 +1,6 @@
 from .. import utils
 #from .api import API
-import psycopg2
+# import psycopg2
 from PIL import Image
 from io import BytesIO
 import requests
@@ -82,7 +82,7 @@ class Dataset:
     def __str__(self):
         return 'Dataset (id={}, name={})'.format(self.id, self.name)
 
-    def add_data(self, paths_to_add=[], paths_to_upload = [], urls=[], annotation_task=None, folder_id=None):
+    def add_data(self, local_files=[], paths_to_upload = [], urls=[], annotation_task=None, folder_id=None):
         """
         Adds images and optionally annotations to a Dataset
 
@@ -102,11 +102,11 @@ class Dataset:
         """
 
             
-        return self.sdk.add_data_to_dataset(dataset_id = self.id, 
-                                            paths_to_add = paths_to_add, 
-                                            paths_to_upload = paths_to_upload, 
-                                            urls = urls, 
-                                            annotation_task = annotation_task, 
+        return self.sdk.add_data_to_dataset(dataset_id = self.id,
+                                            local_files= local_files,
+                                            paths_to_upload = paths_to_upload,
+                                            urls = urls,
+                                            annotation_task = annotation_task,
                                             folder_id = folder_id)
 
     def fetch(self):

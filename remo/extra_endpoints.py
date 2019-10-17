@@ -1,5 +1,5 @@
 from peewee import *
-from playhouse.postgres_ext import PostgresqlExtDatabase
+# from playhouse.postgres_ext import PostgresqlExtDatabase
 
 #db = PostgresqlExtDatabase('postgres', user='postgres', password='admin',host='localhost', port=5432,
 #                            autocommit=True, autorollback=True)
