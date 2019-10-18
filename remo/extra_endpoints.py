@@ -5,15 +5,16 @@ from peewee import *
 #                            autocommit=True, autorollback=True)
 
 db_path = 'C:/Users/Andrea.LaRosa/.remo/remo_db.sqlite3'
-db = SqliteDatabase(db_path, autocommit=True, autorollback=True)
-
-try:
-    db
-except NameError:
-    print("\nERROR! Initialise 'db' to be")
-    print("'=PostgresqlExtDatabase('x', user='x', password='x',host='x', port=x,autocommit=True,autorollback=True)'\n")
-    
-db.connect()
+db = None
+# db = SqliteDatabase(db_path, autocommit=True, autorollback=True)
+#
+# try:
+#     db
+# except NameError:
+#     print("\nERROR! Initialise 'db' to be")
+#     print("'=PostgresqlExtDatabase('x', user='x', password='x',host='x', port=x,autocommit=True,autorollback=True)'\n")
+#
+# db.connect()
 
 
 class pewee_BaseModel(Model):

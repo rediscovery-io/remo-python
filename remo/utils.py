@@ -89,6 +89,9 @@ def build_url(*args, **kwargs):
             params.append('{}={}'.format(key, val))
     if len(params):
         url += "?" + "&".join(params)
+
+    if url.find('?') > 0 or url.find('&') > 0:
+        url = url.rstrip('/')
     return url
 
 

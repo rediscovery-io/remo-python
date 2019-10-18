@@ -131,3 +131,9 @@ class SDK:
     def ann_statistics(self, dataset_id):
         result = self.api.get_annotation_statistics(dataset_id)
         return result
+
+    def export_annotations(self, annotation_set_id, annotation_format=None):
+        args = [annotation_set_id]
+        if annotation_format:
+            args.append(annotation_format)
+        return self.api.export_annotations(*args)
