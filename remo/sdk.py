@@ -82,12 +82,10 @@ class SDK:
             if type(paths_to_upload) is not list:
                 raise ValueError ('Function parameter "paths_to_upload" should be a list of file or directory paths, but instead is a ' + str(type(paths_to_upload)))
             
-            files_upload_result = self.api.upload_files(dataset_id = dataset_id, 
-                                                        paths_to_add = [], 
-                                                        paths_to_upload = paths_to_upload,
+            files_upload_result = self.api.bulk_upload_files(dataset_id = dataset_id, 
+                                                        files_to_upload = paths_to_upload,
                                                         annotation_task = annotation_task, 
-                                                        folder_id = folder_id,
-                                                       status = None)
+                                                        folder_id = folder_id)
             
             result['files_upload_result'] = files_upload_result  
             
@@ -95,12 +93,10 @@ class SDK:
             if type(urls) is not list:
                 raise ValueError ('Function parameter "urls" should be a list of URLs, but instead is a ' + str(type(urls)))
                 
-            urls_upload_result = self.api.upload_files(dataset_id = dataset_id, 
-                                                        paths_to_add = [], 
-                                                        paths_to_upload = urls,
+            urls_upload_result = self.api.upload_urls(dataset_id = dataset_id, 
+                                                        urls = urls,
                                                         annotation_task = annotation_task, 
-                                                        folder_id = folder_id,
-                                                       status = None)
+                                                        folder_id = folder_id)
             
             print(urls_upload_result)
             result['urls_upload_result'] = urls_upload_result

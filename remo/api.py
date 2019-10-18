@@ -92,16 +92,14 @@ class API:
 
     # TODO: fix progress to include both local files and uploads
     def upload_files(self, dataset_id: int,
-                     paths_to_add: list = [],
-                     paths_to_upload: list = [],
+                     files_to_upload: list = [],
                      annotation_task: AnnotationTask = None,
                      folder_id: int = None,
                      status: UploadStatus = None):
 
         files = [('files', (os.path.basename(path), open(path, 'rb'), filetype.guess_mime(path))) for path in
-                 paths_to_upload]
-
-        data = {'local_files': paths_to_add}
+                 files_to_upload]
+        data = {}
         if annotation_task:
             data['annotation_task'] = annotation_task.value
 
@@ -110,36 +108,26 @@ class API:
         r = self.post(url, files=files, data=data)
 
         if r.status_code != http.HTTPStatus.OK:
-            print('Possible Error - Response:', r.text, 'files:', paths_to_add)
+            print('Possible Error - Response:', r.text, 'files:', files_to_upload)
 
-        # status.update(len(paths_to_upload))
-        # status.progress()
+        status.update(len(files))
+        status.progress()
         return r.json()
 
     # TODO: fix progress to include both local files and uploads
-    def bulk_upload_files(self, dataset_id: int, paths_to_add: list, paths_to_upload: list,
+    def bulk_upload_files(self, dataset_id: int, files_to_upload: list,
                           annotation_task: AnnotationTask = None,
                           folder_id: int = None):
 
-        # files to link
-        files = FileResolver(paths_to_add, annotation_task is not None).resolve()
-        groups = self.chunks(files)
-        status = UploadStatus(len(files))
-        res_1 = {}
-        res_2 = {}
-        with ThreadPoolExecutor(1) as ex:
-            res_1 = ex.map(lambda bulk: self.upload_files(dataset_id, bulk, annotation_task, folder_id, status),
-                           groups)
-
-        # files to upload              
-        files = FileResolver(paths_to_upload, annotation_task is not None).resolve()
+        # files to upload
+        files = FileResolver(files_to_upload, annotation_task is not None).resolve()
         groups = self.split_files_by_size(files)
         status = UploadStatus(len(files))
         with ThreadPoolExecutor(1) as ex:
-            res_2 = ex.map(lambda bulk: self.upload_files(dataset_id, bulk, annotation_task, folder_id, status),
-                           groups)
+            res = ex.map(lambda bulk: self.upload_files(dataset_id, bulk, annotation_task, folder_id, status),
+                         groups)
 
-        results = list(res_1).extend(list(res_2))
+        results = res
         return results
 
     def chunks(self, my_list, chunk_size=2000):
