@@ -102,12 +102,17 @@ class SDK:
             result['urls_upload_result'] = urls_upload_result
         return result 
     
-    def get_annotation_set(self, ann_set_id):
-        result = self.api.get_annotation_set(ann_set_id)
-        return result
-    
     def list_annotation_sets(self, dataset_id):
         result = self.api.list_annotation_sets(dataset_id)
+        return result
+    
+    def ann_statistics(self, dataset_id):
+        """        
+        Args:
+            dataset_id: int
+        Returns: Lists annotation set statistics of the dataset
+        """
+        result = self.api.get_annotation_statistics(dataset_id)
         return result
     
     def list_dataset_images(self, dataset_id, folder_id = None, endpoint=None, **kwargs):
@@ -123,12 +128,15 @@ class SDK:
             images.append(name)
 
         return images
-    
-    def ann_statistics(self, dataset_id):
-        result = self.api.get_annotation_statistics(dataset_id)
-        return result
 
     def export_annotations(self, annotation_set_id, annotation_format=None):
+        """
+        Exports annotation set 
+        Args:
+            annotation_set_id: int
+            annotation_format: choose format from this list ['json', 'coco'], default = 'json'
+        Returns: annotations
+        """
         args = [annotation_set_id]
         if annotation_format:
             args.append(annotation_format)

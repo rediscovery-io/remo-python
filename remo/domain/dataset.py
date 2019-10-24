@@ -115,6 +115,9 @@ class Dataset:
 
     def browse(self):
         utils.browse(self.sdk.ui.dataset_url(self.id))
+        
+    def browse_ann(self, ann_id):
+        utils.browse(self.sdk.ui.annotate_url(ann_id))
 
     def annotate(self):
         # TODO: select by annotation task
