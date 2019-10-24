@@ -27,6 +27,4 @@ def export_annotations(sdk):
 
 
 if __name__ == '__main__':
-    print('Hello')
-    sdk = remo.SDK('http://localhost:8000', 'admin@remo.ai', 'adminpass')
-    export_annotations(sdk)
+    print(remo.get_dataset(1))

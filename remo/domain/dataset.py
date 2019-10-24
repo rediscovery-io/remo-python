@@ -64,8 +64,8 @@ class Dataset:
      #   self.total_classes = kwargs.get('total_classes')
       #  self.total_annotation_objects = kwargs.get('total_annotation_objects')
            
-        if 'id' in kwargs:
-               self.initialise_images()
+        # if 'id' in kwargs:
+        #        self.initialise_images()
 
             
     def initialise_images(self):

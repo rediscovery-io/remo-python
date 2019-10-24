@@ -69,8 +69,13 @@ class API:
         return requests.get(*args, headers=self.auth_header(), **kwargs)
 
     def login(self, user_email, user_pwd):
-        resp = requests.post(self.url('/api/rest-auth/login'),
+        try:
+            resp = requests.post(self.url('/api/rest-auth/login'),
                              data={"password": user_pwd, "email": user_email})
+        except requests.exceptions.ConnectionError:
+            print('ERROR: Failed connect to server')
+            return
+
         if resp.status_code != http.HTTPStatus.OK:
             raise Exception(resp.json())
 
