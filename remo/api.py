@@ -7,8 +7,7 @@ import requests
 # import psycopg2
 from .domain.task import AnnotationTask
 from .utils import FileResolver, build_url
-from .extra_endpoints import get_dataset_info as dset_info, list_annotation_sets as list_ann_sets, \
-    get_annotation_set as get_ann_set, get_annotation_statistics as get_ann_stats
+from .extra_endpoints import get_dataset_info as dset_info, list_annotation_sets as list_ann_sets
 
 
 class UploadStatus:
@@ -182,12 +181,12 @@ class API:
 
     # TODO: should return only limited information on annotation sets
     def list_annotation_sets(self, dataset_id, endpoint=None):
-        url = self.url('/api/v1/ui/datasets/{}/annotation-sets'.format(dataset_id))
+        url = None
         if not endpoint:
             return list_ann_sets(dataset_id)
         else:
             return self.get(url).json()
-
+    
     def list_datasets(self, endpoint=None):
         '''
         TODO: change end point used, once we have it
@@ -200,20 +199,24 @@ class API:
             return dset_info()
         else:
             return self.get(url).json()
+        
+    # MC: it's export_annotations()
+    #def get_annotation_set(self, ann_set_id, endpoint=None):
+    #    url = None
+    #    if not endpoint:
+    #        return get_ann_set(ann_set_id)
+    #    else:
+    #        return self.get(url).json()
 
-    def get_annotation_set(self, ann_set_id, endpoint=None):
-        url = None
-        if not endpoint:
-            return get_ann_set(ann_set_id)
-        else:
-            return self.get(url).json()
-
-    def get_annotation_statistics(self, dataset_id, endpoint=None):
-        url = None
-        if not endpoint:
-            return get_ann_stats(dataset_id)
-        else:
-            return self.get(url).json()
+    def get_annotation_statistics(self, dataset_id):
+        """
+        Args:
+            dataset_id: int
+        Returns: annotation statistics
+        """
+        
+        url = self.url('/api/v1/ui/datasets/{}/annotation-sets'.format(dataset_id))
+        return self.get(url).json()
 
     def get_dataset(self, id):
         url = self.url('/api/dataset/{}'.format(id))
@@ -233,9 +236,10 @@ class API:
 
     def export_annotations(self, annotation_set_id, annotation_format='json'):
         """
-        :param annotation_set_id: annotation_set id
-        :param annotation_format: can be one of ['json', 'coco']
-        :return: annotations
+        Args:
+            annotation_set_id: int
+            annotation_format: can be one of ['json', 'coco'], default='json'
+        Returns: annotations
         """
         url = self.url(
             'api/v1/ui/annotation-sets/{}/export/?annotation-format={}'.format(annotation_set_id, annotation_format))

@@ -61,10 +61,23 @@ class SDK:
         
         Args:
             dataset_id: id of the desired dataset to extend (integer)
-            files: path to data source 
-            url: link to data source
+            
+            local_files: list of files or directories. Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
+            
+            paths_to_upload: list of files or directories. These files will be uploaded to the local disk.
+                files supported: image files, annotation files and archive files.
+                Annotation files: json, xml, csv. If annotation file is provided, you need to provide annotation task.
+                Archive files: zip, tar, gzip. These files are unzipped, and then we scan for images, annotations and other archives. Support for nested archive files, image and annotation files in the same format supported elsewhere
+            
+            urls: list of urls pointing to downloadable target, which should be an archive file. The function will download the target of the URL - then we scan for archive files, unpack them and proceed as per Archive file section.
+            
             annotation_task:
-            folder_id:
+                object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
+                instance_segmentation = 'Instance segmentation'. Supports Coco
+                image_classification = 'Image classification'. ImageNet
+                
+            folder_id: if there is a folder in the targer remo id, and you want to add images to a specific folder, you can specify it here.
+            
         '''
         
         
@@ -102,12 +115,17 @@ class SDK:
             result['urls_upload_result'] = urls_upload_result
         return result 
     
-    def get_annotation_set(self, ann_set_id):
-        result = self.api.get_annotation_set(ann_set_id)
-        return result
-    
     def list_annotation_sets(self, dataset_id):
         result = self.api.list_annotation_sets(dataset_id)
+        return result
+    
+    def ann_statistics(self, dataset_id):
+        """        
+        Args:
+            dataset_id: int
+        Returns: Lists annotation set statistics of the dataset
+        """
+        result = self.api.get_annotation_statistics(dataset_id)
         return result
     
     def list_dataset_images(self, dataset_id, folder_id = None, endpoint=None, **kwargs):
@@ -123,12 +141,15 @@ class SDK:
             images.append(name)
 
         return images
-    
-    def ann_statistics(self, dataset_id):
-        result = self.api.get_annotation_statistics(dataset_id)
-        return result
 
     def export_annotations(self, annotation_set_id, annotation_format=None):
+        """
+        Exports annotation set 
+        Args:
+            annotation_set_id: int
+            annotation_format: choose format from this list ['json', 'coco'], default = 'json'
+        Returns: annotations
+        """
         args = [annotation_set_id]
         if annotation_format:
             args.append(annotation_format)
