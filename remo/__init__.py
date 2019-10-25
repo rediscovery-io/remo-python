@@ -60,7 +60,6 @@ if config:
     get_dataset = sdk.get_dataset
     search_images = sdk.search_images
     create_dataset = sdk.create_dataset
-    get_annotation_set = sdk.get_annotation_set
 
     def terminate_server():
         global logs
