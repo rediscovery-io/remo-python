@@ -8,8 +8,8 @@ from remo.domain.task import AnnotationTask
 
 
 # db_path = '../.remo/remo_db.sqlite3'
-
-db = SqliteDatabase(db_path, autocommit=True, autorollback=True)
+db = None
+# db = SqliteDatabase(db_path, autocommit=True, autorollback=True)
 #
 # try:
 #     db
