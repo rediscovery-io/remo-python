@@ -10,3 +10,7 @@ __pycache__
 .pyc
 
 config.json
+
+build
+dist
+remo_sdk.egg-info
