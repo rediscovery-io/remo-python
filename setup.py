@@ -21,8 +21,6 @@ setup(
 
         'Intended Audience :: Developers',
 
-        'License :: OSI Approved :: Creative Commons Attribution-NoDerivatives 4.0 International Public License (CC BY-ND 4.0)'
-        
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
