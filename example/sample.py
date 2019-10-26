@@ -28,4 +28,3 @@ def export_annotations(sdk):
 
 if __name__ == '__main__':
     print(remo.get_dataset(1))
-    # remo.terminate_server()

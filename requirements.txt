@@ -1,8 +1,8 @@
-certifi==2018.11.29
-chardet==3.0.4
-idna==2.8
-Pillow==6.2.0
 requests==2.21.0
-urllib3==1.24.2
 filetype==1.0.5
-peewee==3.11.2
+#certifi==2018.11.29
+#chardet==3.0.4
+#idna==2.8
+#Pillow==6.2.0
+#urllib3==1.24.2
+#peewee==3.11.2
