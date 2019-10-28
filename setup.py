@@ -10,8 +10,8 @@ setup(
     license='LICENSE.txt',
     description='Remo sdk',
     install_requires=[
-        'filetype==1.0.5',
-        'requests==2.21.0',
+        'filetype>=1.0.5',
+        'requests>=2.21.0',
         # 'urllib3==1.24.2',
         # 'Pillow==6.2.0',
         # 'peewee==3.11.2',
