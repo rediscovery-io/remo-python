@@ -1,3 +1,4 @@
+from .interfaces import ISDK
 from .. import utils
 from io import BytesIO
 import requests
@@ -17,32 +18,32 @@ class Image:
         #print(id, dataset,path_to_image, '\n')
     
 class Dataset:
-    images = []
-    annotation_sets = []
-    default_annotation_set = None
-    
-    def __init__(self, sdk, **kwargs):
+    def __init__(self, sdk: ISDK, **kwargs):
         self.sdk = sdk
         self.id = kwargs.get('id')
         self.name = kwargs.get('name')
+        self.images = []
+        self._annotation_sets = []
+        self.default_annotation_set = None
+
+    def __str__(self):
+        return "Dataset {id} - '{name}'".format(id=self.id, name=self.name)
 
     def __repr__(self):
-        return "Dataset {} - '{}'".format(self.id, self.name)
-
+        return self.__str__()
             
+    def annotation_sets(self):
+        return self.sdk.annotation_sets(self.id)
+        
     def initialise_images(self):
         list_of_images = self.list_images()
         for i_image in list_of_images:
             my_image = Image(id = None, path = i_image, dataset = self.name)
             print(i_image, self.name)
             self.images.append(my_image)
-        
-        
+    
     def list_images(self, folder_id = None, **kwargs):
         return self.sdk.list_dataset_images(self.id, folder_id = None, **kwargs)
-    
-    def __str__(self):
-        return 'Dataset (id={}, name={})'.format(self.id, self.name)
 
     def add_data(self, local_files=[], paths_to_upload = [], urls=[], annotation_task=None, folder_id=None):
         """
@@ -83,9 +84,9 @@ class Dataset:
 
     def annotate(self):
         # TODO: select by annotation task
-        print(self.annotation_sets)
-        if len(self.annotation_sets) > 0:
-            utils.browse(self.sdk.ui.annotate_url(self.annotation_sets[0]))
+        print(self._annotation_sets)
+        if len(self._annotation_sets) > 0:
+            utils.browse(self.sdk.ui.annotate_url(self._annotation_sets[0]))
         else:
             print("No annotation sets in dataset " + self.name)
 

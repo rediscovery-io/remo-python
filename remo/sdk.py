@@ -1,8 +1,12 @@
 from .api import API
-from .domain.dataset import Dataset
 from .ui import UI
+from .domain.interfaces import ISDK
+from .domain.dataset import Dataset
+from .domain.annotation_set import AnnotationSet
+from .domain.task import AnnotationTask
 
-class SDK:
+
+class SDK(ISDK):
     def __init__(self, server, user_email=None, user_password=None):
         self.api = API(server)
         self.ui = UI(server)
@@ -121,9 +125,16 @@ class SDK:
             result['urls_upload_result'] = urls_upload_result
         return result 
     
-    def list_annotation_sets(self, dataset_id):
-        result = self.api.list_annotation_sets(dataset_id)
-        return result
+    def annotation_sets(self, dataset_id):
+        resp = self.api.list_annotation_sets(dataset_id)
+        return [
+            AnnotationSet(self,
+                          id=annotation_set['id'],
+                          name=annotation_set['name'],
+                          task=AnnotationTask(annotation_set['task']['name']),
+                          total_classes=annotation_set['statistics']['total_classes'])
+            for annotation_set in resp.get('results', [])
+        ]
     
     def ann_statistics(self, dataset_id):
         """        

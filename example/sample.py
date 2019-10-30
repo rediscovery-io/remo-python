@@ -30,5 +30,12 @@ def list_all_datasets():
     print(remo.datasets())
 
 
+def list_all_annotation_sets():
+    for dataset in remo.datasets():
+        print(dataset)
+        for annotation_set in dataset.annotation_sets():
+            print('>>>', annotation_set)
+
+
 if __name__ == '__main__':
-    list_all_datasets()
+    list_all_annotation_sets()
