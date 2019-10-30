@@ -81,20 +81,12 @@ class Dataset:
         
     def annotate(self, ann_id):
         # TODO: select by annotation task
-<<<<<<< HEAD
-        print(self._annotation_sets)
-        if len(self._annotation_sets) > 0:
-            utils.browse(self.sdk.ui.annotate_url(self._annotation_sets[0]))
-        else:
-            print("No annotation sets in dataset " + self.name)
-=======
         utils.browse(self.sdk.ui.annotate_url(ann_id))
         #if len(self.annotation_sets) > 0:
             
         #    utils.browse(self.sdk.ui.annotate_url(self.annotation_sets[0]))
         #else:
         #    print("No annotation sets in dataset " + self.name)
->>>>>>> f5f48ae589b923adcf3d53231b07d1a60123156a
 
 
 
