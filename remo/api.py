@@ -231,10 +231,11 @@ class API:
         return browse(url)
 
     def get_images(self, dataset_id, image_id):
-        # MC: dowdloads the images
-        # TODO: get using dataset_id
-        url = self.url('/media/dataset_images/')
-        return self.get(url).json()
+        url = self.url('/api/v1/ui/datasets/{}/images/{}/annotations').format(dataset_id, image_id)
+        content = self.get(url).json()
+        image_url = self.url(content['image'])[:-1]
+        return self.get(image_url)
+
 
     def list_dataset_contents(self, dataset_id, **kwargs):
         url = self.url('/api/v1/ui/datasets/{}/images'.format(dataset_id), **kwargs)

@@ -89,32 +89,16 @@ class Dataset:
 
     def search(self, **kwargs):
         pass
-
-    def get_images(self, cls=None, tag=None):
-        # TODO: add class and tags
-        # dataset_details = self.sdk.all_info_datasets()
-        # dataset_info = None
-        # for res in dataset_details['results']:
-        #    if res['id'] == self.id:
-        #        dataset_info = res
-        # url_list = []
-        # image_thumbnails = dataset_info.get('image_thumbnails')
-        # for i in range(len(image_thumbnails)):
-        #    url_ = image_thumbnails[i]['image']
-        #    url_list.append(url_)
-        # return url_list
-        return 0
-
+    
+    def get_images(self, dataset_id, image_id, cls=None, tag=None):       
+        # TODO: add class and tags & multiple images
+        r = self.sdk.get_images(dataset_id, image_id)
+        return r      
+    
     def show_images(self, image_id=17, cls=None, tag=None):
         return self.sdk.show_images(self.id, image_id)
-        # TODO: redirect to ui with endpoints
-        # image_urls = self.get_images(cls=None, tag=None)
-        # imgs = []
-        # for url in image_urls:
-        #    bytes_ = requests.get(url).content
-        #    rawIO = BytesIO(bytes_)
-        #    imgs.append(rawIO)
-        # return imgs
-
+  
+    
     def show_objects(self, cls, tag):
         pass
+        
