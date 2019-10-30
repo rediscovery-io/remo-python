@@ -9,9 +9,10 @@ class SDK:
         if user_email and user_password:
             self.api.login(user_email, user_password)
 
-    def search_images(self, search_terms_dictionary):
-        result = self.api.search_images(search_terms_dictionary) 
-        
+    #def search_images(self, search_terms_dictionary):
+    #    result = self.api.search_images(search_terms_dictionary) 
+    def search_images(self, cls, task):
+        result = self.api.search_images(cls, task)     
     def login(self, user_email, user_pwd):
         self.api.login(user_email, user_pwd)
 
@@ -115,6 +116,7 @@ class SDK:
             result['urls_upload_result'] = urls_upload_result
         return result 
     
+    # TODO: add as a dataset method
     def list_annotation_sets(self, dataset_id):
         result = self.api.list_annotation_sets(dataset_id)
         return result
@@ -154,3 +156,7 @@ class SDK:
         if annotation_format:
             args.append(annotation_format)
         return self.api.export_annotations(*args)
+    
+    def show_images(self, dataset_id, image_id):
+        return self.api.show_images(dataset_id, image_id)
+  

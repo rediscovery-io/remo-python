@@ -6,7 +6,7 @@ import filetype
 import requests
 # import psycopg2
 from .domain.task import AnnotationTask
-from .utils import FileResolver, build_url
+from .utils import FileResolver, build_url, browse
 from .extra_endpoints import get_dataset_info as dset_info, list_annotation_sets as list_ann_sets
 
 
@@ -222,9 +222,33 @@ class API:
         url = self.url('/api/dataset/{}'.format(id))
         return self.get(url).json()
 
-    def all_info_datasets(self, **kwargs):
-        url = self.url('/api/dataset', **kwargs)
+    def all_info_datasets(self, endpoint=None, **kwargs):
+        if endpoint:
+            url = self.url('/api/dataset', **kwargs)
+            return self.get(url).json()
+        else:
+            return dset_info()
+        
+    def show_images(self, dataset_id, image_id):
+        url = self.url('/image/{}?datasetId={}').format(image_id, dataset_id)
+        return browse(url)
+
+    def search_images(self, cls=None, task=None):
+        if cls:
+            url = self.url('/api/v1/ui/search/?classes={}&limit=5').format(cls)
+        else:
+            
+            url = self.url('/api/v1/ui/search/?tasks=Instance%20segmentation&limit=15')
+            #url = self.url('/api/v1/ui/search/?tasks=Image%20classification&limit=15').format(task)
+        return browse(url)
+    
+    def get_images(self, dataset_id, image_id):
+        # MC: dowdloads the images
+        # TODO: get using dataset_id
+        url= self.url('/media/dataset_images/')
         return self.get(url).json()
+
+
 
     def list_dataset_contents(self, dataset_id, **kwargs):
         url = self.url('/api/v1/ui/datasets/{}/images'.format(dataset_id), **kwargs)

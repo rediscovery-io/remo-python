@@ -7,9 +7,9 @@ from remo.domain.task import AnnotationTask
 #                            autocommit=True, autorollback=True)
 
 
-# db_path = '../.remo/remo_db.sqlite3'
-db = None
-# db = SqliteDatabase(db_path, autocommit=True, autorollback=True)
+db_path = '../.remo/remo_db.sqlite3'
+#db = None
+db = SqliteDatabase(db_path, autocommit=True, autorollback=True)
 #
 # try:
 #     db
@@ -76,6 +76,7 @@ def list_annotation_sets(dataset_id):
     '''
     Given a dataset_id returns information of its annotation sets
     '''
+    # TODO: get task_name instead the task_id 
     annotation_set = pewee_AnnotationSets
     annotation_set._meta.set_table_name('annotation_sets')
     annotation_stats = pewee_AnnotationStats
