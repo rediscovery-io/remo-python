@@ -13,9 +13,10 @@ class SDK(ISDK):
         if user_email and user_password:
             self.api.login(user_email, user_password)
 
-    def search_images(self, search_terms_dictionary):
-        result = self.api.search_images(search_terms_dictionary) 
-        
+    #def search_images(self, search_terms_dictionary):
+    #    result = self.api.search_images(search_terms_dictionary) 
+    def search_images(self, cls, task):
+        result = self.api.search_images(cls, task)     
     def login(self, user_email, user_pwd):
         self.api.login(user_email, user_pwd)
 
@@ -135,7 +136,7 @@ class SDK(ISDK):
                           total_classes=annotation_set['statistics']['total_classes'])
             for annotation_set in resp.get('results', [])
         ]
-    
+
     def ann_statistics(self, dataset_id):
         """        
         Args:
@@ -171,3 +172,7 @@ class SDK(ISDK):
         if annotation_format:
             args.append(annotation_format)
         return self.api.export_annotations(*args)
+    
+    def show_images(self, dataset_id, image_id):
+        return self.api.show_images(dataset_id, image_id)
+  

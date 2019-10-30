@@ -4,10 +4,8 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 import filetype
 import requests
-# import psycopg2
 from .domain.task import AnnotationTask
-from .utils import FileResolver, build_url
-from .extra_endpoints import list_annotation_sets as list_ann_sets
+from .utils import FileResolver, build_url, browse
 
 
 class UploadStatus:
@@ -46,7 +44,6 @@ class API:
     def __init__(self, server):
         self.server = server.rstrip('/')
         self.token = None
-        # self.con = psycopg2.connect(database=.., user=.., password=.., host=.., port=..)
 
     def url(self, endpoint, **kwargs):
         return build_url(self.server, endpoint, **kwargs)
@@ -183,17 +180,12 @@ class API:
         url = self.url('/api/v1/ui/datasets/{}/annotation-sets/'.format(dataset_id))
         return self.get(url).json()
     
-    def list_datasets(self, endpoint=None):
-        '''
-        TODO: change end point used, once we have it
-        returns the name and id of datasets
-        NB: we don't return an actual dataset
-        '''
+    def list_datasets(self):
+        """
+        :return: list of datasets
+        """
 
         url = self.url('/api/v1/ui/datasets')
-        # if not endpoint:
-        #     return dset_info()
-        # else:
         return self.get(url).json()
         
     # MC: it's export_annotations()
@@ -218,9 +210,33 @@ class API:
         url = self.url('/api/dataset/{}'.format(id))
         return self.get(url).json()
 
-    def all_info_datasets(self, **kwargs):
-        url = self.url('/api/dataset', **kwargs)
+    def all_info_datasets(self, endpoint=None, **kwargs):
+        if endpoint:
+            url = self.url('/api/dataset', **kwargs)
+            return self.get(url).json()
+        else:
+            return dset_info()
+        
+    def show_images(self, dataset_id, image_id):
+        url = self.url('/image/{}?datasetId={}').format(image_id, dataset_id)
+        return browse(url)
+
+    def search_images(self, cls=None, task=None):
+        if cls:
+            url = self.url('/api/v1/ui/search/?classes={}&limit=5').format(cls)
+        else:
+            
+            url = self.url('/api/v1/ui/search/?tasks=Instance%20segmentation&limit=15')
+            #url = self.url('/api/v1/ui/search/?tasks=Image%20classification&limit=15').format(task)
+        return browse(url)
+    
+    def get_images(self, dataset_id, image_id):
+        # MC: dowdloads the images
+        # TODO: get using dataset_id
+        url= self.url('/media/dataset_images/')
         return self.get(url).json()
+
+
 
     def list_dataset_contents(self, dataset_id, **kwargs):
         url = self.url('/api/v1/ui/datasets/{}/images'.format(dataset_id), **kwargs)

@@ -79,16 +79,22 @@ class Dataset:
     def browse(self):
         utils.browse(self.sdk.ui.dataset_url(self.id))
         
-    def browse_ann(self, ann_id):
-        utils.browse(self.sdk.ui.annotate_url(ann_id))
-
-    def annotate(self):
+    def annotate(self, ann_id):
         # TODO: select by annotation task
+<<<<<<< HEAD
         print(self._annotation_sets)
         if len(self._annotation_sets) > 0:
             utils.browse(self.sdk.ui.annotate_url(self._annotation_sets[0]))
         else:
             print("No annotation sets in dataset " + self.name)
+=======
+        utils.browse(self.sdk.ui.annotate_url(ann_id))
+        #if len(self.annotation_sets) > 0:
+            
+        #    utils.browse(self.sdk.ui.annotate_url(self.annotation_sets[0]))
+        #else:
+        #    print("No annotation sets in dataset " + self.name)
+>>>>>>> f5f48ae589b923adcf3d53231b07d1a60123156a
 
 
 
@@ -97,28 +103,31 @@ class Dataset:
         
         
     def get_images(self, cls=None, tag=None):
+        
         # TODO: add class and tags 
-        dataset_details = self.sdk.all_info_datasets() 
-        dataset_info = None
-        for res in dataset_details['results']:
-            if res['id'] == self.id:
-                dataset_info = res
-        url_list = []
-        image_thumbnails = dataset_info.get('image_thumbnails')
-        for i in range(len(image_thumbnails)):
-            url_ = image_thumbnails[i]['image']
-            url_list.append(url_)
-        return url_list
+        #dataset_details = self.sdk.all_info_datasets() 
+        #dataset_info = None
+        #for res in dataset_details['results']:
+        #    if res['id'] == self.id:
+        #        dataset_info = res
+        #url_list = []
+        #image_thumbnails = dataset_info.get('image_thumbnails')
+        #for i in range(len(image_thumbnails)):
+        #    url_ = image_thumbnails[i]['image']
+        #    url_list.append(url_)
+        #return url_list
+        return 0
     
-    def show_images(self, cls=None, tag=None):
+    def show_images(self, image_id=17, cls=None, tag=None):
+        return self.sdk.show_images(self.id, image_id)
         # TODO: redirect to ui with endpoints
-        image_urls = self.get_images(cls=None, tag=None)
-        imgs = []
-        for url in image_urls:
-            bytes_ = requests.get(url).content
-            rawIO = BytesIO(bytes_)
-            imgs.append(rawIO)
-        return imgs
+        #image_urls = self.get_images(cls=None, tag=None)
+        #imgs = []
+        #for url in image_urls:
+        #    bytes_ = requests.get(url).content
+        #    rawIO = BytesIO(bytes_)
+        #    imgs.append(rawIO)
+        #return imgs
   
     
     def show_objects(self, cls, tag):
