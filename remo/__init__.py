@@ -78,6 +78,7 @@ python -m remo_app update
         print('Failed to launch Remo server, please start it manually')
         return False
 
+
     launch_server(open_browser=False)
 
     sdk = SDK('{}:{}'.format(config.server, config.port), config.user_email, config.user_password)
@@ -87,6 +88,7 @@ python -m remo_app update
     get_dataset = sdk.get_dataset
     search_images = sdk.search_images
     create_dataset = sdk.create_dataset
+
 
     def terminate_server():
         global logs
@@ -107,5 +109,3 @@ else:
     python -m remo_app update
     
     """.format(cfg_path))
-
-

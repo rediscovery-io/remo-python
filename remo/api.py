@@ -67,7 +67,7 @@ class API:
     def login(self, user_email, user_pwd):
         try:
             resp = requests.post(self.url('/api/rest-auth/login'),
-                             data={"password": user_pwd, "email": user_email})
+                                 data={"password": user_pwd, "email": user_email})
         except requests.exceptions.ConnectionError:
             print('ERROR: Failed connect to server')
             return
@@ -179,7 +179,7 @@ class API:
     def list_annotation_sets(self, dataset_id: int):
         url = self.url('/api/v1/ui/datasets/{}/annotation-sets/'.format(dataset_id))
         return self.get(url).json()
-    
+
     def list_datasets(self):
         """
         :return: list of datasets
@@ -187,9 +187,9 @@ class API:
 
         url = self.url('/api/v1/ui/datasets')
         return self.get(url).json()
-        
+
     # MC: it's export_annotations()
-    #def get_annotation_set(self, ann_set_id, endpoint=None):
+    # def get_annotation_set(self, ann_set_id, endpoint=None):
     #    url = None
     #    if not endpoint:
     #        return get_ann_set(ann_set_id)
@@ -202,7 +202,7 @@ class API:
             dataset_id: int
         Returns: annotation statistics
         """
-        
+
         url = self.url('/api/v1/ui/datasets/{}/annotation-sets'.format(dataset_id))
         return self.get(url).json()
 
@@ -216,7 +216,7 @@ class API:
             return self.get(url).json()
         else:
             return dset_info()
-        
+
     def show_images(self, dataset_id, image_id):
         url = self.url('/image/{}?datasetId={}').format(image_id, dataset_id)
         return browse(url)
@@ -225,18 +225,16 @@ class API:
         if cls:
             url = self.url('/api/v1/ui/search/?classes={}&limit=5').format(cls)
         else:
-            
+
             url = self.url('/api/v1/ui/search/?tasks=Instance%20segmentation&limit=15')
-            #url = self.url('/api/v1/ui/search/?tasks=Image%20classification&limit=15').format(task)
+            # url = self.url('/api/v1/ui/search/?tasks=Image%20classification&limit=15').format(task)
         return browse(url)
-    
+
     def get_images(self, dataset_id, image_id):
         # MC: dowdloads the images
         # TODO: get using dataset_id
-        url= self.url('/media/dataset_images/')
+        url = self.url('/media/dataset_images/')
         return self.get(url).json()
-
-
 
     def list_dataset_contents(self, dataset_id, **kwargs):
         url = self.url('/api/v1/ui/datasets/{}/images'.format(dataset_id), **kwargs)

@@ -4,19 +4,19 @@ from io import BytesIO
 import requests
 
 
-    
 class Image:
     id = None
     dataset = None
     path_to_image = None
     annotation_sets = []
-    
+
     def __init__(self, **kwargs):
         self.id = kwargs.get('id')
         self.dataset = kwargs.get('dataset')
         self.path_to_image = kwargs.get('path')
-        #print(id, dataset,path_to_image, '\n')
-    
+        # print(id, dataset,path_to_image, '\n')
+
+
 class Dataset:
     def __init__(self, sdk: ISDK, **kwargs):
         self.sdk = sdk
@@ -31,21 +31,21 @@ class Dataset:
 
     def __repr__(self):
         return self.__str__()
-            
+
     def annotation_sets(self):
         return self.sdk.annotation_sets(self.id)
-        
+
     def initialise_images(self):
         list_of_images = self.list_images()
         for i_image in list_of_images:
-            my_image = Image(id = None, path = i_image, dataset = self.name)
+            my_image = Image(id=None, path=i_image, dataset=self.name)
             print(i_image, self.name)
             self.images.append(my_image)
-    
-    def list_images(self, folder_id = None, **kwargs):
-        return self.sdk.list_dataset_images(self.id, folder_id = None, **kwargs)
 
-    def add_data(self, local_files=[], paths_to_upload = [], urls=[], annotation_task=None, folder_id=None):
+    def list_images(self, folder_id=None, **kwargs):
+        return self.sdk.list_dataset_images(self.id, folder_id=None, **kwargs)
+
+    def add_data(self, local_files=[], paths_to_upload=[], urls=[], annotation_task=None, folder_id=None):
         """
         Adds images and optionally annotations to a Dataset
 
@@ -64,13 +64,12 @@ class Dataset:
 
         """
 
-            
-        return self.sdk.add_data_to_dataset(dataset_id = self.id,
-                                            local_files= local_files,
-                                            paths_to_upload = paths_to_upload,
-                                            urls = urls,
-                                            annotation_task = annotation_task,
-                                            folder_id = folder_id)
+        return self.sdk.add_data_to_dataset(dataset_id=self.id,
+                                            local_files=local_files,
+                                            paths_to_upload=paths_to_upload,
+                                            urls=urls,
+                                            annotation_task=annotation_task,
+                                            folder_id=folder_id)
 
     def fetch(self):
         dataset = self.sdk.get_dataset(self.id)
@@ -78,52 +77,44 @@ class Dataset:
 
     def browse(self):
         utils.browse(self.sdk.ui.dataset_url(self.id))
-        
+
     def annotate(self, ann_id):
         # TODO: select by annotation task
         utils.browse(self.sdk.ui.annotate_url(ann_id))
-        #if len(self.annotation_sets) > 0:
-            
+        # if len(self.annotation_sets) > 0:
+
         #    utils.browse(self.sdk.ui.annotate_url(self.annotation_sets[0]))
-        #else:
+        # else:
         #    print("No annotation sets in dataset " + self.name)
-
-
 
     def search(self, **kwargs):
         pass
-        
-        
+
     def get_images(self, cls=None, tag=None):
-        
-        # TODO: add class and tags 
-        #dataset_details = self.sdk.all_info_datasets() 
-        #dataset_info = None
-        #for res in dataset_details['results']:
+        # TODO: add class and tags
+        # dataset_details = self.sdk.all_info_datasets()
+        # dataset_info = None
+        # for res in dataset_details['results']:
         #    if res['id'] == self.id:
         #        dataset_info = res
-        #url_list = []
-        #image_thumbnails = dataset_info.get('image_thumbnails')
-        #for i in range(len(image_thumbnails)):
+        # url_list = []
+        # image_thumbnails = dataset_info.get('image_thumbnails')
+        # for i in range(len(image_thumbnails)):
         #    url_ = image_thumbnails[i]['image']
         #    url_list.append(url_)
-        #return url_list
+        # return url_list
         return 0
-    
+
     def show_images(self, image_id=17, cls=None, tag=None):
         return self.sdk.show_images(self.id, image_id)
         # TODO: redirect to ui with endpoints
-        #image_urls = self.get_images(cls=None, tag=None)
-        #imgs = []
-        #for url in image_urls:
+        # image_urls = self.get_images(cls=None, tag=None)
+        # imgs = []
+        # for url in image_urls:
         #    bytes_ = requests.get(url).content
         #    rawIO = BytesIO(bytes_)
         #    imgs.append(rawIO)
-        #return imgs
-  
-    
+        # return imgs
+
     def show_objects(self, cls, tag):
         pass
-        
-
- 
