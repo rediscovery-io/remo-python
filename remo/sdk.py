@@ -38,10 +38,16 @@ class SDK:
         my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task, folder_id)
         return my_dataset
     
-    def list_datasets(self):
-        dataset_info = self.api.list_datasets()
-        return dataset_info
-        
+    def datasets(self) -> []:
+        """
+        :return: list of datasets
+        """
+        resp = self.api.list_datasets()
+        return [
+            Dataset(self, id=dataset['id'], name=dataset['name'])
+            for dataset in resp.get('results', [])
+        ]
+
     def all_info_datasets(self, **kwargs) -> [Dataset]:
         result = self.api.all_info_datasets(**kwargs)
         return result

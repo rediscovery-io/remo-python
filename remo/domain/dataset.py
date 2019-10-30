@@ -1,31 +1,8 @@
 from .. import utils
-#from .api import API
-# import psycopg2
-from PIL import Image
 from io import BytesIO
 import requests
 
-class data:
-    @staticmethod
-    def repr(obj):
-        items = []
-        for prop, value in obj.__dict__.items():
-            try:
-                item = "%s = %r" % (prop, value)
-                assert len(item) < 20
-            except:
-                item = "%s: <%s>" % (prop, value.__class__.__name__)
-            items.append(item)
 
-        return "%s(%s)" % (obj.__class__.__name__, ', '.join(items))
-
-    def __init__(self, cls):
-        cls.__repr__ = data.repr
-        self.cls = cls
-
-    def __call__(self, *args, **kwargs):
-        return self.cls(*args, **kwargs)
-    
     
 class Image:
     id = None
@@ -39,33 +16,18 @@ class Image:
         self.path_to_image = kwargs.get('path')
         #print(id, dataset,path_to_image, '\n')
     
-#@data
 class Dataset:
-    """remo long desc """
-    __doc__ = "dataset from remo!"
     images = []
     annotation_sets = []
     default_annotation_set = None
     
-    def __repr__(self):
-        return "Dataset {} - '{}'".format(self.id, self.name)
-        
     def __init__(self, sdk, **kwargs):
         self.sdk = sdk
-        self.name = kwargs.get('name')
         self.id = kwargs.get('id')
-        self.created_at = kwargs.get('created_at')
-        self.license = kwargs.get('license')
-        
-     #   self.is_public = kwargs.get('is_public')
-      # self.annotation_sets = kwargs.get('annotation_sets')
-     #   self.users_shared = kwargs.get('users_shared')
-    #    self.top3_classes = kwargs.get('top3_classes')
-     #   self.total_classes = kwargs.get('total_classes')
-      #  self.total_annotation_objects = kwargs.get('total_annotation_objects')
-           
-        # if 'id' in kwargs:
-        #        self.initialise_images()
+        self.name = kwargs.get('name')
+
+    def __repr__(self):
+        return "Dataset {} - '{}'".format(self.id, self.name)
 
             
     def initialise_images(self):

@@ -26,5 +26,9 @@ def export_annotations(sdk):
     print(annotation_set.export_annotations())
 
 
+def list_all_datasets():
+    print(remo.datasets())
+
+
 if __name__ == '__main__':
-    print(remo.get_dataset(1))
+    list_all_datasets()

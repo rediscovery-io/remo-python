@@ -83,7 +83,7 @@ python -m remo_app update
     sdk = SDK('{}:{}'.format(config.server, config.port), config.user_email, config.user_password)
 
     login = sdk.login
-    list_datasets = sdk.list_datasets
+    datasets = sdk.datasets
     get_dataset = sdk.get_dataset
     search_images = sdk.search_images
     create_dataset = sdk.create_dataset

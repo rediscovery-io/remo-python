@@ -194,11 +194,11 @@ class API:
         NB: we don't return an actual dataset
         '''
 
-        url = None
-        if not endpoint:
-            return dset_info()
-        else:
-            return self.get(url).json()
+        url = self.url('/api/v1/ui/datasets')
+        # if not endpoint:
+        #     return dset_info()
+        # else:
+        return self.get(url).json()
         
     # MC: it's export_annotations()
     #def get_annotation_set(self, ann_set_id, endpoint=None):

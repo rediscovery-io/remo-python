@@ -12,9 +12,6 @@ setup(
     install_requires=[
         'filetype>=1.0.5',
         'requests>=2.21.0',
-        # 'urllib3==1.24.2',
-        # 'Pillow==6.2.0',
-        # 'peewee==3.11.2',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
