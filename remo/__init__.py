@@ -41,9 +41,9 @@ WARNING: Provided conda environment does not exist at {}
 Failed to launch Remo server, please start it manually.
 
 To fix config issue, please run init or update for Remo server (inside Remo conda env), like: 
-python -m rediscovery init
+python -m remo_app init
 or
-python -m rediscovery update
+python -m remo_app update
 """.format(config.conda_env))
             return False
 
@@ -55,7 +55,7 @@ python -m rediscovery update
         python_exe = os.path.join(config.conda_env, *path_args)
 
         server = subprocess.Popen(
-            '{} -m rediscovery'.format(python_exe),
+            '{} -m remo_app'.format(python_exe),
             stdout=logs, stderr=logs,
             shell=True, universal_newlines=True,
         )
@@ -102,9 +102,9 @@ else:
     
     Please run init or update for Remo server (inside Remo conda env), like: 
     
-    python -m rediscovery init
+    python -m remo_app init
     or
-    python -m rediscovery update
+    python -m remo_app update
     
     """.format(cfg_path))
 
