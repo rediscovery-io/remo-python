@@ -178,3 +178,6 @@ class SDK(ISDK):
 
     def show_images(self, dataset_id, image_id):
         return self.api.show_images(dataset_id, image_id)
+    
+    def get_images(self, dataset_id, image_id):
+        return self.api.get_images(dataset_id, image_id)
