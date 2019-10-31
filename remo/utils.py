@@ -91,13 +91,9 @@ def build_url(*args, **kwargs):
     :param kwargs: additional query parameters
     :return: full url
     """
-    tail_slash = None
-    try:
-        # MC: raises TypeError: 'int' object is not subscriptable
-        tail_slash = kwargs.pop('tail_slash', (args[-1][-1] == '/'))
-    except TypeError:
-        pass
-    url = '/'.join(map(lambda x: str(x).strip('/'), filter(lambda arg: arg is not None, args)))
+    args = filter(lambda arg: arg is not None, args)
+    tail_slash = kwargs.pop('tail_slash', (str(args[-1])[-1] == '/'))
+    url = '/'.join(map(lambda x: str(x).strip('/'), args))
 
     params = []
     for key, val in kwargs.items():
