@@ -81,11 +81,6 @@ class Dataset:
     def annotate(self, ann_id):
         # TODO: select by annotation task
         utils.browse(self.sdk.ui.annotate_url(ann_id))
-        # if len(self.annotation_sets) > 0:
-
-        #    utils.browse(self.sdk.ui.annotate_url(self.annotation_sets[0]))
-        # else:
-        #    print("No annotation sets in dataset " + self.name)
 
     def search(self, **kwargs):
         pass
@@ -93,10 +88,10 @@ class Dataset:
     def get_images(self, dataset_id, image_id, cls=None, tag=None):       
         # TODO: add class and tags & multiple images
         r = self.sdk.get_images(dataset_id, image_id)
-        return r      
+        return BytesIO(r.content)     
     
-    def show_images(self, image_id=17, cls=None, tag=None):
-        return self.sdk.show_images(self.id, image_id)
+    def show_images(self, image_id, cls=None, tag=None):
+        return self.sdk.show_images(image_id, self.id)
   
     
     def show_objects(self, cls, tag):

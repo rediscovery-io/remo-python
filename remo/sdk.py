@@ -144,11 +144,11 @@ class SDK(ISDK):
         """
         return self.api.export_annotations(annotation_set_id, annotation_format)
 
-    def show_images(self, dataset_id, image_id):
+    def show_images(self, image_id, dataset_id):
         """
         Opens browser on the image view for giving image
         """
-        browse(self.ui.image_view(dataset_id, image_id))
+        browse(self.ui.image_view(image_id, dataset_id))
 
     def search_images(self, cls=None, task=None):
         """
