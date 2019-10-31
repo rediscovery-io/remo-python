@@ -4,22 +4,13 @@ from .domain.interfaces import ISDK
 from .domain.dataset import Dataset
 from .domain.annotation_set import AnnotationSet
 from .domain.task import AnnotationTask
+from .utils import browse
 
 
 class SDK(ISDK):
-    def __init__(self, server, user_email=None, user_password=None):
-        self.api = API(server)
-        self.ui = UI(server)
-        if user_email and user_password:
-            self.api.login(user_email, user_password)
-
-    # def search_images(self, search_terms_dictionary):
-    #    result = self.api.search_images(search_terms_dictionary) 
-    def search_images(self, cls, task):
-        result = self.api.search_images(cls, task)
-
-    def login(self, user_email, user_pwd):
-        self.api.login(user_email, user_pwd)
+    def __init__(self, API, UI):
+        self.api = API
+        self.ui = UI
 
     # ALR: do we need folder_id here?
     def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None,
@@ -44,24 +35,14 @@ class SDK(ISDK):
         my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task, folder_id)
         return my_dataset
 
-    def datasets(self) -> []:
-        """
-        :return: list of datasets
-        """
+    def datasets(self) -> [Dataset]:
         resp = self.api.list_datasets()
         return [
             Dataset(self, id=dataset['id'], name=dataset['name'])
             for dataset in resp.get('results', [])
         ]
 
-    def all_info_datasets(self, **kwargs) -> [Dataset]:
-        result = self.api.all_info_datasets(**kwargs)
-        return result
-
     def get_dataset(self, dataset_id) -> Dataset:
-        '''
-        Given a dataset id, returns the dataset
-        '''
         result = self.api.get_dataset(dataset_id)
         return Dataset(self, **result)
 
@@ -140,15 +121,6 @@ class SDK(ISDK):
             for annotation_set in resp.get('results', [])
         ]
 
-    def ann_statistics(self, dataset_id):
-        """        
-        Args:
-            dataset_id: int
-        Returns: Lists annotation set statistics of the dataset
-        """
-        result = self.api.get_annotation_statistics(dataset_id)
-        return result
-
     def list_dataset_images(self, dataset_id, folder_id=None, endpoint=None, **kwargs):
         if folder_id is not None:
             result = self.api.list_dataset_contents_by_folder(dataset_id, folder_id, **kwargs)
@@ -163,21 +135,26 @@ class SDK(ISDK):
 
         return images
 
-    def export_annotations(self, annotation_set_id, annotation_format=None):
+    def export_annotations(self, annotation_set_id: int, annotation_format='json'):
         """
         Exports annotation set 
         Args:
-            annotation_set_id: int
             annotation_format: choose format from this list ['json', 'coco'], default = 'json'
         Returns: annotations
         """
-        args = [annotation_set_id]
-        if annotation_format:
-            args.append(annotation_format)
-        return self.api.export_annotations(*args)
+        return self.api.export_annotations(annotation_set_id, annotation_format)
 
     def show_images(self, dataset_id, image_id):
-        return self.api.show_images(dataset_id, image_id)
-    
+        """
+        Opens browser on the image view for giving image
+        """
+        browse(self.ui.image_view(dataset_id, image_id))
+
+    def search_images(self, cls=None, task=None):
+        """
+        Opens browser in search page
+        """
+        browse(self.ui.search_url())
+
     def get_images(self, dataset_id, image_id):
         return self.api.get_images(dataset_id, image_id)

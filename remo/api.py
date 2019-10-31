@@ -40,34 +40,16 @@ class NotAuthenticatedError(Exception):
         pass
 
 
-class API:
-    def __init__(self, server):
-        self.server = server.rstrip('/')
+class BaseAPI:
+    def __init__(self, server, email, password):
+        self.server = server
         self.token = None
+        self._login(email, password)
 
-    def url(self, endpoint, **kwargs):
-        return build_url(self.server, endpoint, **kwargs)
-
-    def is_authenticated(self):
-        return self.token is not None
-
-    def auth_header(self):
-        if not self.is_authenticated():
-            raise NotAuthenticatedError
-
-        return {'Authorization': 'Token {}'.format(self.token)}
-
-    def post(self, *args, **kwargs):
-        return requests.post(*args, headers=self.auth_header(), **kwargs)
-
-    def get(self, *args, **kwargs):
-
-        return requests.get(*args, headers=self.auth_header(), **kwargs)
-
-    def login(self, user_email, user_pwd):
+    def _login(self, email, password):
         try:
-            resp = requests.post(self.url('/api/rest-auth/login'),
-                                 data={"password": user_pwd, "email": user_email})
+            resp = requests.post(self.url('/api/rest-auth/login/'),
+                                 data={"password": password, "email": email})
         except requests.exceptions.ConnectionError:
             print('ERROR: Failed connect to server')
             return
@@ -77,8 +59,28 @@ class API:
 
         self.token = resp.json().get('key')
 
+    def _is_authenticated(self):
+        return self.token is not None
+
+    def _auth_header(self):
+        if not self._is_authenticated():
+            raise NotAuthenticatedError
+        return {'Authorization': 'Token {}'.format(self.token)}
+
+    def url(self, endpoint, **kwargs):
+        return build_url(self.server, endpoint, **kwargs)
+
+    def post(self, *args, **kwargs):
+        return requests.post(*args, headers=self._auth_header(), **kwargs)
+
+    def get(self, *args, **kwargs):
+        return requests.get(*args, headers=self._auth_header(), **kwargs)
+
+
+class API(BaseAPI):
+
     def create_dataset(self, name, public=False):
-        return self.post(self.url('/api/dataset'),
+        return self.post(self.url('/api/dataset/'),
                          json={"name": name, "is_public": public}).json()
 
     def upload_file(self, dataset_id, path, annotation_task=None, folder_id=None):
@@ -88,7 +90,7 @@ class API:
         if annotation_task:
             data['annotation_task'] = annotation_task.value
 
-        url = self.url('/api/dataset/{}/upload'.format(dataset_id), folder_id=folder_id)
+        url = self.url('/api/dataset/{}/upload/'.format(dataset_id), folder_id=folder_id)
         return self.post(url, files=files, data=data).json()
 
     # TODO: fix progress to include both local files and uploads
@@ -104,7 +106,7 @@ class API:
         if annotation_task:
             data['annotation_task'] = annotation_task.value
 
-        url = self.url('/api/dataset/{}/upload'.format(dataset_id), folder_id=folder_id)
+        url = self.url('/api/dataset/{}/upload/'.format(dataset_id), folder_id=folder_id)
 
         r = self.post(url, files=files, data=data)
 
@@ -163,7 +165,7 @@ class API:
         if folder_id:
             payload['folder_id'] = folder_id
 
-        url = self.url('/api/dataset/{}/upload'.format(dataset_id))
+        url = self.url('/api/dataset/{}/upload/'.format(dataset_id))
         return self.post(url, json=payload).json()
 
     def upload_urls(self, dataset_id, urls, annotation_task=None, folder_id=None):
@@ -181,74 +183,30 @@ class API:
         return self.get(url).json()
 
     def list_datasets(self):
-        """
-        :return: list of datasets
-        """
-
-        url = self.url('/api/v1/ui/datasets')
-        return self.get(url).json()
-
-    # MC: it's export_annotations()
-    # def get_annotation_set(self, ann_set_id, endpoint=None):
-    #    url = None
-    #    if not endpoint:
-    #        return get_ann_set(ann_set_id)
-    #    else:
-    #        return self.get(url).json()
-
-    def get_annotation_statistics(self, dataset_id):
-        """
-        Args:
-            dataset_id: int
-        Returns: annotation statistics
-        """
-
-        url = self.url('/api/v1/ui/datasets/{}/annotation-sets'.format(dataset_id))
+        url = self.url('/api/v1/ui/datasets/')
         return self.get(url).json()
 
     def get_dataset(self, id):
-        url = self.url('/api/dataset/{}'.format(id))
+        url = self.url('/api/dataset/{}/'.format(id))
         return self.get(url).json()
 
-    def all_info_datasets(self, endpoint=None, **kwargs):
-        if endpoint:
-            url = self.url('/api/dataset', **kwargs)
-            return self.get(url).json()
-        else:
-            return dset_info()
-
-    def show_images(self, dataset_id, image_id):
-        url = self.url('/image/{}?datasetId={}').format(image_id, dataset_id)
-        return browse(url)
-
-    def search_images(self, cls=None, task=None):
-        if cls:
-            url = self.url('/api/v1/ui/search/?classes={}&limit=5').format(cls)
-        else:
-
-            url = self.url('/api/v1/ui/search/?tasks=Instance%20segmentation&limit=15')
-            # url = self.url('/api/v1/ui/search/?tasks=Image%20classification&limit=15').format(task)
-        return browse(url)
-
     def get_images(self, dataset_id, image_id):
-        url = self.url('/api/v1/ui/datasets/{}/images/{}/annotations').format(dataset_id, image_id)
+        url = self.url('/api/v1/ui/datasets/{}/images/{}/annotations/').format(dataset_id, image_id)
         content = self.get(url).json()
-        image_url = self.url(content['image'])[:-1]
+        image_url = self.url(content['image'])
         return self.get(image_url)
 
-
     def list_dataset_contents(self, dataset_id, **kwargs):
-        url = self.url('/api/v1/ui/datasets/{}/images'.format(dataset_id), **kwargs)
+        url = self.url('/api/v1/ui/datasets/{}/images/'.format(dataset_id), **kwargs)
         return self.get(url).json()
 
     def list_dataset_contents_by_folder(self, dataset_id, folder_id, **kwargs):
-        url = self.url('/api/user-dataset/{}/contents/{}'.format(dataset_id, folder_id), **kwargs)
+        url = self.url('/api/user-dataset/{}/contents/{}/'.format(dataset_id, folder_id), **kwargs)
         return self.get(url).json()
 
-    def export_annotations(self, annotation_set_id, annotation_format='json'):
+    def export_annotations(self, annotation_set_id: int, annotation_format='json'):
         """
         Args:
-            annotation_set_id: int
             annotation_format: can be one of ['json', 'coco'], default='json'
         Returns: annotations
         """

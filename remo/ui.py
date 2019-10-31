@@ -9,10 +9,13 @@ class UI:
         return build_url(self.server, endpoint, *args, **kwargs)
 
     def dataset_url(self, id=None):
-        url = self.url('datasets')
-        if id:
-            url += str(id)
-        return url
+        return self.url('datasets', id)
 
     def annotate_url(self, id):
         return self.url('annotation', id)
+
+    def search_url(self):
+        return self.url('datasets/filtered/images')
+
+    def image_view(self, image_id, dataset_id):
+        return self.url('/image/{}?datasetId={}').format(image_id, dataset_id)

@@ -37,5 +37,9 @@ def list_all_annotation_sets():
             print('>>>', annotation_set)
 
 
+def search_images():
+    remo.search_images()
+
+
 if __name__ == '__main__':
-    list_all_annotation_sets()
+    list_all_datasets()

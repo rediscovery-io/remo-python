@@ -8,6 +8,8 @@ import requests
 from .utils import browse
 from .config import parse_config
 from .sdk import SDK
+from .api import API
+from .ui import UI
 from .domain.task import AnnotationTask
 
 REMO_HOME = os.getenv('REMO_HOME', str(Path.home().joinpath('.remo')))
@@ -81,9 +83,11 @@ python -m remo_app update
 
     launch_server(open_browser=False)
 
-    sdk = SDK('{}:{}'.format(config.server, config.port), config.user_email, config.user_password)
+    server_url = '{}:{}'.format(config.server, config.port)
+    api = API(server_url, config.user_email, config.user_password)
+    ui = UI(server_url)
+    sdk = SDK(api, ui)
 
-    login = sdk.login
     datasets = sdk.datasets
     get_dataset = sdk.get_dataset
     search_images = sdk.search_images
