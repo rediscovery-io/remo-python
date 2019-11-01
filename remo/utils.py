@@ -91,7 +91,7 @@ def build_url(*args, **kwargs):
     :param kwargs: additional query parameters
     :return: full url
     """
-    args = filter(lambda arg: arg is not None, args)
+    args = list(filter(lambda arg: arg is not None, args))
     tail_slash = kwargs.pop('tail_slash', (str(args[-1])[-1] == '/'))
     url = '/'.join(map(lambda x: str(x).strip('/'), args))
 
