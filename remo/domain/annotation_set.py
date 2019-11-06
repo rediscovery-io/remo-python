@@ -6,6 +6,10 @@ class AnnotationSet:
         self.name = kwargs.get('name')
         self.task = kwargs.get('task')
         self.total_classes = kwargs.get('total_classes')
+        self.released_at = kwargs.get('released_at')
+        self.updated_at = kwargs.get('updated_at')
+        self.total_images = kwargs.get('total_images')
+        self.top3_classes = kwargs.get('top3_classes')
 
     def __str__(self):
         return "Annotation set {id} - '{name}', task: {task}, #classes: {total_classes}".format(
@@ -14,7 +18,7 @@ class AnnotationSet:
     def __repr__(self):
         return self.__str__()
 
-    def export_annotations(self, annotation_format=None):
+    def get_annotations(self, annotation_format=None):
         """
         :param annotation_format: choose format from this list ['json', 'coco']
         :return: annotations

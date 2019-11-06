@@ -88,9 +88,9 @@ python -m remo_app update
     ui = UI(server_url)
     sdk = SDK(api, ui)
 
-    datasets = sdk.datasets
+    list_datasets = sdk.list_datasets
     get_dataset = sdk.get_dataset
-    search_images = sdk.search_images
+    view_search = sdk.view_search
     create_dataset = sdk.create_dataset
 
 
