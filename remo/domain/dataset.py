@@ -83,13 +83,16 @@ class Dataset:
     def view_annotation(self, ann_id):
         # TODO: select by annotation task
         utils.browse(self.sdk.ui.annotate_url(ann_id))
-
+        
+    def view_annotation_statistics(self, ann_id):
+        utils.browse(self.sdk.ui.annotation_stats(ann_id))
+        
     def view_search(self, **kwargs):
         pass
     
-    def get_images(self, dataset_id, image_id, cls=None, tag=None):       
+    def get_images(self, image_id, cls=None, tag=None):       
         # TODO: add class and tags & multiple images
-        r = self.sdk.get_images(dataset_id, image_id)
+        r = self.sdk.get_images(self.id, image_id)
         return BytesIO(r.content)     
     
     def view_image(self, image_id, cls=None, tag=None):

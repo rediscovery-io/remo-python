@@ -1,5 +1,6 @@
 import http
 import os
+import csv
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 import filetype
@@ -203,8 +204,7 @@ class API(BaseAPI):
     def list_dataset_contents_by_folder(self, dataset_id, folder_id, **kwargs):
         url = self.url('/api/user-dataset/{}/contents/{}/'.format(dataset_id, folder_id), **kwargs)
         return self.get(url).json()
-    
-    # TODO: export_annotations() to export .csv, .xml file
+
     def get_annotations(self, annotation_set_id: int, annotation_format='json'):
         """
         Args:
@@ -213,4 +213,20 @@ class API(BaseAPI):
         """
         url = self.url(
             'api/v1/ui/annotation-sets/{}/export/?annotation-format={}'.format(annotation_set_id, annotation_format))
+        return self.get(url).json()
+    
+    def export_annotation_json_to_csv(self, annotation, output_file='output.csv', task=None):
+        # TODO: multiple class case
+        output = open(output_file,'w', newline='')
+        f = csv.writer(output)
+        header =  ['file_name', 'class', 'xmin', 'ymin', 'xmax', 'ymax']
+        f.writerow(header) 
+        for item in annotation:
+            annotations = item['annotations']
+            for annotation in annotations:
+                f.writerow([item['file_name'], annotation['classes'][0]] + list(annotation['bbox'].values()))
+        output.close()
+    
+    def search_class(self, class_name):
+        url = self.url('/api/v1/ui/search/?classes={}').format(class_name)
         return self.get(url).json()
