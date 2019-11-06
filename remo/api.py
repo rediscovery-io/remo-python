@@ -203,8 +203,9 @@ class API(BaseAPI):
     def list_dataset_contents_by_folder(self, dataset_id, folder_id, **kwargs):
         url = self.url('/api/user-dataset/{}/contents/{}/'.format(dataset_id, folder_id), **kwargs)
         return self.get(url).json()
-
-    def export_annotations(self, annotation_set_id: int, annotation_format='json'):
+    
+    # TODO: export_annotations() to export .csv, .xml file
+    def get_annotations(self, annotation_set_id: int, annotation_format='json'):
         """
         Args:
             annotation_format: can be one of ['json', 'coco'], default='json'

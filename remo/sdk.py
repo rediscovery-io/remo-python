@@ -33,9 +33,10 @@ class SDK(ISDK):
         print(result)
         my_dataset = Dataset(self, **result)
         my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task, folder_id)
+        my_dataset.initialise_images()
         return my_dataset
 
-    def datasets(self) -> [Dataset]:
+    def list_datasets(self) -> [Dataset]:
         resp = self.api.list_datasets()
         return [
             Dataset(self, id=dataset['id'], name=dataset['name'])
@@ -46,9 +47,9 @@ class SDK(ISDK):
         result = self.api.get_dataset(dataset_id)
         return Dataset(self, **result)
 
+     # MC: Can annotation_task have a default value?
     def add_data_to_dataset(self, dataset_id, local_files=[],
                             paths_to_upload=[], urls=[], annotation_task=None, folder_id=None):
-        # JSONDecodeError: Expecting value: line 1 column 1 (char 0)
         '''
         Adds data to existing dataset
         
@@ -110,7 +111,7 @@ class SDK(ISDK):
             result['urls_upload_result'] = urls_upload_result
         return result
 
-    def annotation_sets(self, dataset_id):
+    def list_annotation_sets(self, dataset_id):
         resp = self.api.list_annotation_sets(dataset_id)
         return [
             AnnotationSet(self,
@@ -120,7 +121,24 @@ class SDK(ISDK):
                           total_classes=annotation_set['statistics']['total_classes'])
             for annotation_set in resp.get('results', [])
         ]
-
+    
+    def annotation_statistics(self, dataset_id):
+        resp = self.api.list_annotation_sets(dataset_id)
+        return [
+            "Annotation set {id} - '{name}',  #images: {total_images}, #classes: {total_classes}, #objects: {total_annotation_objects}, Top3 classes: {top3_classes}, Released: {released_at}, Updated: {updated_at} ".format(
+                id=annotation_set['id'], name=annotation_set['name'],
+                total_images=annotation_set['total_images'], 
+                total_classes=annotation_set['statistics']['total_classes'],
+                total_annotation_objects=annotation_set['statistics']['total_annotation_objects'],   
+                top3_classes=[(i['name'], i['count']) for i in annotation_set['statistics']['top3_classes']],
+                released_at=annotation_set.get('released_at'),
+                updated_at=annotation_set['updated_at'])
+            for annotation_set in resp.get('results', [])
+        ]
+   
+      
+    
+    
     def list_dataset_images(self, dataset_id, folder_id=None, endpoint=None, **kwargs):
         if folder_id is not None:
             result = self.api.list_dataset_contents_by_folder(dataset_id, folder_id, **kwargs)
@@ -135,22 +153,22 @@ class SDK(ISDK):
 
         return images
 
-    def export_annotations(self, annotation_set_id: int, annotation_format='json'):
+    # TODO: export_annotations() to export .csv, .xml file
+    def get_annotations(self, annotation_set_id: int, annotation_format='json'):
         """
-        Exports annotation set 
         Args:
             annotation_format: choose format from this list ['json', 'coco'], default = 'json'
-        Returns: annotations
+        Returns: annotations, format: list of dicts
         """
-        return self.api.export_annotations(annotation_set_id, annotation_format)
+        return self.api.get_annotations(annotation_set_id, annotation_format)
 
-    def show_images(self, image_id, dataset_id):
+    def view_image(self, image_id, dataset_id):
         """
         Opens browser on the image view for giving image
         """
         browse(self.ui.image_view(image_id, dataset_id))
 
-    def search_images(self, cls=None, task=None):
+    def view_search(self, cls=None, task=None):
         """
         Opens browser in search page
         """

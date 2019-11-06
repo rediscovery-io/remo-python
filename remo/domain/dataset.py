@@ -33,13 +33,15 @@ class Dataset:
         return self.__str__()
 
     def annotation_sets(self):
-        return self.sdk.annotation_sets(self.id)
+        return self.sdk.list_annotation_sets(self.id)
+    
+    def annotation_statistics(self):
+        return self.sdk.annotation_statistics(self.id)
 
     def initialise_images(self):
         list_of_images = self.list_images()
         for i_image in list_of_images:
             my_image = Image(id=None, path=i_image, dataset=self.name)
-            print(i_image, self.name)
             self.images.append(my_image)
 
     def list_images(self, folder_id=None, **kwargs):
@@ -75,14 +77,14 @@ class Dataset:
         dataset = self.sdk.get_dataset(self.id)
         self.__dict__.update(dataset.__dict__)
 
-    def browse(self):
+    def view(self):
         utils.browse(self.sdk.ui.dataset_url(self.id))
 
-    def annotate(self, ann_id):
+    def view_annotation(self, ann_id):
         # TODO: select by annotation task
         utils.browse(self.sdk.ui.annotate_url(ann_id))
 
-    def search(self, **kwargs):
+    def view_search(self, **kwargs):
         pass
     
     def get_images(self, dataset_id, image_id, cls=None, tag=None):       
@@ -90,10 +92,10 @@ class Dataset:
         r = self.sdk.get_images(dataset_id, image_id)
         return BytesIO(r.content)     
     
-    def show_images(self, image_id, cls=None, tag=None):
-        return self.sdk.show_images(image_id, self.id)
+    def view_image(self, image_id, cls=None, tag=None):
+        return self.sdk.view_image(image_id, self.id)
   
     
-    def show_objects(self, cls, tag):
+    def view_objects(self, cls, tag):
         pass
         
