@@ -12,29 +12,42 @@ class SDK(ISDK):
         self.api = API
         self.ui = UI
 
-    # ALR: do we need folder_id here?
+
     def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None,
-                       folder_id=None, public=False) -> Dataset:
+                          public=False):
 
-        # TODO: add documentation on annotation tasks and urls upload
-        ''' Creates a dataset from an url or path
+            ''' 
+            Creates a new dataset in Remo and optionally populate it with images and annotation from local drive or URL
 
-        Args:
-            name: string, name of the Dataset
-            files: list of paths of files
-            urls: URL of images
-            annotation_task: in case we are uploading annotations, specify the annotation task
-            folder_id: 
+            Args:
+               name: string, name of the Dataset
 
-        Returns: remo Dataset
-        '''
+               local_files: list of files or directories. Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
 
-        result = self.api.create_dataset(name, public)
-        print(result)
-        my_dataset = Dataset(self, **result)
-        my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task, folder_id)
-        my_dataset.initialise_images()
-        return my_dataset
+               paths_to_upload: list of files or directories. These files will be uploaded to the local disk.
+                  - files supported: image files, annotation files and archive files.
+                  - Annotation files: json, xml, csv. If annotation file is provided, you need to provide annotation task.
+                  - Archive files: zip, tar, gzip. These files are unzipped, and then we scan for images, annotations and other archives. Support for nested archive files, image and annotation files in the same format supported elsewhere
+
+               urls: list of urls pointing to downloadable target, which should be an archive file. The function will download the target of the URL, scan for archive files, unpack them and the results will be scanned for images, annotations and other archives.
+
+               annotation_task:
+                   object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
+                   instance_segmentation = 'Instance segmentation'. Supports Coco
+                   image_classification = 'Image classification'. ImageNet
+
+              public: do not use it for now :)
+
+            Returns: remo Dataset
+            '''
+
+            result = self.api.create_dataset(name, public)
+            print(result)
+            my_dataset = Dataset(self, **result)
+            my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task, folder_id)
+            my_dataset.initialise_images()
+
+            return my_dataset
 
     def list_datasets(self) -> [Dataset]:
         resp = self.api.list_datasets()
@@ -51,27 +64,28 @@ class SDK(ISDK):
     def add_data_to_dataset(self, dataset_id, local_files=[],
                             paths_to_upload=[], urls=[], annotation_task=None, folder_id=None):
         '''
+
+            
         Adds data to existing dataset
         
         Args:
             dataset_id: id of the desired dataset to extend (integer)
-            
             local_files: list of files or directories. Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
-            
             paths_to_upload: list of files or directories. These files will be uploaded to the local disk.
-                files supported: image files, annotation files and archive files.
-                Annotation files: json, xml, csv. If annotation file is provided, you need to provide annotation task.
-                Archive files: zip, tar, gzip. These files are unzipped, and then we scan for images, annotations and other archives. Support for nested archive files, image and annotation files in the same format supported elsewhere
-            
+
+               files supported: image files, annotation files and archive files.
+
+               Annotation files: json, xml, csv. If annotation file is provided, you need to provide annotation task.
+
+               Archive files: zip, tar, gzip. These files are unzipped, and then we scan for images, annotations and other archives. Support for nested archive files, image and annotation files in the same format supported elsewhere
+
             urls: list of urls pointing to downloadable target, which should be an archive file. The function will download the target of the URL - then we scan for archive files, unpack them and proceed as per Archive file section.
-            
+
             annotation_task:
-                object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
-                instance_segmentation = 'Instance segmentation'. Supports Coco
-                image_classification = 'Image classification'. ImageNet
-                
+               object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
+               instance_segmentation = 'Instance segmentation'. Supports Coco
+               image_classification = 'Image classification'. ImageNet
             folder_id: if there is a folder in the targer remo id, and you want to add images to a specific folder, you can specify it here.
-            
         '''
 
         result = {}
@@ -140,17 +154,19 @@ class SDK(ISDK):
     
     
     def list_dataset_images(self, dataset_id, folder_id=None, endpoint=None, **kwargs):
+        
         if folder_id is not None:
             result = self.api.list_dataset_contents_by_folder(dataset_id, folder_id, **kwargs)
         else:
             result = self.api.list_dataset_contents(dataset_id, **kwargs)
-
-        # print('Next:', result.get('next'))
         images = []
+        
         for entry in result.get('results', []):
-            name = entry.get('name')
-            images.append(name)
-
+            my_dict = {}
+            my_dict['name'] = entry.get('name')
+            my_dict['id'] = entry.get('id')
+            images.append(my_dict)
+            
         return images
 
     # TODO: export_annotations() to export .csv, .xml file
