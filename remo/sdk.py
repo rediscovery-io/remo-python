@@ -71,7 +71,7 @@ class SDK:
      # MC: Can annotation_task have a default value?
     def add_data_to_dataset(self, dataset_id, local_files=[],
                             paths_to_upload=[], urls=[], annotation_task=None, folder_id=None):
-        '''
+        """
 
             
         Adds data to existing dataset
@@ -94,7 +94,7 @@ class SDK:
                instance_segmentation = 'Instance segmentation'. Supports Coco
                image_classification = 'Image classification'. ImageNet
             - folder_id: if there is a folder in the targer remo id, and you want to add images to a specific folder, you can specify it here.
-        '''
+        """
 
         result = {}
         if len(local_files):
@@ -178,7 +178,7 @@ class SDK:
     
     def list_dataset_images(self, dataset_id, folder_id=None, **kwargs):
         '''
-        Returns a list of remo_datasets with all the datasets in the database.
+        Returns a list of images within the given dataset.
         You can use the ID of the dataset to access a specific datasets
         
         Args:
