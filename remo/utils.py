@@ -1,6 +1,4 @@
 import os
-import webbrowser
-import urllib.parse
 
 IMAGE_EXTENSIONS = {'.jpeg', '.jpg', '.png', '.tiff', '.tif'}
 ANNOTATION_EXTENSIONS = {'.csv', '.xml', '.json'}
@@ -80,36 +78,3 @@ class FileResolver:
             for name in filenames:
                 file_path = os.path.join(dirpath, name)
                 self._check_file(file_path)
-
-
-def build_url(*args, **kwargs):
-    """
-    Builds full url from inputs.
-    Additional param `tail_slash` specifies tailed slash
-
-    :param args: typically server and endpoint
-    :param kwargs: additional query parameters
-    :return: full url
-    """
-    args = list(filter(lambda arg: arg is not None, args))
-    tail_slash = kwargs.pop('tail_slash', (str(args[-1])[-1] == '/'))
-    url = '/'.join(map(lambda x: str(x).strip('/'), args))
-
-    params = []
-    for key, val in kwargs.items():
-        if val:
-            params.append('{}={}'.format(key, val))
-
-    if len(params):
-        joined_params = "&".join(params)
-        separator = '&' if '?' in url else '/?'
-        url = "{}{}{}".format(url, separator, urllib.parse.quote(joined_params))
-    elif '?' not in url and tail_slash:
-        url += '/'
-
-    return url
-
-
-def browse(url):
-    print('Open', url)
-    webbrowser.open_new_tab(url)

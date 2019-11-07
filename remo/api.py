@@ -6,7 +6,8 @@ from datetime import datetime, timedelta
 import filetype
 import requests
 from .domain.task import AnnotationTask
-from .utils import FileResolver, build_url, browse
+from .utils import FileResolver
+import urllib.parse
 
 
 class UploadStatus:
@@ -62,13 +63,41 @@ class BaseAPI:
         return {'Authorization': 'Token {}'.format(self.token)}
 
     def url(self, endpoint, *args, **kwargs):
-        return build_url(self.server, endpoint, *args, **kwargs)
+        return self._build_url(self.server, endpoint, *args, **kwargs)
 
     def post(self, *args, **kwargs):
         return requests.post(*args, headers=self._auth_header(), **kwargs)
 
     def get(self, *args, **kwargs):
         return requests.get(*args, headers=self._auth_header(), **kwargs)
+
+    @staticmethod
+    def _build_url(*args, **kwargs):
+        """
+        Builds full url from inputs.
+        Additional param `tail_slash` specifies tailed slash
+
+        :param args: typically server and endpoint
+        :param kwargs: additional query parameters
+        :return: full url
+        """
+        args = list(filter(lambda arg: arg is not None, args))
+        tail_slash = kwargs.pop('tail_slash', (str(args[-1])[-1] == '/'))
+        url = '/'.join(map(lambda x: str(x).strip('/'), args))
+
+        params = []
+        for key, val in kwargs.items():
+            if val:
+                params.append('{}={}'.format(key, val))
+
+        if len(params):
+            joined_params = "&".join(params)
+            separator = '&' if '?' in url else '/?'
+            url = "{}{}{}".format(url, separator, urllib.parse.quote(joined_params))
+        elif '?' not in url and tail_slash:
+            url += '/'
+
+        return url
 
 
 class API(BaseAPI):

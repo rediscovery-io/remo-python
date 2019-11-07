@@ -1,6 +1,4 @@
-from .. import utils
 from io import BytesIO
-import requests
 
 
 class Image:
@@ -102,15 +100,15 @@ class Dataset:
         self.__dict__.update(dataset.__dict__)
 
     def view(self):
-        utils.browse(self.sdk.ui.dataset_url(self.id))
+        self.sdk.view_dataset(self.id)
 
-    def view_annotation(self, ann_id):
+    def view_annotation(self, annotation_set_id):
         # TODO: select by annotation task
-        utils.browse(self.sdk.ui.annotate_url(ann_id))
-        
+        self.sdk.view_annotation_set(annotation_set_id)
+
     def view_annotation_statistics(self, ann_id):
-        utils.browse(self.sdk.ui.annotation_stats(ann_id))
-        
+        self.sdk.view_annotation_stats(ann_id)
+
     def view_search(self, **kwargs):
         pass
     

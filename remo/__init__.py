@@ -5,11 +5,10 @@ from pathlib import Path
 
 import requests
 
-from .utils import browse
+from .browser import browse
 from .config import parse_config
 from .sdk import SDK
 from .api import API
-from .ui import UI
 from .domain.task import AnnotationTask
 
 REMO_HOME = os.getenv('REMO_HOME', str(Path.home().joinpath('.remo')))

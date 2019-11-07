@@ -2,7 +2,7 @@ from .api import API
 from .domain.dataset import Dataset
 from .domain.annotation_set import AnnotationSet
 from .domain.task import AnnotationTask
-from .utils import browse
+from .browser import browse
 
 
 class SDK:
