@@ -10,10 +10,9 @@ class SDK:
         self.api = API(server, email, password)
         self.url = self.api.url
 
-
     # TODO: Add a default annotation set as a dataset created
     def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None,
-                          public=False):
+                       public=False):
         """ 
         Creates a new dataset in Remo and optionally populate it with images and annotation from local drive or URL
 
@@ -46,7 +45,7 @@ class SDK:
 
         return my_dataset
 
-     # MC: Can annotation_task have a default value if dataset has only one annotation format?
+    # MC: Can annotation_task have a default value if dataset has only one annotation format?
     def add_data_to_dataset(self, dataset_id, local_files=[],
                             paths_to_upload=[], urls=[], annotation_task=None, folder_id=None):
         """
@@ -90,7 +89,7 @@ class SDK:
 
             files_upload_result = self.api.bulk_upload_files(dataset_id=dataset_id,
                                                              files_to_upload=paths_to_upload,
-                                                             annotation_task=annotation_task, 
+                                                             annotation_task=annotation_task,
                                                              folder_id=folder_id)
 
             result['files_upload_result'] = files_upload_result
@@ -108,12 +107,12 @@ class SDK:
             print(urls_upload_result)
             result['urls_upload_result'] = urls_upload_result
         return result
-    
+
     def list_datasets(self):
         """
         Returns a list of remo_datasets with all the datasets in the database.
         You can use the ID of the dataset to access a specific datasets
-        """  
+        """
         resp = self.api.list_datasets()
         return [
             Dataset(self, id=dataset['id'], name=dataset['name'])
@@ -127,10 +126,9 @@ class SDK:
         Args:
             - dataset_id: integer. The id of the dataset to retrieve
 
-        """  
+        """
         result = self.api.get_dataset(dataset_id)
         return Dataset(self, **result)
-
 
     def list_annotation_sets(self, dataset_id):
         """
@@ -149,7 +147,7 @@ class SDK:
                           total_classes=annotation_set['statistics']['total_classes'])
             for annotation_set in resp.get('results', [])
         ]
-    
+
     # TODO: convert into a dataset function
     def get_annotations(self, annotation_set_id: int, annotation_format='json'):
         """
@@ -158,7 +156,7 @@ class SDK:
         Returns: annotations, format: list of dicts
         """
         return self.api.get_annotations(annotation_set_id, annotation_format)
-    
+
     def export_annotation_to_csv(self, annotation_set_id: int, output_file, annotation_task):
         """
         Takes annotations and saves as a .csv file  
@@ -171,7 +169,7 @@ class SDK:
                image_classification = 'Image classification'. ImageNet
         """
         return self.api.export_annotation_to_csv(annotation_set_id, output_file, annotation_task)
-    
+
     def annotation_statistics(self, dataset_id):
         """
         Prints annotation statistics of a given dataset
@@ -180,21 +178,19 @@ class SDK:
             - dataset_id : the id of the dataset to query
         
         """
-        
+
         resp = self.api.list_annotation_sets(dataset_id)
         return [
             "Annotation set {id} - '{name}',  #images: {total_images}, #classes: {total_classes}, #objects: {total_annotation_objects}, Top3 classes: {top3_classes}, Released: {released_at}, Updated: {updated_at} ".format(
                 id=annotation_set['id'], name=annotation_set['name'],
-                total_images=annotation_set['total_images'], 
+                total_images=annotation_set['total_images'],
                 total_classes=annotation_set['statistics']['total_classes'],
-                total_annotation_objects=annotation_set['statistics']['total_annotation_objects'],   
+                total_annotation_objects=annotation_set['statistics']['total_annotation_objects'],
                 top3_classes=[(i['name'], i['count']) for i in annotation_set['statistics']['top3_classes']],
                 released_at=annotation_set.get('released_at'),
                 updated_at=annotation_set['updated_at'])
             for annotation_set in resp.get('results', [])
         ]
-   
-    
 
     def list_dataset_images(self, dataset_id, folder_id=None, **kwargs):
         """
@@ -211,13 +207,13 @@ class SDK:
         else:
             result = self.api.list_dataset_contents(dataset_id, **kwargs)
         images = []
-        
+
         for entry in result.get('results', []):
             my_dict = {}
             my_dict['name'] = entry.get('name')
             my_dict['id'] = entry.get('id')
             images.append(my_dict)
-            
+
         return images
 
     def get_images(self, dataset_id, image_id):
@@ -236,7 +232,7 @@ class SDK:
 
         """
         return self.api.export_annotation_json_to_csv(annotation, output_file, task)
-    
+
     def view_image(self, image_id, dataset_id):
         """
         Opens browser on the image view for given image
@@ -250,7 +246,7 @@ class SDK:
         if not contain:
             msg = 'Image ID: %s' % str(image_id) + ' not in dataset %s' % str(dataset_id)
             print(msg)
-    
+
     def search_images(self, class_name, annotation_task):
         """
         Search images by class and annotation task
@@ -272,7 +268,7 @@ class SDK:
 
         """
         browse(self.url('datasets/filtered/images'))
-    
+
     def search_class(self, class_name):
         """
         Returns images with given class
@@ -291,5 +287,3 @@ class SDK:
 
     def view_annotation_stats(self, annotation_id):
         browse(self.url('annotation-detail/{}/intro'.format(annotation_id)))
-
-

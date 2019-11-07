@@ -37,9 +37,9 @@ class Dataset:
         """
         Returns a list of the annotation sets within the dataset
         """
-        
+
         return self.sdk.list_annotation_sets(self.id)
-    
+
     def annotation_statistics(self):
         """
         Prints annotation statistics of the dataset
@@ -112,13 +112,13 @@ class Dataset:
     def get_images(self, image_id, cls=None, tag=None):
         # TODO: add class and tags & multiple images
         r = self.sdk.get_images(self.id, image_id)
-        return BytesIO(r.content)     
-    
+        return BytesIO(r.content)
+
     def view_image(self, image_id, cls=None, tag=None):
         return self.sdk.view_image(image_id, self.id)
 
     def view_search(self, **kwargs):
         pass
-    
+
     def view_objects(self, cls, tag):
         pass

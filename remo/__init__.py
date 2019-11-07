@@ -96,6 +96,7 @@ python -m remo_app update
     add_data_to_dataset = sdk.add_data_to_dataset
     view_image = sdk.view_image
 
+
     def terminate_server():
         global logs
         global server
