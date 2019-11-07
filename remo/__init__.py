@@ -9,7 +9,7 @@ from .browser import browse
 from .config import parse_config
 from .sdk import SDK
 from .api import API
-from .domain.task import AnnotationTask
+from .domain import task
 
 REMO_HOME = os.getenv('REMO_HOME', str(Path.home().joinpath('.remo')))
 cfg_path = str(os.path.join(REMO_HOME, 'remo.json'))

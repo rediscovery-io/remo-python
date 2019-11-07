@@ -5,6 +5,8 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 import filetype
 import requests
+
+from .domain import task
 from .utils import FileResolver
 import urllib.parse
 
@@ -227,7 +229,7 @@ class API(BaseAPI):
         annotation = self.get_annotations(annotation_set_id, annotation_format='json')
         output = open(output_file, 'w', newline='')
         f = csv.writer(output)
-        if annotation_task.value == 'Object detection':
+        if annotation_task.value == task.object_detection:
             header = ['file_name', 'class', 'xmin', 'ymin', 'xmax', 'ymax']
             f.writerow(header)
             for item in annotation:
@@ -236,7 +238,7 @@ class API(BaseAPI):
                     classes = annotation['classes']
                     for cls in classes:
                         f.writerow([item['file_name'], cls] + list(annotation['bbox'].values()))
-        elif annotation_task.value == 'Instance segmentation':
+        elif annotation_task.value == task.instance_segmentation:
             header = ['file_name', 'class', 'coordinates']
             f.writerow(header)
             for item in annotation:

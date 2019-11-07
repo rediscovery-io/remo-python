@@ -1,7 +1,6 @@
 from .api import API
 from .domain.dataset import Dataset
 from .domain.annotation_set import AnnotationSet
-from .domain.task import AnnotationTask
 from .browser import browse
 
 
@@ -143,7 +142,7 @@ class SDK:
             AnnotationSet(self,
                           id=annotation_set['id'],
                           name=annotation_set['name'],
-                          task=AnnotationTask(annotation_set['task']['name']),
+                          task=annotation_set['task']['name'],
                           total_classes=annotation_set['statistics']['total_classes'])
             for annotation_set in resp.get('results', [])
         ]
