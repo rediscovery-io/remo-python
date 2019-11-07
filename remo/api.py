@@ -101,11 +101,10 @@ class BaseAPI:
 
 
 class API(BaseAPI):
-
+       
     def create_dataset(self, name, public=False):
         return self.post(self.url('/api/dataset/'),
                          json={"name": name, "is_public": public}).json()
-
     def upload_file(self, dataset_id, path, annotation_task=None, folder_id=None):
         name = os.path.basename(path)
         files = {'files': (name, open(path, 'rb'), filetype.guess_mime(path))}
@@ -200,25 +199,11 @@ class API(BaseAPI):
 
         url = self.url('/api/dataset/{}/upload'.format(dataset_id))
         return self.post(url, json=payload).json()
-
-    def list_annotation_sets(self, dataset_id: int):
-        url = self.url('/api/v1/ui/datasets/{}/annotation-sets/'.format(dataset_id))
-        return self.get(url).json()
-
+    
     def list_datasets(self):
         url = self.url('/api/v1/ui/datasets/')
         return self.get(url).json()
-
-    def get_dataset(self, id):
-        url = self.url('/api/dataset/{}/'.format(id))
-        return self.get(url).json()
-
-    def get_images(self, dataset_id, image_id):
-        url = self.url('/api/v1/ui/datasets/{}/images/{}/annotations/').format(dataset_id, image_id)
-        content = self.get(url).json()
-        image_url = self.url(content['image'])
-        return self.get(image_url)
-
+    
     def list_dataset_contents(self, dataset_id, **kwargs):
         url = self.url('/api/v1/ui/datasets/{}/images/'.format(dataset_id), **kwargs)
         return self.get(url).json()
@@ -226,7 +211,15 @@ class API(BaseAPI):
     def list_dataset_contents_by_folder(self, dataset_id, folder_id, **kwargs):
         url = self.url('/api/user-dataset/{}/contents/{}/'.format(dataset_id, folder_id), **kwargs)
         return self.get(url).json()
-
+    
+    def get_dataset(self, id):
+        url = self.url('/api/dataset/{}/'.format(id))
+        return self.get(url).json()
+    
+    def list_annotation_sets(self, dataset_id: int):
+        url = self.url('/api/v1/ui/datasets/{}/annotation-sets/'.format(dataset_id))
+        return self.get(url).json()
+    
     def get_annotations(self, annotation_set_id: int, annotation_format='json'):
         """
         Args:
@@ -237,18 +230,44 @@ class API(BaseAPI):
             'api/v1/ui/annotation-sets/{}/export/?annotation-format={}'.format(annotation_set_id, annotation_format))
         return self.get(url).json()
     
-    def export_annotation_json_to_csv(self, annotation, output_file='output.csv', task=None):
-        # TODO: multiple class case
+    def export_annotation_to_csv(self, annotation_set_id: int, output_file, annotation_task):
+        annotation = self.get_annotations(annotation_set_id, annotation_format='json')
         output = open(output_file,'w', newline='')
         f = csv.writer(output)
-        header =  ['file_name', 'class', 'xmin', 'ymin', 'xmax', 'ymax']
-        f.writerow(header) 
-        for item in annotation:
-            annotations = item['annotations']
-            for annotation in annotations:
-                f.writerow([item['file_name'], annotation['classes'][0]] + list(annotation['bbox'].values()))
+        if annotation_task.value == 'Object detection':
+            header =  ['file_name', 'class', 'xmin', 'ymin', 'xmax', 'ymax']
+            f.writerow(header) 
+            for item in annotation:
+                annotations = item['annotations']
+                for annotation in annotations:
+                    classes = annotation['classes']
+                    for cls in classes:
+                        f.writerow([item['file_name'], cls] + list(annotation['bbox'].values()))
+        elif annotation_task.value == 'Instance segmentation':
+            header =  ['file_name', 'class', 'coordinates']
+            f.writerow(header) 
+            for item in annotation:
+                annotations = item['annotations']
+                for annotation in annotations:
+                    classes = annotation['classes']
+                    for cls in classes:
+                        segments = ' '.join(str(v) for d in annotation['segments'] for k, v in d.items())
+                        f.writerow([item['file_name'], cls, segments])
+        else:
+            # TODO: classification task 
+            # MC: currently there is a bug in the ui
+            output.close()
+            raise NotImplementedError
         output.close()
+
+    def get_images(self, dataset_id, image_id):
+        url = self.url('/api/v1/ui/datasets/{}/images/{}/annotations/').format(dataset_id, image_id)
+        content = self.get(url).json()
+        image_url = self.url(content['image'])
+        return self.get(image_url)   
     
-    def search_class(self, class_name):
-        url = self.url('/api/v1/ui/search/?classes={}').format(class_name)
-        return self.get(url).json()
+    def search_images(self, class_name, annotation_task, num_data=None):
+        task = annotation_task.value.replace(" ", "%20")
+        url = self.url('/api/v1/ui/search/?classes={}&tasks={}').format(class_name, task)
+        results = self.get(url).json()['results']
+        return results

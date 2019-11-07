@@ -89,7 +89,12 @@ python -m remo_app update
     get_dataset = sdk.get_dataset
     view_search = sdk.view_search
     create_dataset = sdk.create_dataset
-
+    export_annotation_to_csv = sdk.export_annotation_to_csv
+    search_images = sdk.search_images
+    annotation_statistics = sdk.annotation_statistics
+    list_annotation_sets = sdk.list_annotation_sets
+    add_data_to_dataset = sdk.add_data_to_dataset
+    view_image = sdk.view_image
 
     def terminate_server():
         global logs

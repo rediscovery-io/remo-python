@@ -11,72 +11,47 @@ class SDK:
         self.url = self.api.url
 
 
+    # TODO: Add a default annotation set as a dataset created
     def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None,
                           public=False):
+        """ 
+        Creates a new dataset in Remo and optionally populate it with images and annotation from local drive or URL
 
-            ''' 
-            Creates a new dataset in Remo and optionally populate it with images and annotation from local drive or URL
-
-            Args:
-               name: string, name of the Dataset
-
-               local_files: list of files or directories. Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
-
-               paths_to_upload: list of files or directories. These files will be uploaded to the local disk.
-                  - files supported: image files, annotation files and archive files.
-                  - Annotation files: json, xml, csv. If annotation file is provided, you need to provide annotation task.
-                  - Archive files: zip, tar, gzip. These files are unzipped, and then we scan for images, annotations and other archives. Support for nested archive files, image and annotation files in the same format supported elsewhere
-
-               urls: list of urls pointing to downloadable target, which should be an archive file. The function will download the target of the URL, scan for archive files, unpack them and the results will be scanned for images, annotations and other archives.
-
-               annotation_task:
-                   object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
-                   instance_segmentation = 'Instance segmentation'. Supports Coco
-                   image_classification = 'Image classification'. ImageNet
-
-              public: do not use it for now :)
-
-            Returns: remo Dataset
-            '''
-
-            result = self.api.create_dataset(name, public)
-            print(result)
-            my_dataset = Dataset(self, **result)
-            my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task)
-            my_dataset.initialise_images()
-
-            return my_dataset
-
-    def list_datasets(self):
-        '''
-        Returns a list of remo_datasets with all the datasets in the database.
-        You can use the ID of the dataset to access a specific datasets
-        '''
-        resp = self.api.list_datasets()
-        return [
-            Dataset(self, id=dataset['id'], name=dataset['name'])
-            for dataset in resp.get('results', [])
-        ]
-
-    def get_dataset(self, dataset_id):
-        '''
-        Retrieves the dataset with id dataset_id.
-        
         Args:
-            - dataset_id: integer. The id of the dataset to retrieve
-            
-        '''
-        result = self.api.get_dataset(dataset_id)
-        return Dataset(self, **result)
+           name: string, name of the Dataset
 
-     # MC: Can annotation_task have a default value?
+           local_files: list of files or directories. Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
+
+           paths_to_upload: list of files or directories. These files will be uploaded to the local disk.
+              - files supported: image files, annotation files and archive files.
+              - Annotation files: json, xml, csv. If annotation file is provided, you need to provide annotation task.
+              - Archive files: zip, tar, gzip. These files are unzipped, and then we scan for images, annotations and other archives. Support for nested archive files, image and annotation files in the same format supported elsewhere
+
+           urls: list of urls pointing to downloadable target, which should be an archive file. The function will download the target of the URL, scan for archive files, unpack them and the results will be scanned for images, annotations and other archives.
+
+           annotation_task:
+               object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
+               instance_segmentation = 'Instance segmentation'. Supports Coco
+               image_classification = 'Image classification'. ImageNet
+
+          public: do not use it for now :)
+
+        Returns: remo Dataset
+        """
+
+        result = self.api.create_dataset(name, public)
+        my_dataset = Dataset(self, **result)
+        my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task)
+        my_dataset.initialise_images()
+
+        return my_dataset
+
+     # MC: Can annotation_task have a default value if dataset has only one annotation format?
     def add_data_to_dataset(self, dataset_id, local_files=[],
                             paths_to_upload=[], urls=[], annotation_task=None, folder_id=None):
         """
-
-            
         Adds data to existing dataset
-        
+
         Args:
             - dataset_id: id of the desired dataset to extend (integer)
             - local_files: list of files or directories. Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
@@ -133,15 +108,38 @@ class SDK:
             print(urls_upload_result)
             result['urls_upload_result'] = urls_upload_result
         return result
+    
+    def list_datasets(self):
+        """
+        Returns a list of remo_datasets with all the datasets in the database.
+        You can use the ID of the dataset to access a specific datasets
+        """  
+        resp = self.api.list_datasets()
+        return [
+            Dataset(self, id=dataset['id'], name=dataset['name'])
+            for dataset in resp.get('results', [])
+        ]
+
+    def get_dataset(self, dataset_id):
+        """
+        Retrieves the dataset with id dataset_id.
+
+        Args:
+            - dataset_id: integer. The id of the dataset to retrieve
+
+        """  
+        result = self.api.get_dataset(dataset_id)
+        return Dataset(self, **result)
+
 
     def list_annotation_sets(self, dataset_id):
-        '''
+        """
         Returns a list of AnnotationSet containing all the AnnotationSets of a given dataset
         
         Args:
             - dataset_id : the id of the dataset to query
         
-        '''
+        """
         resp = self.api.list_annotation_sets(dataset_id)
         return [
             AnnotationSet(self,
@@ -152,14 +150,36 @@ class SDK:
             for annotation_set in resp.get('results', [])
         ]
     
+    # TODO: convert into a dataset function
+    def get_annotations(self, annotation_set_id: int, annotation_format='json'):
+        """
+        Args:
+            annotation_format: 'json' or 'coco', default = 'json'
+        Returns: annotations, format: list of dicts
+        """
+        return self.api.get_annotations(annotation_set_id, annotation_format)
+    
+    def export_annotation_to_csv(self, annotation_set_id: int, output_file, annotation_task):
+        """
+        Takes annotations and saves as a .csv file  
+        Args:
+            annotation_set_id: int
+            output_file: .csv path
+            annotation_task:
+               object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
+               instance_segmentation = 'Instance segmentation'. Supports Coco
+               image_classification = 'Image classification'. ImageNet
+        """
+        return self.api.export_annotation_to_csv(annotation_set_id, output_file, annotation_task)
+    
     def annotation_statistics(self, dataset_id):
-        '''
+        """
         Prints annotation statistics of a given dataset
         
         Args:
             - dataset_id : the id of the dataset to query
         
-        '''
+        """
         
         resp = self.api.list_annotation_sets(dataset_id)
         return [
@@ -174,18 +194,17 @@ class SDK:
             for annotation_set in resp.get('results', [])
         ]
    
-      
     
-    
+
     def list_dataset_images(self, dataset_id, folder_id=None, **kwargs):
-        '''
+        """
         Returns a list of images within the given dataset.
         You can use the ID of the dataset to access a specific datasets
         
         Args:
             - dataset_id: the id of the dataset to query
             - folder_id: the id of the folder to query
-        '''
+        """
 
         if folder_id is not None:
             result = self.api.list_dataset_contents_by_folder(dataset_id, folder_id, **kwargs)
@@ -201,20 +220,20 @@ class SDK:
             
         return images
 
-    def get_annotations(self, annotation_set_id, annotation_format='json'):
+    def get_images(self, dataset_id, image_id):
         """
-        Args:
-            annotation_format: choose format from this list ['json', 'coco'], default = 'json'
-        Returns: annotations, format: list of dicts
+        Retrieves all the images of the given datasets
+        TODO: add description. What is image_id?
+        WIP
         """
-        return self.api.get_annotations(annotation_set_id, annotation_format)
-    
+        return self.api.get_images(dataset_id, image_id)
+
     def export_annotation_json_to_csv(self, annotation, output_file='output.csv', task=None):
         """
         Converts annotation file to csv format
         TODO: add description
         WIP
-        
+
         """
         return self.api.export_annotation_json_to_csv(annotation, output_file, task)
     
@@ -231,22 +250,28 @@ class SDK:
         if not contain:
             msg = 'Image ID: %s' % str(image_id) + ' not in dataset %s' % str(dataset_id)
             print(msg)
-                
+    
+    def search_images(self, class_name, annotation_task):
+        """
+        Search images by class and annotation task
+        Args:
+            class_name: string.
+                Name of the class to filter dataset.
+            annotation_task:
+               object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
+               instance_segmentation = 'Instance segmentation'. Supports Coco
+               image_classification = 'Image classification'. ImageNet
+        Returns: image_id, dataset_id, name, annotations
+        """
+        return self.api.search_images(class_name, annotation_task)
 
     def view_search(self, cls=None, task=None):
+        # TODO: view search by class and task
         """
         Opens browser in search page
-        
+
         """
         browse(self.url('datasets/filtered/images'))
-
-    def get_images(self, dataset_id, image_id):
-        """
-        Retrieves all the images of the given datasets
-        TODO: add description. What is image_id?
-        WIP
-        """
-        return self.api.get_images(dataset_id, image_id)
     
     def search_class(self, class_name):
         """
