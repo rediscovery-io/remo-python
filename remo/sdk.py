@@ -1,3 +1,4 @@
+from .api import API
 from .domain.dataset import Dataset
 from .domain.annotation_set import AnnotationSet
 from .domain.task import AnnotationTask
@@ -5,9 +6,9 @@ from .utils import browse
 
 
 class SDK:
-    def __init__(self, API, UI):
-        self.api = API
-        self.ui = UI
+    def __init__(self, server, email, password):
+        self.api = API(server, email, password)
+        self.url = self.api.url
 
 
     def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None,
@@ -226,7 +227,7 @@ class SDK:
         for img_dict in img_list:
             if image_id == img_dict['id']:
                 contain = True
-                browse(self.ui.image_view(image_id, dataset_id))
+                browse(self.url('/image/{}?datasetId={}'.format(image_id, dataset_id)))
         if not contain:
             msg = 'Image ID: %s' % str(image_id) + ' not in dataset %s' % str(dataset_id)
             print(msg)
@@ -237,7 +238,7 @@ class SDK:
         Opens browser in search page
         
         """
-        browse(self.ui.search_url())
+        browse(self.url('datasets/filtered/images'))
 
     def get_images(self, dataset_id, image_id):
         """
@@ -253,4 +254,17 @@ class SDK:
         WIP
         """
         return self.api.search_class(class_name)
+
+    def view_datasets(self):
+        browse(self.url('datasets'))
+
+    def view_dataset(self, id):
+        browse(self.url('datasets', id))
+
+    def view_annotation_set(self, id):
+        browse(self.url('annotation', id))
+
+    def view_annotation_stats(self, annotation_id):
+        browse(self.url('annotation-detail/{}/intro'.format(annotation_id)))
+
 

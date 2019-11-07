@@ -84,9 +84,7 @@ python -m remo_app update
     launch_server(open_browser=False)
 
     server_url = '{}:{}'.format(config.server, config.port)
-    api = API(server_url, config.user_email, config.user_password)
-    ui = UI(server_url)
-    sdk = SDK(api, ui)
+    sdk = SDK(server_url, config.user_email, config.user_password)
 
     list_datasets = sdk.list_datasets
     get_dataset = sdk.get_dataset

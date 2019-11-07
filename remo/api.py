@@ -61,8 +61,8 @@ class BaseAPI:
             raise Exception('Not authenticated')
         return {'Authorization': 'Token {}'.format(self.token)}
 
-    def url(self, endpoint, **kwargs):
-        return build_url(self.server, endpoint, **kwargs)
+    def url(self, endpoint, *args, **kwargs):
+        return build_url(self.server, endpoint, *args, **kwargs)
 
     def post(self, *args, **kwargs):
         return requests.post(*args, headers=self._auth_header(), **kwargs)
