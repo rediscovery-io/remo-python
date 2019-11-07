@@ -34,13 +34,6 @@ class UploadStatus:
         self.reported_progress = percentage
 
 
-class NotAuthenticatedError(Exception):
-    """ Not Authenticated run-time error. """
-
-    def __init__(self, *args, **kwargs):
-        pass
-
-
 class BaseAPI:
     def __init__(self, server, email, password):
         self.server = server
@@ -65,7 +58,7 @@ class BaseAPI:
 
     def _auth_header(self):
         if not self._is_authenticated():
-            raise NotAuthenticatedError
+            raise Exception('Not authenticated')
         return {'Authorization': 'Token {}'.format(self.token)}
 
     def url(self, endpoint, **kwargs):
