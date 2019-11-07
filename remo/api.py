@@ -5,20 +5,19 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 import filetype
 import requests
-from .domain.task import AnnotationTask
 from .utils import FileResolver
 import urllib.parse
 
 
 class UploadStatus:
 
-    def __init__(self, total_count: int):
+    def __init__(self, total_count):
         self.total_count = total_count
         self.current_count = 0
         self.start = datetime.now()
         self.reported_progress = 0
 
-    def update(self, count: int):
+    def update(self, count):
         self.current_count += count
 
     def progress(self):
@@ -117,12 +116,7 @@ class API(BaseAPI):
         return self.post(url, files=files, data=data).json()
 
     # TODO: fix progress to include both local files and uploads
-    def upload_files(self, dataset_id: int,
-                     files_to_upload: list = [],
-                     annotation_task: AnnotationTask = None,
-                     folder_id: int = None,
-                     status: UploadStatus = None):
-
+    def upload_files(self, dataset_id, files_to_upload=[], annotation_task=None, folder_id=None, status=None):
         files = [('files', (os.path.basename(path), open(path, 'rb'), filetype.guess_mime(path))) for path in
                  files_to_upload]
         data = {}
@@ -141,9 +135,7 @@ class API(BaseAPI):
         return r.json()
 
     # TODO: fix progress to include both local files and uploads
-    def bulk_upload_files(self, dataset_id: int, files_to_upload: list,
-                          annotation_task: AnnotationTask = None,
-                          folder_id: int = None):
+    def bulk_upload_files(self, dataset_id, files_to_upload, annotation_task=None, folder_id=None):
 
         # files to upload
         files = FileResolver(files_to_upload, annotation_task is not None).resolve()
@@ -164,7 +156,7 @@ class API(BaseAPI):
 
         return groups
 
-    def split_files_by_size(self, files: list) -> list:
+    def split_files_by_size(self, files):
         groups = []
         bulk = []
         total_size = 0
@@ -217,11 +209,11 @@ class API(BaseAPI):
         url = self.url('/api/dataset/{}/'.format(id))
         return self.get(url).json()
 
-    def list_annotation_sets(self, dataset_id: int):
+    def list_annotation_sets(self, dataset_id):
         url = self.url('/api/v1/ui/datasets/{}/annotation-sets/'.format(dataset_id))
         return self.get(url).json()
 
-    def get_annotations(self, annotation_set_id: int, annotation_format='json'):
+    def get_annotations(self, annotation_set_id, annotation_format='json'):
         """
         Args:
             annotation_format: can be one of ['json', 'coco'], default='json'
@@ -231,7 +223,7 @@ class API(BaseAPI):
             'api/v1/ui/annotation-sets/{}/export/?annotation-format={}'.format(annotation_set_id, annotation_format))
         return self.get(url).json()
 
-    def export_annotation_to_csv(self, annotation_set_id: int, output_file, annotation_task):
+    def export_annotation_to_csv(self, annotation_set_id, output_file, annotation_task):
         annotation = self.get_annotations(annotation_set_id, annotation_format='json')
         output = open(output_file, 'w', newline='')
         f = csv.writer(output)

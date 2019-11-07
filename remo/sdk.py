@@ -149,7 +149,7 @@ class SDK:
         ]
 
     # TODO: convert into a dataset function
-    def get_annotations(self, annotation_set_id: int, annotation_format='json'):
+    def get_annotations(self, annotation_set_id, annotation_format='json'):
         """
         Args:
             annotation_format: 'json' or 'coco', default = 'json'
@@ -157,7 +157,7 @@ class SDK:
         """
         return self.api.get_annotations(annotation_set_id, annotation_format)
 
-    def export_annotation_to_csv(self, annotation_set_id: int, output_file, annotation_task):
+    def export_annotation_to_csv(self, annotation_set_id, output_file, annotation_task):
         """
         Takes annotations and saves as a .csv file  
         Args:

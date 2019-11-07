@@ -10,7 +10,7 @@ class Config:
     _default_user_email = 'admin@remo.ai'
     _default_user_password = 'adminpass'
 
-    def __init__(self, config: dict):
+    def __init__(self, config):
         self.port = config.get('port', self._default_port)
         self.server = config.get('server', self._default_server)
 
@@ -21,7 +21,7 @@ class Config:
         self.conda_env = config.get('conda_env')
 
 
-def parse_config(config_path) -> Config:
+def parse_config(config_path):
     if not os.path.exists(config_path):
         return None
 
