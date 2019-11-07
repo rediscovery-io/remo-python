@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='remo-sdk',
-    version='0.0.4',
+    version='0.0.5',
     author='Rediscovery',
     author_email='hello@remo.ai',
     packages=find_packages(exclude=['backup', 'example']),
