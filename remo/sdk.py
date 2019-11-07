@@ -11,82 +11,79 @@ class SDK(ISDK):
     def __init__(self, API, UI):
         self.api = API
         self.ui = UI
-
-
+        
+    # TODO: Add a default annotation set as a dataset created
     def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None,
                           public=False):
 
-            ''' 
-            Creates a new dataset in Remo and optionally populate it with images and annotation from local drive or URL
+        """ 
+        Creates a new dataset in Remo and optionally populate it with images and annotation from local drive or URL
 
-            Args:
-               name: string, name of the Dataset
+        Args:
+           name: string.
+               Name of the Dataset
 
-               local_files: list of files or directories. Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
+           local_files: list of files or directories. 
+               Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
 
-               paths_to_upload: list of files or directories. These files will be uploaded to the local disk.
+           paths_to_upload: list of files or directories.
+               These files will be uploaded to the local disk.
                   - files supported: image files, annotation files and archive files.
                   - Annotation files: json, xml, csv. If annotation file is provided, you need to provide annotation task.
                   - Archive files: zip, tar, gzip. These files are unzipped, and then we scan for images, annotations and other archives. Support for nested archive files, image and annotation files in the same format supported elsewhere
 
-               urls: list of urls pointing to downloadable target, which should be an archive file. The function will download the target of the URL, scan for archive files, unpack them and the results will be scanned for images, annotations and other archives.
+           urls: list of urls pointing to downloadable target, which should be an archive file.
+               The function will download the target of the URL, scan for archive files, unpack them and the results will be scanned for images, annotations and other archives.
 
-               annotation_task:
-                   object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
-                   instance_segmentation = 'Instance segmentation'. Supports Coco
-                   image_classification = 'Image classification'. ImageNet
+           annotation_task:
+               object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
+               instance_segmentation = 'Instance segmentation'. Supports Coco
+               image_classification = 'Image classification'. ImageNet
 
-              public: do not use it for now :)
+           public: do not use it for now :)
 
-            Returns: remo Dataset
-            '''
+        Returns: remo Dataset
+        """
 
-            result = self.api.create_dataset(name, public)
-            print(result)
-            my_dataset = Dataset(self, **result)
-            my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task)
-            my_dataset.initialise_images()
+        result = self.api.create_dataset(name, public)
+        my_dataset = Dataset(self, **result)
+        my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task)
+        my_dataset.initialise_images()
 
-            return my_dataset
+        return my_dataset
 
-    def list_datasets(self) -> [Dataset]:
-        resp = self.api.list_datasets()
-        return [
-            Dataset(self, id=dataset['id'], name=dataset['name'])
-            for dataset in resp.get('results', [])
-        ]
-
-    def get_dataset(self, dataset_id) -> Dataset:
-        result = self.api.get_dataset(dataset_id)
-        return Dataset(self, **result)
-
-     # MC: Can annotation_task have a default value?
+     # MC: Can annotation_task have a default value if dataset has only one annotation format?
     def add_data_to_dataset(self, dataset_id, local_files=[],
                             paths_to_upload=[], urls=[], annotation_task=None, folder_id=None):
-        '''
+        """
 
             
         Adds data to existing dataset
         
         Args:
             dataset_id: id of the desired dataset to extend (integer)
-            local_files: list of files or directories. Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
-            paths_to_upload: list of files or directories. These files will be uploaded to the local disk.
+            
+            local_files: list of files or directories. 
+                Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
+                
+            paths_to_upload: list of files or directories. 
+                These files will be uploaded to the local disk. files supported: image files, annotation files and archive files.
 
-               files supported: image files, annotation files and archive files.
+               Annotation files: json, xml, csv. 
+                   If annotation file is provided, you need to provide annotation task.
 
-               Annotation files: json, xml, csv. If annotation file is provided, you need to provide annotation task.
+               Archive files: zip, tar, gzip. 
+                   These files are unzipped, and then we scan for images, annotations and other archives. Support for nested archive files, image and annotation files in the same format supported elsewhere
 
-               Archive files: zip, tar, gzip. These files are unzipped, and then we scan for images, annotations and other archives. Support for nested archive files, image and annotation files in the same format supported elsewhere
-
-            urls: list of urls pointing to downloadable target, which should be an archive file. The function will download the target of the URL - then we scan for archive files, unpack them and proceed as per Archive file section.
+            urls: list of urls pointing to downloadable target, which should be an archive file. 
+                The function will download the target of the URL - then we scan for archive files, unpack them and proceed as per Archive file section.
 
             annotation_task:
                object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
                instance_segmentation = 'Instance segmentation'. Supports Coco
                image_classification = 'Image classification'. ImageNet
             folder_id: if there is a folder in the targer remo id, and you want to add images to a specific folder, you can specify it here.
-        '''
+        """
 
         result = {}
         if len(local_files):
@@ -124,8 +121,35 @@ class SDK(ISDK):
             print(urls_upload_result)
             result['urls_upload_result'] = urls_upload_result
         return result
+    
+    def list_datasets(self) -> [Dataset]:
+        """
+        Lists the available datasets
+        """  
+        resp = self.api.list_datasets()
+        return [
+            Dataset(self, id=dataset['id'], name=dataset['name'])
+            for dataset in resp.get('results', [])
+        ]
+
+    def get_dataset(self, dataset_id) -> Dataset:
+        """
+        Given a dataset id returns the dataset
+        Args:
+            dataset_id: int            
+        Returns: remo dataset
+        """  
+        result = self.api.get_dataset(dataset_id)
+        return Dataset(self, **result)
+
 
     def list_annotation_sets(self, dataset_id):
+        """
+        Lists the annotation sets
+        Args:
+            dataset_id: int        
+        Returns: list of annotations containing annotation set id-name, annotation task and num classes
+        """  
         resp = self.api.list_annotation_sets(dataset_id)
         return [
             AnnotationSet(self,
@@ -136,7 +160,35 @@ class SDK(ISDK):
             for annotation_set in resp.get('results', [])
         ]
     
+    # TODO: convert into a dataset function
+    def get_annotations(self, annotation_set_id: int, annotation_format='json'):
+        """
+        Args:
+            annotation_format: 'json' or 'coco', default = 'json'
+        Returns: annotations, format: list of dicts
+        """
+        return self.api.get_annotations(annotation_set_id, annotation_format)
+    
+    def export_annotation_to_csv(self, annotation_set_id: int, output_file, annotation_task):
+        """
+        Takes annotations and saves as a .csv file  
+        Args:
+            annotation_set_id: int
+            output_file: .csv path
+            annotation_task:
+               object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
+               instance_segmentation = 'Instance segmentation'. Supports Coco
+               image_classification = 'Image classification'. ImageNet
+        """
+        return self.api.export_annotation_to_csv(annotation_set_id, output_file, annotation_task)
+    
     def annotation_statistics(self, dataset_id):
+        """
+        Shows annotation statistics
+        Args:
+            dataset_id: int
+        Returns: annotation set id, name, num of images, num of classes, num of objects, top3 classes, release and update dates
+        """
         resp = self.api.list_annotation_sets(dataset_id)
         return [
             "Annotation set {id} - '{name}',  #images: {total_images}, #classes: {total_classes}, #objects: {total_annotation_objects}, Top3 classes: {top3_classes}, Released: {released_at}, Updated: {updated_at} ".format(
@@ -150,11 +202,14 @@ class SDK(ISDK):
             for annotation_set in resp.get('results', [])
         ]
    
-      
-    
     
     def list_dataset_images(self, dataset_id, folder_id=None, endpoint=None, **kwargs):
-        
+        """
+        Given a dataset id returns list of the dataset images
+        Args:
+            dataset_id: int            
+        Returns: list of images with their names and ids
+        """  
         if folder_id is not None:
             result = self.api.list_dataset_contents_by_folder(dataset_id, folder_id, **kwargs)
         else:
@@ -169,20 +224,24 @@ class SDK(ISDK):
             
         return images
 
-    def get_annotations(self, annotation_set_id: int, annotation_format='json'):
+    def get_images(self, dataset_id, image_id):
         """
+        Get image file by dataset_id and image_id
         Args:
-            annotation_format: choose format from this list ['json', 'coco'], default = 'json'
-        Returns: annotations, format: list of dicts
+            dataset_id: int 
+            image_id: int
+           
+        Returns: image
         """
-        return self.api.get_annotations(annotation_set_id, annotation_format)
-    
-    def export_annotation_json_to_csv(self, annotation, output_file='output.csv', task=None):
-        return self.api.export_annotation_json_to_csv(annotation, output_file, task)
+        return self.api.get_images(dataset_id, image_id)
     
     def view_image(self, image_id, dataset_id):
         """
         Opens browser on the image view for giving image
+        Args:
+            image_id: int
+            dataset_id: int
+        Returns: Browse UI of the selected image
         """
         img_list = self.list_dataset_images(dataset_id)
         contain = False
@@ -193,17 +252,26 @@ class SDK(ISDK):
         if not contain:
             msg = 'Image ID: %s' % str(image_id) + ' not in dataset %s' % str(dataset_id)
             print(msg)
-                
-
+    
+    def search_images(self, class_name, annotation_task):
+        """
+        Search images by class and annotation task
+        Args:
+            class_name: string. 
+                Name of the class to filter dataset.
+            annotation_task:
+               object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
+               instance_segmentation = 'Instance segmentation'. Supports Coco
+               image_classification = 'Image classification'. ImageNet
+        Returns: image_id, dataset_id, name, annotations
+        """
+        return self.api.search_images(class_name, annotation_task)
+    
     def view_search(self, cls=None, task=None):
+        # TODO: view search by class and task
         """
         Opens browser in search page
         """
         browse(self.ui.search_url())
 
-    def get_images(self, dataset_id, image_id):
-        return self.api.get_images(dataset_id, image_id)
-    
-    def search_class(self, class_name):
-        return self.api.search_class(class_name)
 
