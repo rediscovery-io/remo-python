@@ -5,6 +5,10 @@ import requests
 
 
 class Image:
+    """
+    TODO: Start using it
+    WIP
+    """
     id = None
     dataset = None
     path_to_image = None
@@ -18,7 +22,7 @@ class Image:
 
 
 class Dataset:
-    def __init__(self, sdk: ISDK, **kwargs):
+    def __init__(self, sdk, **kwargs):
         self.sdk = sdk
         self.id = kwargs.get('id')
         self.name = kwargs.get('name')
@@ -33,9 +37,19 @@ class Dataset:
         return self.__str__()
 
     def annotation_sets(self):
+        """
+        Returns a list of the annotation sets within the dataset
+        """
+        
         return self.sdk.list_annotation_sets(self.id)
     
     def annotation_statistics(self):
+        """
+        Prints annotation statistics of the dataset
+        TODO - for which annotation set?
+        WIP
+        
+        """
         return self.sdk.annotation_statistics(self.id)
 
     def initialise_images(self):
@@ -45,25 +59,36 @@ class Dataset:
             self.images.append(my_image)
 
     def list_images(self, folder_id=None, **kwargs):
+        """
+        Prints annotation statistics of the dataset
+        TODO - for which annotation set?
+        WIP
+        
+        """
         return self.sdk.list_dataset_images(self.id, folder_id=None, **kwargs)
 
     def add_data(self, local_files=[], paths_to_upload=[], urls=[], annotation_task=None, folder_id=None):
         """
-        Adds images and optionally annotations to a Dataset
-
-        Longer Description
-
+            
+        Adds data to the dataset
+        
         Args:
-            files: 
-            urls: 
-            annotation_task: 
-            folder_id:
+            - local_files: list of files or directories. Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
+            - paths_to_upload: list of files or directories. These files will be uploaded to the local disk.
 
-        Returns:
+               files supported: image files, annotation files and archive files.
 
+               Annotation files: json, xml, csv. If annotation file is provided, you need to provide annotation task.
 
-        Raises:
+               Archive files: zip, tar, gzip. These files are unzipped, and then we scan for images, annotations and other archives. Support for nested archive files, image and annotation files in the same format supported elsewhere
 
+            - urls: list of urls pointing to downloadable target, which should be an archive file. The function will download the target of the URL - then we scan for archive files, unpack them and proceed as per Archive file section.
+
+            - annotation_task:
+               object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
+               instance_segmentation = 'Instance segmentation'. Supports Coco
+               image_classification = 'Image classification'. ImageNet
+            - folder_id: if there is a folder in the targer remo id, and you want to add images to a specific folder, you can specify it here.
         """
 
         return self.sdk.add_data_to_dataset(dataset_id=self.id,
