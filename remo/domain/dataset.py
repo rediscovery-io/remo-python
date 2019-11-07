@@ -1,4 +1,3 @@
-from .interfaces import ISDK
 from .. import utils
 from io import BytesIO
 import requests
@@ -18,7 +17,7 @@ class Image:
 
 
 class Dataset:
-    def __init__(self, sdk: ISDK, **kwargs):
+    def __init__(self, sdk, **kwargs):
         self.sdk = sdk
         self.id = kwargs.get('id')
         self.name = kwargs.get('name')

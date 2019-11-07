@@ -1,13 +1,10 @@
-from .api import API
-from .ui import UI
-from .domain.interfaces import ISDK
 from .domain.dataset import Dataset
 from .domain.annotation_set import AnnotationSet
 from .domain.task import AnnotationTask
 from .utils import browse
 
 
-class SDK(ISDK):
+class SDK:
     def __init__(self, API, UI):
         self.api = API
         self.ui = UI
