@@ -13,6 +13,9 @@ class UI:
 
     def annotate_url(self, id):
         return self.url('annotation', id)
+    
+    def annotation_stats(self, annotation_id):
+        return self.url('annotation-detail/{}/intro').format(annotation_id)
 
     def search_url(self):
         return self.url('datasets/filtered/images')

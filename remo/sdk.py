@@ -44,7 +44,7 @@ class SDK(ISDK):
             result = self.api.create_dataset(name, public)
             print(result)
             my_dataset = Dataset(self, **result)
-            my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task, folder_id)
+            my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task)
             my_dataset.initialise_images()
 
             return my_dataset
@@ -106,7 +106,7 @@ class SDK(ISDK):
 
             files_upload_result = self.api.bulk_upload_files(dataset_id=dataset_id,
                                                              files_to_upload=paths_to_upload,
-                                                             annotation_task=annotation_task,
+                                                             annotation_task=annotation_task, 
                                                              folder_id=folder_id)
 
             result['files_upload_result'] = files_upload_result
@@ -169,7 +169,6 @@ class SDK(ISDK):
             
         return images
 
-    # TODO: export_annotations() to export .csv, .xml file
     def get_annotations(self, annotation_set_id: int, annotation_format='json'):
         """
         Args:
@@ -177,12 +176,24 @@ class SDK(ISDK):
         Returns: annotations, format: list of dicts
         """
         return self.api.get_annotations(annotation_set_id, annotation_format)
-
+    
+    def export_annotation_json_to_csv(self, annotation, output_file='output.csv', task=None):
+        return self.api.export_annotation_json_to_csv(annotation, output_file, task)
+    
     def view_image(self, image_id, dataset_id):
         """
         Opens browser on the image view for giving image
         """
-        browse(self.ui.image_view(image_id, dataset_id))
+        img_list = self.list_dataset_images(dataset_id)
+        contain = False
+        for img_dict in img_list:
+            if image_id == img_dict['id']:
+                contain = True
+                browse(self.ui.image_view(image_id, dataset_id))
+        if not contain:
+            msg = 'Image ID: %s' % str(image_id) + ' not in dataset %s' % str(dataset_id)
+            print(msg)
+                
 
     def view_search(self, cls=None, task=None):
         """
@@ -192,3 +203,7 @@ class SDK(ISDK):
 
     def get_images(self, dataset_id, image_id):
         return self.api.get_images(dataset_id, image_id)
+    
+    def search_class(self, class_name):
+        return self.api.search_class(class_name)
+
