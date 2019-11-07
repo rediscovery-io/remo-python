@@ -2,6 +2,7 @@ from .api import API
 from .domain.dataset import Dataset
 from .domain.annotation_set import AnnotationSet
 from .browser import browse
+from .endpoints import frontend
 
 
 class SDK:
@@ -241,7 +242,7 @@ class SDK:
         for img_dict in img_list:
             if image_id == img_dict['id']:
                 contain = True
-                browse(self.url('/image/{}?datasetId={}'.format(image_id, dataset_id)))
+                browse(self.url(frontend.image_view.format(image_id, dataset_id)))
         if not contain:
             msg = 'Image ID: %s' % str(image_id) + ' not in dataset %s' % str(dataset_id)
             print(msg)
@@ -266,7 +267,7 @@ class SDK:
         Opens browser in search page
 
         """
-        browse(self.url('datasets/filtered/images'))
+        browse(self.url(frontend.search))
 
     def search_class(self, class_name):
         """
@@ -276,13 +277,13 @@ class SDK:
         return self.api.search_class(class_name)
 
     def view_datasets(self):
-        browse(self.url('datasets'))
+        browse(self.url(frontend.datasets))
 
     def view_dataset(self, id):
-        browse(self.url('datasets', id))
+        browse(self.url(frontend.datasets, id))
 
     def view_annotation_set(self, id):
-        browse(self.url('annotation', id))
+        browse(self.url(frontend.annotation, id))
 
     def view_annotation_stats(self, annotation_id):
-        browse(self.url('annotation-detail/{}/intro'.format(annotation_id)))
+        browse(self.url(frontend.annotation_detail.format(annotation_id)))
