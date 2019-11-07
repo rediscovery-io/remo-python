@@ -49,14 +49,25 @@ class SDK(ISDK):
 
             return my_dataset
 
-    def list_datasets(self) -> [Dataset]:
+    def list_datasets(self):
+        '''
+        Returns a list of remo_datasets with all the datasets in the database.
+        You can use the ID of the dataset to access a specific datasets
+        '''
         resp = self.api.list_datasets()
         return [
             Dataset(self, id=dataset['id'], name=dataset['name'])
             for dataset in resp.get('results', [])
         ]
 
-    def get_dataset(self, dataset_id) -> Dataset:
+    def get_dataset(self, dataset_id):
+        '''
+        Retrieves the dataset with id dataset_id.
+        
+        Args:
+            - dataset_id: integer. The id of the dataset to retrieve
+            
+        '''
         result = self.api.get_dataset(dataset_id)
         return Dataset(self, **result)
 
@@ -69,9 +80,9 @@ class SDK(ISDK):
         Adds data to existing dataset
         
         Args:
-            dataset_id: id of the desired dataset to extend (integer)
-            local_files: list of files or directories. Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
-            paths_to_upload: list of files or directories. These files will be uploaded to the local disk.
+            - dataset_id: id of the desired dataset to extend (integer)
+            - local_files: list of files or directories. Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
+            - paths_to_upload: list of files or directories. These files will be uploaded to the local disk.
 
                files supported: image files, annotation files and archive files.
 
@@ -79,13 +90,13 @@ class SDK(ISDK):
 
                Archive files: zip, tar, gzip. These files are unzipped, and then we scan for images, annotations and other archives. Support for nested archive files, image and annotation files in the same format supported elsewhere
 
-            urls: list of urls pointing to downloadable target, which should be an archive file. The function will download the target of the URL - then we scan for archive files, unpack them and proceed as per Archive file section.
+            - urls: list of urls pointing to downloadable target, which should be an archive file. The function will download the target of the URL - then we scan for archive files, unpack them and proceed as per Archive file section.
 
-            annotation_task:
+            - annotation_task:
                object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
                instance_segmentation = 'Instance segmentation'. Supports Coco
                image_classification = 'Image classification'. ImageNet
-            folder_id: if there is a folder in the targer remo id, and you want to add images to a specific folder, you can specify it here.
+            - folder_id: if there is a folder in the targer remo id, and you want to add images to a specific folder, you can specify it here.
         '''
 
         result = {}
@@ -126,6 +137,13 @@ class SDK(ISDK):
         return result
 
     def list_annotation_sets(self, dataset_id):
+        '''
+        Returns a list of AnnotationSet containing all the AnnotationSets of a given dataset
+        
+        Args:
+            - dataset_id : the id of the dataset to query
+        
+        '''
         resp = self.api.list_annotation_sets(dataset_id)
         return [
             AnnotationSet(self,
@@ -137,6 +155,14 @@ class SDK(ISDK):
         ]
     
     def annotation_statistics(self, dataset_id):
+        '''
+        Prints annotation statistics of a given dataset
+        
+        Args:
+            - dataset_id : the id of the dataset to query
+        
+        '''
+        
         resp = self.api.list_annotation_sets(dataset_id)
         return [
             "Annotation set {id} - '{name}',  #images: {total_images}, #classes: {total_classes}, #objects: {total_annotation_objects}, Top3 classes: {top3_classes}, Released: {released_at}, Updated: {updated_at} ".format(
@@ -153,8 +179,16 @@ class SDK(ISDK):
       
     
     
-    def list_dataset_images(self, dataset_id, folder_id=None, endpoint=None, **kwargs):
+    def list_dataset_images(self, dataset_id, folder_id=None, **kwargs):
+        '''
+        Returns a list of remo_datasets with all the datasets in the database.
+        You can use the ID of the dataset to access a specific datasets
         
+        Args:
+            - dataset_id: the id of the dataset to query
+            - folder_id: the id of the folder to query
+        '''
+
         if folder_id is not None:
             result = self.api.list_dataset_contents_by_folder(dataset_id, folder_id, **kwargs)
         else:
@@ -169,7 +203,7 @@ class SDK(ISDK):
             
         return images
 
-    def get_annotations(self, annotation_set_id: int, annotation_format='json'):
+    def get_annotations(self, annotation_set_id, annotation_format='json'):
         """
         Args:
             annotation_format: choose format from this list ['json', 'coco'], default = 'json'
@@ -178,11 +212,17 @@ class SDK(ISDK):
         return self.api.get_annotations(annotation_set_id, annotation_format)
     
     def export_annotation_json_to_csv(self, annotation, output_file='output.csv', task=None):
+        """
+        Converts annotation file to csv format
+        TODO: add description
+        WIP
+        
+        """
         return self.api.export_annotation_json_to_csv(annotation, output_file, task)
     
     def view_image(self, image_id, dataset_id):
         """
-        Opens browser on the image view for giving image
+        Opens browser on the image view for given image
         """
         img_list = self.list_dataset_images(dataset_id)
         contain = False
@@ -198,12 +238,22 @@ class SDK(ISDK):
     def view_search(self, cls=None, task=None):
         """
         Opens browser in search page
+        
         """
         browse(self.ui.search_url())
 
     def get_images(self, dataset_id, image_id):
+        """
+        Retrieves all the images of the given datasets
+        TODO: add description. What is image_id?
+        WIP
+        """
         return self.api.get_images(dataset_id, image_id)
     
     def search_class(self, class_name):
+        """
+        Returns images with given class
+        WIP
+        """
         return self.api.search_class(class_name)
 
