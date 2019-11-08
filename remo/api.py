@@ -208,8 +208,11 @@ class API(BaseAPI):
         return self.get(url).json()
 
     def get_dataset(self, id):
-        url = self.url(backend.dataset,id)
-        return self.get(url).json()
+        url = self.url(backend.dataset, id, tail_slash=True)
+        print('url', url)
+        r = self.get(url)
+        print(r.content)
+        return r.json()
 
     def list_annotation_sets(self, dataset_id):
         url = self.url(backend.v1_dataset_annotation_sets.format(dataset_id))

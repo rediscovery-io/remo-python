@@ -8,7 +8,6 @@ from .endpoints import frontend
 class SDK:
     def __init__(self, server, email, password):
         self.api = API(server, email, password)
-        self.url = self.api.url
 
     # TODO: Add a default annotation set as a dataset created
     def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None):
@@ -231,25 +230,6 @@ class SDK:
         """
         return self.api.get_images(dataset_id, image_id)
 
-    def view_image(self, image_id, dataset_id):
-        """
-        Opens browser on the image view for giving image
-        Args:
-            image_id: int
-            dataset_id: int
-        Returns: Browse UI of the selected image
-        """
-        # TODO: find easier way to check if image belongs to dataset
-        img_list = self.list_dataset_images(dataset_id)
-        contain = False
-        for img_dict in img_list:
-            if image_id == img_dict['id']:
-                contain = True
-                browse(self.url(frontend.image_view.format(image_id, dataset_id)))
-        if not contain:
-            msg = 'Image ID: %s' % str(image_id) + ' not in dataset %s' % str(dataset_id)
-            print(msg)
-
     def search_images(self, class_name, annotation_task):
         """
         Search images by class and annotation task
@@ -264,14 +244,6 @@ class SDK:
         """
         return self.api.search_images(class_name, annotation_task)
 
-    def view_search(self, cls=None, task=None):
-        # TODO: view search by class and task
-        """
-        Opens browser in search page
-
-        """
-        browse(self.url(frontend.search))
-
     def search_class(self, class_name):
         """
         Returns images with given class
@@ -279,14 +251,44 @@ class SDK:
         """
         return self.api.search_class(class_name)
 
+    def view_search(self, cls=None, task=None):
+        # TODO: view search by class and task
+        """
+        Opens browser in search page
+
+        """
+        self._view(frontend.search)
+
+    def view_image(self, image_id, dataset_id):
+        """
+        Opens browser on the image view for giving image
+        Args:
+            image_id: int
+            dataset_id: int
+        Returns: Browse UI of the selected image
+        """
+        # TODO: find easier way to check if image belongs to dataset
+        img_list = self.list_dataset_images(dataset_id)
+        contain = False
+        for img_dict in img_list:
+            if image_id == img_dict['id']:
+                contain = True
+                self._view(frontend.image_view.format(image_id, dataset_id))
+        if not contain:
+            msg = 'Image ID: %s' % str(image_id) + ' not in dataset %s' % str(dataset_id)
+            print(msg)
+
     def view_datasets(self):
-        browse(self.url(frontend.datasets))
+        self._view(frontend.datasets)
 
     def view_dataset(self, id):
-        browse(self.url(frontend.datasets, id))
+        self._view(frontend.datasets, id)
 
     def view_annotation_set(self, id):
-        browse(self.url(frontend.annotation, id))
+        self._view(frontend.annotation, id)
 
     def view_annotation_stats(self, annotation_id):
-        browse(self.url(frontend.annotation_detail.format(annotation_id)))
+        self._view(frontend.annotation_detail.format(annotation_id))
+
+    def _view(self, url, *args, **kwargs):
+        browse(self.api.url(url, *args, **kwargs))

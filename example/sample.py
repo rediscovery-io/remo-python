@@ -1,7 +1,8 @@
 import time
 
 import remo
-from remo.domain.annotation_set import AnnotationSet
+from remo import AnnotationSet
+from example.data.data import show_dataset
 
 
 def create_dataset_from_local_files(sdk):
@@ -21,20 +22,20 @@ def create_dataset_from_remote_files(sdk):
     dataset.annotate()
 
 
-def export_annotations(sdk):
-    annotation_set = AnnotationSet(sdk, id=6)
-    print(annotation_set.export_annotations())
+# def export_annotations(sdk):
+#     annotation_set = AnnotationSet(sdk, id=6)
+#     print(annotation_set.export_annotations())
 
 
 def list_all_datasets():
-    print(remo.datasets())
+    print(remo.list_datasets())
 
 
-def list_all_annotation_sets():
-    for dataset in remo.datasets():
-        print(dataset)
-        for annotation_set in dataset.annotation_sets():
-            print('>>>', annotation_set)
+# def list_all_annotation_sets():
+#     for dataset in remo.datasets():
+#         print(dataset)
+#         for annotation_set in dataset.annotation_sets():
+#             print('>>>', annotation_set)
 
 
 def search_images():
@@ -42,4 +43,6 @@ def search_images():
 
 
 if __name__ == '__main__':
-    list_all_datasets()
+    d = remo.get_dataset(1)
+    show_dataset(d)
+
