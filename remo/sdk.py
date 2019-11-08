@@ -18,14 +18,17 @@ class SDK:
         Args:
            name: string, name of the Dataset
 
-           local_files: list of files or directories. Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
+           local_files: list of files or directories.
+                Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
 
-           paths_to_upload: list of files or directories. These files will be uploaded to the local disk.
+           paths_to_upload: list of files or directories.
+            These files will be uploaded to the local disk.
               - files supported: image files, annotation files and archive files.
               - Annotation files: json, xml, csv. If annotation file is provided, you need to provide annotation task.
               - Archive files: zip, tar, gzip. These files are unzipped, and then we scan for images, annotations and other archives. Support for nested archive files, image and annotation files in the same format supported elsewhere
 
-           urls: list of urls pointing to downloadable target, which should be an archive file. The function will download the target of the URL, scan for archive files, unpack them and the results will be scanned for images, annotations and other archives.
+           urls: list of urls pointing to downloadable target, which should be an archive file.
+              The function will download the target of the URL, scan for archive files, unpack them and the results will be scanned for images, annotations and other archives.
 
            annotation_task:
                object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
@@ -51,16 +54,21 @@ class SDK:
 
         Args:
             - dataset_id: id of the desired dataset to extend (integer)
-            - local_files: list of files or directories. Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
-            - paths_to_upload: list of files or directories. These files will be uploaded to the local disk.
+            - local_files: list of files or directories.
+                    Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
+            - paths_to_upload: list of files or directories.
+                    These files will be uploaded to the local disk.
 
                files supported: image files, annotation files and archive files.
 
-               Annotation files: json, xml, csv. If annotation file is provided, you need to provide annotation task.
+               Annotation files: json, xml, csv.
+                    If annotation file is provided, you need to provide annotation task.
 
-               Archive files: zip, tar, gzip. These files are unzipped, and then we scan for images, annotations and other archives. Support for nested archive files, image and annotation files in the same format supported elsewhere
+               Archive files: zip, tar, gzip.
+                    These files are unzipped, and then we scan for images, annotations and other archives. Support for nested archive files, image and annotation files in the same format supported elsewhere
 
-            - urls: list of urls pointing to downloadable target, which should be an archive file. The function will download the target of the URL - then we scan for archive files, unpack them and proceed as per Archive file section.
+            - urls: list of urls pointing to downloadable target, which should be an archive file.
+                    The function will download the target of the URL - then we scan for archive files, unpack them and proceed as per Archive file section.
 
             - annotation_task:
                object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
@@ -108,8 +116,7 @@ class SDK:
 
     def list_datasets(self):
         """
-        Returns a list of remo_datasets with all the datasets in the database.
-        You can use the ID of the dataset to access a specific datasets
+        Lists the available datasets
         """
         resp = self.api.list_datasets()
         return [
@@ -119,22 +126,20 @@ class SDK:
 
     def get_dataset(self, dataset_id):
         """
-        Retrieves the dataset with id dataset_id.
-
+        Given a dataset id returns the dataset
         Args:
-            - dataset_id: integer. The id of the dataset to retrieve
-
+            dataset_id: int
+        Returns: remo dataset
         """
         result = self.api.get_dataset(dataset_id)
         return Dataset(self, **result)
 
     def list_annotation_sets(self, dataset_id):
         """
-        Returns a list of AnnotationSet containing all the AnnotationSets of a given dataset
-        
+        Lists the annotation sets
         Args:
-            - dataset_id : the id of the dataset to query
-        
+            dataset_id: int
+        Returns: list of annotations containing annotation set id-name, annotation task and num classes
         """
         resp = self.api.list_annotation_sets(dataset_id)
         return [
@@ -170,11 +175,12 @@ class SDK:
 
     def annotation_statistics(self, dataset_id):
         """
-        Prints annotation statistics of a given dataset
+        Shows annotation statistics
         
         Args:
-            - dataset_id : the id of the dataset to query
-        
+            - dataset_id: int
+
+        Returns: annotation set id, name, num of images, num of classes, num of objects, top3 classes, release and update dates
         """
 
         resp = self.api.list_annotation_sets(dataset_id)
@@ -192,12 +198,12 @@ class SDK:
 
     def list_dataset_images(self, dataset_id, folder_id=None, **kwargs):
         """
-        Returns a list of images within the given dataset.
-        You can use the ID of the dataset to access a specific datasets
+        Given a dataset id returns list of the dataset images
         
         Args:
             - dataset_id: the id of the dataset to query
             - folder_id: the id of the folder to query
+        Returns: list of images with their names and ids
         """
 
         if folder_id is not None:
@@ -216,25 +222,24 @@ class SDK:
 
     def get_images(self, dataset_id, image_id):
         """
-        Retrieves all the images of the given datasets
-        TODO: add description. What is image_id?
-        WIP
+        Get image file by dataset_id and image_id
+        Args:
+            dataset_id: int
+            image_id: int
+
+        Returns: image
         """
         return self.api.get_images(dataset_id, image_id)
 
-    def export_annotation_json_to_csv(self, annotation, output_file='output.csv', task=None):
-        """
-        Converts annotation file to csv format
-        TODO: add description
-        WIP
-
-        """
-        return self.api.export_annotation_json_to_csv(annotation, output_file, task)
-
     def view_image(self, image_id, dataset_id):
         """
-        Opens browser on the image view for given image
+        Opens browser on the image view for giving image
+        Args:
+            image_id: int
+            dataset_id: int
+        Returns: Browse UI of the selected image
         """
+        # TODO: find easier way to check if image belongs to dataset
         img_list = self.list_dataset_images(dataset_id)
         contain = False
         for img_dict in img_list:

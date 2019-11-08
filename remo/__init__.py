@@ -8,7 +8,6 @@ import requests
 from .browser import browse
 from .config import parse_config
 from .sdk import SDK
-from .api import API
 from .domain import task
 
 REMO_HOME = os.getenv('REMO_HOME', str(Path.home().joinpath('.remo')))

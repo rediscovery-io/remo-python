@@ -13,7 +13,7 @@ def create_dataset_from_local_files(sdk):
 def create_dataset_from_remote_files(sdk):
     dataset = sdk.create_dataset('Demo', urls=[
         "https://remo-sample-datasets.s3-eu-west-1.amazonaws.com/Imagenet_sample_dataset.zip"],
-                                 annotation_task=remo.AnnotationTask.image_classification)
+                                 annotation_task=remo.task.image_classification)
     dataset.browse()
     # wait a bit for uploading and parsing annotations
     time.sleep(5)
