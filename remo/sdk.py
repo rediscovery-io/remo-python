@@ -11,8 +11,7 @@ class SDK:
         self.url = self.api.url
 
     # TODO: Add a default annotation set as a dataset created
-    def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None,
-                       public=False):
+    def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None):
         """ 
         Creates a new dataset in Remo and optionally populate it with images and annotation from local drive or URL
 
@@ -33,12 +32,11 @@ class SDK:
                instance_segmentation = 'Instance segmentation'. Supports Coco
                image_classification = 'Image classification'. ImageNet
 
-          public: do not use it for now :)
 
         Returns: remo Dataset
         """
 
-        result = self.api.create_dataset(name, public)
+        result = self.api.create_dataset(name)
         my_dataset = Dataset(self, **result)
         my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task)
         my_dataset.initialise_images()

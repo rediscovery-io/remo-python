@@ -5,10 +5,11 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 import filetype
 import requests
+import urllib.parse
 
 from .domain import task
+from .endpoints import backend
 from .utils import FileResolver
-import urllib.parse
 
 
 class UploadStatus:
@@ -44,7 +45,7 @@ class BaseAPI:
 
     def _login(self, email, password):
         try:
-            resp = requests.post(self.url('/api/rest-auth/login/'),
+            resp = requests.post(self.url(backend.login),
                                  data={"password": password, "email": email})
         except requests.exceptions.ConnectionError:
             print('ERROR: Failed connect to server')
@@ -103,18 +104,17 @@ class BaseAPI:
 
 class API(BaseAPI):
 
-    def create_dataset(self, name, public=False):
-        return self.post(self.url('/api/dataset/'),
-                         json={"name": name, "is_public": public}).json()
+    def create_dataset(self, name):
+        return self.post(self.url(backend.dataset), json={"name": name}).json()
 
     def upload_file(self, dataset_id, path, annotation_task=None, folder_id=None):
         name = os.path.basename(path)
         files = {'files': (name, open(path, 'rb'), filetype.guess_mime(path))}
         data = {}
         if annotation_task:
-            data['annotation_task'] = annotation_task.value
+            data['annotation_task'] = annotation_task
 
-        url = self.url('/api/dataset/{}/upload/'.format(dataset_id), folder_id=folder_id)
+        url = self.url(backend.dataset_upload.format(dataset_id), folder_id=folder_id)
         return self.post(url, files=files, data=data).json()
 
     # TODO: fix progress to include both local files and uploads
@@ -123,9 +123,9 @@ class API(BaseAPI):
                  files_to_upload]
         data = {}
         if annotation_task:
-            data['annotation_task'] = annotation_task.value
+            data['annotation_task'] = annotation_task
 
-        url = self.url('/api/dataset/{}/upload/'.format(dataset_id), folder_id=folder_id)
+        url = self.url(backend.dataset_upload.format(dataset_id), folder_id=folder_id)
 
         r = self.post(url, files=files, data=data)
 
@@ -178,41 +178,41 @@ class API(BaseAPI):
     def upload_local_files(self, dataset_id, local_files, annotation_task=None, folder_id=None):
         payload = {"local_files": local_files}
         if annotation_task:
-            payload['annotation_task'] = annotation_task.value
+            payload['annotation_task'] = annotation_task
         if folder_id:
             payload['folder_id'] = folder_id
 
-        url = self.url('/api/dataset/{}/upload/'.format(dataset_id))
+        url = self.url(backend.dataset_upload.format(dataset_id))
         return self.post(url, json=payload).json()
 
     def upload_urls(self, dataset_id, urls, annotation_task=None, folder_id=None):
         payload = {"urls": urls}
         if annotation_task:
-            payload['annotation_task'] = annotation_task.value
+            payload['annotation_task'] = annotation_task
         if folder_id:
             payload['folder_id'] = folder_id
 
-        url = self.url('/api/dataset/{}/upload'.format(dataset_id))
+        url = self.url(backend.dataset_upload.format(dataset_id))
         return self.post(url, json=payload).json()
 
     def list_datasets(self):
-        url = self.url('/api/v1/ui/datasets/')
+        url = self.url(backend.v1_datasets)
         return self.get(url).json()
 
     def list_dataset_contents(self, dataset_id, **kwargs):
-        url = self.url('/api/v1/ui/datasets/{}/images/'.format(dataset_id), **kwargs)
+        url = self.url(backend.v1_dataset_images.format(dataset_id), **kwargs)
         return self.get(url).json()
 
     def list_dataset_contents_by_folder(self, dataset_id, folder_id, **kwargs):
-        url = self.url('/api/user-dataset/{}/contents/{}/'.format(dataset_id, folder_id), **kwargs)
+        url = self.url(backend.dataset_folder_content.format(dataset_id, folder_id), **kwargs)
         return self.get(url).json()
 
     def get_dataset(self, id):
-        url = self.url('/api/dataset/{}/'.format(id))
+        url = self.url(backend.dataset,id)
         return self.get(url).json()
 
     def list_annotation_sets(self, dataset_id):
-        url = self.url('/api/v1/ui/datasets/{}/annotation-sets/'.format(dataset_id))
+        url = self.url(backend.v1_dataset_annotation_sets.format(dataset_id))
         return self.get(url).json()
 
     def get_annotations(self, annotation_set_id, annotation_format='json'):
@@ -221,15 +221,15 @@ class API(BaseAPI):
             annotation_format: can be one of ['json', 'coco'], default='json'
         Returns: annotations
         """
-        url = self.url(
-            'api/v1/ui/annotation-sets/{}/export/?annotation-format={}'.format(annotation_set_id, annotation_format))
+        url = self.url(backend.v1_export_annotations.format(annotation_set_id, annotation_format))
         return self.get(url).json()
 
+    # TODO: seems like this func should go to sdk
     def export_annotation_to_csv(self, annotation_set_id, output_file, annotation_task):
         annotation = self.get_annotations(annotation_set_id, annotation_format='json')
         output = open(output_file, 'w', newline='')
         f = csv.writer(output)
-        if annotation_task.value == task.object_detection:
+        if annotation_task == task.object_detection:
             header = ['file_name', 'class', 'xmin', 'ymin', 'xmax', 'ymax']
             f.writerow(header)
             for item in annotation:
@@ -238,7 +238,7 @@ class API(BaseAPI):
                     classes = annotation['classes']
                     for cls in classes:
                         f.writerow([item['file_name'], cls] + list(annotation['bbox'].values()))
-        elif annotation_task.value == task.instance_segmentation:
+        elif annotation_task == task.instance_segmentation:
             header = ['file_name', 'class', 'coordinates']
             f.writerow(header)
             for item in annotation:
@@ -256,13 +256,14 @@ class API(BaseAPI):
         output.close()
 
     def get_images(self, dataset_id, image_id):
-        url = self.url('/api/v1/ui/datasets/{}/images/{}/annotations/').format(dataset_id, image_id)
+        url = self.url(backend.v1_dataset_image_annotations.format(dataset_id, image_id))
         content = self.get(url).json()
         image_url = self.url(content['image'])
         return self.get(image_url)
 
     def search_images(self, class_name, annotation_task, num_data=None):
-        task = annotation_task.value.replace(" ", "%20")
-        url = self.url('/api/v1/ui/search/?classes={}&tasks={}').format(class_name, task)
+        # TODO: check if this needed
+        # task = annotation_task.replace(" ", "%20")
+        url = self.url(backend.v1_search, classes=class_name, tasks=task)
         results = self.get(url).json()['results']
         return results

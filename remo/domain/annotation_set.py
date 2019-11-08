@@ -13,7 +13,7 @@ class AnnotationSet:
 
     def __str__(self):
         return "Annotation set {id} - '{name}', task: {task}, #classes: {total_classes}".format(
-            id=self.id, name=self.name, task=self.task.value, total_classes=self.total_classes)
+            id=self.id, name=self.name, task=self.task, total_classes=self.total_classes)
 
     def __repr__(self):
         return self.__str__()
