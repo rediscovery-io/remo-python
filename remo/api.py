@@ -262,8 +262,6 @@ class API(BaseAPI):
         return self.get(image_url)
 
     def search_images(self, class_name, annotation_task, num_data=None):
-        # TODO: check if this needed
-        # task = annotation_task.replace(" ", "%20")
         url = self.url(backend.v1_search, classes=class_name, tasks=task)
         results = self.get(url).json()['results']
         return results
