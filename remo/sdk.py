@@ -229,8 +229,8 @@ class SDK:
         Returns: image
         """
         return self.api.get_images(dataset_id, image_id)
-
-    def search_images(self, class_name, annotation_task):
+    
+    def search_images(self, class_list, task_list):
         """
         Search images by class and annotation task
         Args:
@@ -242,7 +242,7 @@ class SDK:
                image_classification = 'Image classification'. ImageNet
         Returns: image_id, dataset_id, name, annotations
         """
-        return self.api.search_images(class_name, annotation_task)
+        return self.api.search_images(class_list, task_list)
 
     def search_class(self, class_name):
         """

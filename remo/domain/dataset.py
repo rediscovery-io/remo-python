@@ -32,38 +32,7 @@ class Dataset:
 
     def __repr__(self):
         return self.__str__()
-
-    def annotation_sets(self):
-        """
-        Returns a list of the annotation sets within the dataset
-        """
-
-        return self.sdk.list_annotation_sets(self.id)
-
-    def annotation_statistics(self):
-        """
-        Prints annotation statistics of the dataset
-        TODO - for which annotation set?
-        WIP
-        
-        """
-        return self.sdk.annotation_statistics(self.id)
-
-    def initialise_images(self):
-        list_of_images = self.list_images()
-        for i_image in list_of_images:
-            my_image = Image(id=None, path=i_image, dataset=self.name)
-            self.images.append(my_image)
-
-    def list_images(self, folder_id=None, **kwargs):
-        """
-        Prints annotation statistics of the dataset
-        TODO - for which annotation set?
-        WIP
-        
-        """
-        return self.sdk.list_dataset_images(self.id, folder_id=None, **kwargs)
-
+    
     def add_data(self, local_files=[], paths_to_upload=[], urls=[], annotation_task=None, folder_id=None):
         """
             
@@ -94,15 +63,48 @@ class Dataset:
                                             urls=urls,
                                             annotation_task=annotation_task,
                                             folder_id=folder_id)
-
     def fetch(self):
         dataset = self.sdk.get_dataset(self.id)
         self.__dict__.update(dataset.__dict__)
 
+
+    def annotation_sets(self):
+        """
+        Returns a list of the annotation sets within the dataset
+        """
+
+        return self.sdk.list_annotation_sets(self.id)
+    
+    # MC: Should we have a function that only shows with the given annotation id?
+    def annotation_statistics(self):
+        """
+        Prints annotation statistics of all the avaiable annotations sets of the dataset
+        TODO - for which annotation set?
+        Returns: annotation set id, name, num of images, num of classes, num of objects, top3 classes, release and update dates
+        """
+        return self.sdk.annotation_statistics(self.id)
+
+    def initialise_images(self):
+        list_of_images = self.list_images()
+        for i_image in list_of_images:
+            my_image = Image(id=None, path=i_image, dataset=self.name)
+            self.images.append(my_image)
+            
+    def list_images(self, folder_id=None, **kwargs):
+        """
+        Prints annotation statistics of the dataset
+        TODO - for which annotation set?
+        WIP
+        
+        """
+        return self.sdk.list_dataset_images(self.id, folder_id=None, **kwargs)
+
+    
+    
     def view(self):
         self.sdk.view_dataset(self.id)
 
-    def view_annotation(self, annotation_set_id):
+    def view_annotate(self, annotation_set_id):
         # TODO: select by annotation task
         self.sdk.view_annotation_set(annotation_set_id)
 

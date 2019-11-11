@@ -252,10 +252,13 @@ class API(BaseAPI):
                         segments = ' '.join(str(v) for d in annotation['segments'] for k, v in d.items())
                         f.writerow([item['file_name'], cls, segments])
         else:
-            # TODO: classification task 
-            # MC: currently there is a bug in the ui
-            output.close()
-            raise NotImplementedError
+            # else it is image_classification
+            header = ['file_name', 'class']
+            f.writerow(header)
+            for item in annotation:
+                classes = item['classes']
+                for cls in classes:
+                    f.writerow([item['file_name'], cls])
         output.close()
 
     def get_images(self, dataset_id, image_id):
@@ -264,7 +267,22 @@ class API(BaseAPI):
         image_url = self.url(content['image'])
         return self.get(image_url)
 
-    def search_images(self, class_name, annotation_task, num_data=None):
-        url = self.url(backend.v1_search, classes=class_name, tasks=task)
-        results = self.get(url).json()['results']
-        return results
+    def search_images(self, class_list, task_list, num_data=None):
+        """
+        Search images given a list of classes and tasks
+        Args:
+            class_list: list of strings
+            task_list: list of strings
+        Returns: list of dicts of image information
+        """
+        # TODO: search only with class or with task
+        # add task names on return
+        result_list = []
+        for cls in class_list:
+            for task in task_list:
+                url = self.url(backend.v1_search_images).format(cls, task)
+                results = self.get(url).json()['results']
+                result_list += results
+        return result_list
+   
+    
