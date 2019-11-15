@@ -1,3 +1,5 @@
+from .dataset import Dataset
+
 class AnnotationSet:
 
     def __init__(self, sdk, **kwargs):
@@ -27,3 +29,6 @@ class AnnotationSet:
         if annotation_format:
             args.append(annotation_format)
         return self.sdk.export_annotations(*args)
+
+
+

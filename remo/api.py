@@ -1,6 +1,5 @@
 import http
 import os
-import csv
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 import filetype
@@ -126,7 +125,6 @@ class API(BaseAPI):
             data['annotation_task'] = annotation_task
 
         url = self.url(backend.dataset_upload.format(dataset_id), folder_id=folder_id)
-
         r = self.post(url, files=files, data=data)
 
         if r.status_code != http.HTTPStatus.OK:
@@ -200,6 +198,7 @@ class API(BaseAPI):
         return self.get(url).json()
 
     def list_dataset_contents(self, dataset_id, **kwargs):
+        # TODO: need to filter with annotation_id
         url = self.url(backend.v1_dataset_images.format(dataset_id), **kwargs)
         return self.get(url).json()
 
@@ -227,62 +226,37 @@ class API(BaseAPI):
         url = self.url(backend.v1_export_annotations.format(annotation_set_id, annotation_format))
         return self.get(url).json()
 
-    # TODO: seems like this func should go to sdk
-    def export_annotation_to_csv(self, annotation_set_id, output_file, annotation_task):
-        annotation = self.get_annotations(annotation_set_id, annotation_format='json')
-        output = open(output_file, 'w', newline='')
-        f = csv.writer(output)
-        if annotation_task == task.object_detection:
-            header = ['file_name', 'class', 'xmin', 'ymin', 'xmax', 'ymax']
-            f.writerow(header)
-            for item in annotation:
-                annotations = item['annotations']
-                for annotation in annotations:
-                    classes = annotation['classes']
-                    for cls in classes:
-                        f.writerow([item['file_name'], cls] + list(annotation['bbox'].values()))
-        elif annotation_task == task.instance_segmentation:
-            header = ['file_name', 'class', 'coordinates']
-            f.writerow(header)
-            for item in annotation:
-                annotations = item['annotations']
-                for annotation in annotations:
-                    classes = annotation['classes']
-                    for cls in classes:
-                        segments = ' '.join(str(v) for d in annotation['segments'] for k, v in d.items())
-                        f.writerow([item['file_name'], cls, segments])
-        else:
-            # else it is image_classification
-            header = ['file_name', 'class']
-            f.writerow(header)
-            for item in annotation:
-                classes = item['classes']
-                for cls in classes:
-                    f.writerow([item['file_name'], cls])
-        output.close()
-
-    def get_images(self, dataset_id, image_id):
+    def get_images_by_id(self, dataset_id, image_id):
         url = self.url(backend.v1_dataset_image_annotations.format(dataset_id, image_id))
         content = self.get(url).json()
         image_url = self.url(content['image'])
         return self.get(image_url)
+    
+    def get_images_by_search(self, img_url):
+        image_url = self.url(img_url)
+        return self.get(image_url)
 
-    def search_images(self, class_list, task_list, num_data=None):
+    def search_images(self, class_list, task, dataset_id):
         """
         Search images given a list of classes and tasks
         Args:
             class_list: list of strings
-            task_list: list of strings
-        Returns: list of dicts of image information
+            task: string 
+            dataset_id: int
+        Returns: dictionary of image_id, dataset_id, name, preview, annotations, classes, dimensions
         """
-        # TODO: search only with class or with task
-        # add task names on return
-        result_list = []
-        for cls in class_list:
-            for task in task_list:
-                url = self.url(backend.v1_search_images).format(cls, task)
-                results = self.get(url).json()['results']
-                result_list += results
-        return result_list
-   
+        # TODO: adding task names on return
+        params = {}
+        if task:
+            params['tasks'] = task
+        if class_list:
+            params['classes'] = tuple(class_list)
+        if dataset_id:
+            params['dataset_id'] = dataset_id
+        
+        url = self.url(backend.v1_search)
+        results = self.get(url, params).json()['results']
+        return results
+ 
+       
     
