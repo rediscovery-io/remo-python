@@ -6,10 +6,10 @@ class AnnotationSet:
         self.name = kwargs.get('name')
         self.task = kwargs.get('task')
         self.total_classes = kwargs.get('total_classes')
-        self.released_at = kwargs.get('released_at')
         self.updated_at = kwargs.get('updated_at')
         self.total_images = kwargs.get('total_images')
         self.top3_classes = kwargs.get('top3_classes')
+        self.total_annotation_objects = kwargs.get('total_annotation_objects')
 
     def __str__(self):
         return "Annotation set {id} - '{name}', task: {task}, #classes: {total_classes}".format(
@@ -18,12 +18,23 @@ class AnnotationSet:
     def __repr__(self):
         return self.__str__()
 
-    def get_annotations(self, annotation_format=None):
+    def get_annotations(self, annotation_format='json'):
         """
         :param annotation_format: choose format from this list ['json', 'coco']
         :return: annotations
         """
-        args = [self.id]
-        if annotation_format:
-            args.append(annotation_format)
-        return self.sdk.export_annotations(*args)
+        return self.sdk.get_annotations(self.id, annotation_format)
+
+    def export_annotation_to_csv(self, output_file):
+        """
+        Takes annotations and saves as a .csv file
+        Args:
+            output_file: .csv path
+        """
+        self.sdk.export_annotation_to_csv(self.id, output_file, self.task)
+
+    def view(self):
+        self.sdk.view_annotation_set(self.id)
+
+    def view_stats(self):
+        self.sdk.view_annotation_stats(self.id)

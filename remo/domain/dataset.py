@@ -1,21 +1,6 @@
 from io import BytesIO
 
-
-class Image:
-    """
-    TODO: Start using it
-    WIP
-    """
-    id = None
-    dataset = None
-    path_to_image = None
-    annotation_sets = []
-
-    def __init__(self, **kwargs):
-        self.id = kwargs.get('id')
-        self.dataset = kwargs.get('dataset')
-        self.path_to_image = kwargs.get('path')
-        # print(id, dataset,path_to_image, '\n')
+from .image import Image
 
 
 class Dataset:
@@ -24,7 +9,7 @@ class Dataset:
         self.id = kwargs.get('id')
         self.name = kwargs.get('name')
         self.images = []
-        self._annotation_sets = []
+        self.annotation_sets = []
         self.default_annotation_set = None
 
     def __str__(self):
@@ -32,7 +17,7 @@ class Dataset:
 
     def __repr__(self):
         return self.__str__()
-    
+
     def add_data(self, local_files=[], paths_to_upload=[], urls=[], annotation_task=None, folder_id=None):
         """
             
@@ -63,61 +48,140 @@ class Dataset:
                                             urls=urls,
                                             annotation_task=annotation_task,
                                             folder_id=folder_id)
+
     def fetch(self):
         dataset = self.sdk.get_dataset(self.id)
         self.__dict__.update(dataset.__dict__)
 
-
-    def annotation_sets(self):
+    def list_annotation_sets(self):
         """
-        Returns a list of the annotation sets within the dataset
+        Lists of the annotation sets within the dataset
+        Returns: list of annotations containing annotation set id-name, annotation task and num classes
         """
-
         return self.sdk.list_annotation_sets(self.id)
-    
-    # MC: Should we have a function that only shows with the given annotation id?
-    def annotation_statistics(self):
+
+    def get_annotations(self, annotation_set_id=None, annotation_format='json'):
         """
-        Prints annotation statistics of all the avaiable annotations sets of the dataset
-        TODO - for which annotation set?
+        Get annotation of the dataset
+        
+        Args:
+            - annotation_set_id: int default: default_annotation_set
+            - annotation_format: string. can be one of ['json', 'coco'], default='json'
+
+        Returns: file_name, height, width, tags, task, annotations with classes and coordinates
+        """
+        annotation_set = self._get_annotation_set_or_default(annotation_set_id)
+        if annotation_set:
+            return annotation_set.get_annotations(annotation_format)
+
+        print('ERROR: annotation set not defined')
+
+    def _get_annotation_set(self, id):
+        for annotation_set in self.annotation_sets:
+            if annotation_set.id == id:
+                return annotation_set
+
+        print('ERROR: annotation set with id={} was not found'.format(id))
+
+    def _get_annotation_set_or_default(self, annotation_set_id=None):
+        if not annotation_set_id:
+            return self.default_annotation_set
+
+        return self._get_annotation_set(annotation_set_id)
+
+    def get_annotation_statistics(self):
+        """
+        Prints annotation statistics of all the avaiable annotation sets of the dataset
         Returns: annotation set id, name, num of images, num of classes, num of objects, top3 classes, release and update dates
         """
-        return self.sdk.annotation_statistics(self.id)
+        statistics = []
+        for ann_set in self.annotation_sets:
+            stat = "Annotation set {}, name: {},  #images: {}, #classes: {}, #objects: {}, Top3 classes: {}, Released: {}, Updated {}".format(
+                ann_set.id, ann_set.name, ann_set.total_images, ann_set.total_classes, ann_set.total_annotation_objects,
+                ann_set.top3_classes, ann_set.released_at, ann_set.updated_at)
+            statistics.append(stat)
+        return statistics
+
+    def export_annotation_to_csv(self, output_file, annotation_set_id=None):
+        annotation_set = self._get_annotation_set_or_default(annotation_set_id)
+        if annotation_set:
+            return annotation_set.export_annotation_to_csv(output_file)
+
+        print('ERROR: annotation set not defined')
+
+    def set_default_annotations(self, annotation_set_id):
+        self.default_annotation_set = self._get_annotation_set(annotation_set_id)
 
     def initialise_images(self):
-        list_of_images = self.list_images()
-        for i_image in list_of_images:
-            my_image = Image(id=None, path=i_image, dataset=self.name)
-            self.images.append(my_image)
-            
+        images = self.list_images()
+        self.images = [
+            Image(id=None, path=img, dataset=self.name)
+            for img in images
+        ]
+
+    def initialize_annotation_set(self):
+        self.annotation_sets = self.sdk.list_annotation_sets(self.id)
+        if self.annotation_sets:
+            self.default_annotation_set = self.annotation_sets[0]
+
     def list_images(self, folder_id=None, **kwargs):
         """
-        Prints annotation statistics of the dataset
-        TODO - for which annotation set?
-        WIP
-        
-        """
-        return self.sdk.list_dataset_images(self.id, folder_id=None, **kwargs)
+        Given a dataset id returns list of the dataset images
 
-    
-    
+        Args:
+            - dataset_id: the id of the dataset to query
+            - folder_id: the id of the folder to query
+        Returns: list of images with their names and ids
+        """
+        return self.sdk.list_dataset_images(self.id, folder_id=folder_id, **kwargs)
+
+    def get_images_by_id(self, image_id):
+        """
+        Given an image id returns the image content
+        Args:
+            - image_id: int
+        Returns: image content
+        """
+        # TODO: turn into an image object
+        r = self.sdk.get_images_by_id(self.id, image_id)
+        return BytesIO(r.content)
+
+    def get_images_by_search(self, class_list, task):
+        """
+        Given a class list and task returns image list 
+        Args:
+            - class_list: list of strings
+            - task: string
+        Returns: list of dictionaries containing classes, task and image content
+        """
+        # TODO: add tags 
+        # TODO: turn into an image object
+        result = self.search_images(class_list, task)
+        img_list = []
+        for i in range(len(result)):
+            r = self.sdk.get_image(result[i]['preview'])
+            img_list.append({'classes': result[i]['annotations']['classes'], 'task': task, 'img': BytesIO(r.content)})
+        return img_list
+
+    def search_images(self, class_list, task):
+        # TODO: convert result into list of dataset objects
+        return self.sdk.search_images(class_list, task, self.id)
+
     def view(self):
         self.sdk.view_dataset(self.id)
 
-    def view_annotate(self, annotation_set_id):
-        # TODO: select by annotation task
-        self.sdk.view_annotation_set(annotation_set_id)
+    def view_annotate(self, annotation_set_id=None):
+        annotation_set = self._get_annotation_set_or_default(annotation_set_id)
+        if annotation_set:
+            annotation_set.view()
 
-    def view_annotation_statistics(self, ann_id):
-        self.sdk.view_annotation_stats(ann_id)
-
-    def get_images(self, image_id, cls=None, tag=None):
-        # TODO: add class and tags & multiple images
-        r = self.sdk.get_images(self.id, image_id)
-        return BytesIO(r.content)
+    def view_annotation_statistics(self, annotation_set_id=None):
+        annotation_set = self._get_annotation_set_or_default(annotation_set_id)
+        if annotation_set:
+            annotation_set.view_stats()
 
     def view_image(self, image_id, cls=None, tag=None):
-        return self.sdk.view_image(image_id, self.id)
+        self.sdk.view_image(image_id, self.id)
 
     def view_search(self, **kwargs):
         pass

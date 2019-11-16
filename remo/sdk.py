@@ -1,15 +1,17 @@
+import csv
+
+from .domain import Dataset, AnnotationSet
 from .api import API
-from .domain.dataset import Dataset
-from .domain.annotation_set import AnnotationSet
 from .browser import browse
 from .endpoints import frontend
+from .exporter import get_json_to_csv_exporter
 
 
 class SDK:
     def __init__(self, server, email, password):
         self.api = API(server, email, password)
 
-    # TODO: Add a default annotation set as a dataset created
+    # MC: there is a problem in fetching annotation sets
     def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None):
         """ 
         Creates a new dataset in Remo and optionally populate it with images and annotation from local drive or URL
@@ -40,12 +42,12 @@ class SDK:
 
         result = self.api.create_dataset(name)
         my_dataset = Dataset(self, **result)
+        print(result)
         my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task)
         my_dataset.initialise_images()
-
+        my_dataset.initialize_annotation_set()
         return my_dataset
 
-    # MC: Can annotation_task have a default value if dataset has only one annotation format?
     def add_data_to_dataset(self, dataset_id, local_files=[],
                             paths_to_upload=[], urls=[], annotation_task=None, folder_id=None):
         """
@@ -75,7 +77,6 @@ class SDK:
                image_classification = 'Image classification'. ImageNet
             - folder_id: if there is a folder in the targer remo id, and you want to add images to a specific folder, you can specify it here.
         """
-
         result = {}
         if len(local_files):
             if type(local_files) is not list:
@@ -116,12 +117,13 @@ class SDK:
     def list_datasets(self):
         """
         Lists the available datasets
+        Returns: dataset id and dataset name
         """
         resp = self.api.list_datasets()
-        return [
-            Dataset(self, id=dataset['id'], name=dataset['name'])
-            for dataset in resp.get('results', [])
-        ]
+        result = []
+        for dataset in resp.get('results', []):
+            result.append(Dataset(self, id=dataset['id'], name=dataset['name']))
+        return result
 
     def get_dataset(self, dataset_id):
         """
@@ -131,69 +133,61 @@ class SDK:
         Returns: remo dataset
         """
         result = self.api.get_dataset(dataset_id)
-        return Dataset(self, **result)
+        dataset = Dataset(self, **result)
+        dataset.initialize_annotation_set()
+        return dataset
 
     def list_annotation_sets(self, dataset_id):
-        """
-        Lists the annotation sets
-        Args:
-            dataset_id: int
-        Returns: list of annotations containing annotation set id-name, annotation task and num classes
-        """
-        resp = self.api.list_annotation_sets(dataset_id)
+        result = self.api.list_annotation_sets(dataset_id)
         return [
             AnnotationSet(self,
                           id=annotation_set['id'],
                           name=annotation_set['name'],
+                          updated_at=annotation_set['updated_at'],
                           task=annotation_set['task']['name'],
-                          total_classes=annotation_set['statistics']['total_classes'])
-            for annotation_set in resp.get('results', [])
+                          top3_classes=annotation_set['statistics']['top3_classes'],
+                          total_images=annotation_set['statistics']['annotated_images_count'],
+                          total_classes=annotation_set['statistics']['total_classes'],
+                          total_annotation_objects=annotation_set['statistics']['total_annotation_objects'])
+            for annotation_set in result.get('results', [])
         ]
 
-    # TODO: convert into a dataset function
+    def get_annotation_set(self, id):
+        annotation_set = self.api.get_annotation_set(id)
+        return AnnotationSet(self,
+                      id=annotation_set['id'],
+                      name=annotation_set['name'],
+                      updated_at=annotation_set['updated_at'],
+                      task=annotation_set['task']['name'],
+                      total_classes=len(annotation_set['classes']))
+
+
     def get_annotations(self, annotation_set_id, annotation_format='json'):
         """
         Args:
-            annotation_format: 'json' or 'coco', default = 'json'
-        Returns: annotations, format: list of dicts
+            annotation_format: can be one of ['json', 'coco'], default='json'
+        Returns: annotations
         """
-        return self.api.get_annotations(annotation_set_id, annotation_format)
+        result = self.api.get_annotations(annotation_set_id, annotation_format)
+        return result
 
-    def export_annotation_to_csv(self, annotation_set_id, output_file, annotation_task):
+    def export_annotation_to_csv(self, annotation_set_id, output_file):
         """
-        Takes annotations and saves as a .csv file  
+        Takes annotations and saves as a .csv file
         Args:
             annotation_set_id: int
             output_file: .csv path
-            annotation_task:
-               object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
-               instance_segmentation = 'Instance segmentation'. Supports Coco
-               image_classification = 'Image classification'. ImageNet
         """
-        return self.api.export_annotation_to_csv(annotation_set_id, output_file, annotation_task)
+        annotation_set = self.get_annotation_set(annotation_set_id)
+        exporter = get_json_to_csv_exporter(annotation_set.task)
+        if not exporter:
+            print("ERROR: for giving annotation task '{}' export function not implemented".format(annotation_set.task))
+            return
 
-    def annotation_statistics(self, dataset_id):
-        """
-        Shows annotation statistics
-        
-        Args:
-            - dataset_id: int
-
-        Returns: annotation set id, name, num of images, num of classes, num of objects, top3 classes, release and update dates
-        """
-
-        resp = self.api.list_annotation_sets(dataset_id)
-        return [
-            "Annotation set {id} - '{name}',  #images: {total_images}, #classes: {total_classes}, #objects: {total_annotation_objects}, Top3 classes: {top3_classes}, Released: {released_at}, Updated: {updated_at} ".format(
-                id=annotation_set['id'], name=annotation_set['name'],
-                total_images=annotation_set['total_images'],
-                total_classes=annotation_set['statistics']['total_classes'],
-                total_annotation_objects=annotation_set['statistics']['total_annotation_objects'],
-                top3_classes=[(i['name'], i['count']) for i in annotation_set['statistics']['top3_classes']],
-                released_at=annotation_set.get('released_at'),
-                updated_at=annotation_set['updated_at'])
-            for annotation_set in resp.get('results', [])
-        ]
+        annotation_results = self.get_annotations(annotation_set_id, annotation_format='json')
+        with open(output_file, 'w', newline='') as output:
+            csv_writer = csv.writer(output)
+            exporter(annotation_results, csv_writer)
 
     def list_dataset_images(self, dataset_id, folder_id=None, **kwargs):
         """
@@ -205,21 +199,21 @@ class SDK:
         Returns: list of images with their names and ids
         """
 
-        if folder_id is not None:
+        if folder_id:
             result = self.api.list_dataset_contents_by_folder(dataset_id, folder_id, **kwargs)
         else:
             result = self.api.list_dataset_contents(dataset_id, **kwargs)
-        images = []
 
-        for entry in result.get('results', []):
-            my_dict = {}
-            my_dict['name'] = entry.get('name')
-            my_dict['id'] = entry.get('id')
-            images.append(my_dict)
-
+        images = [
+            {
+                'id': entry.get('id'),
+                'name': entry.get('name'),
+            }
+            for entry in result.get('results', [])
+        ]
         return images
 
-    def get_images(self, dataset_id, image_id):
+    def get_images_by_id(self, dataset_id, image_id):
         """
         Get image file by dataset_id and image_id
         Args:
@@ -228,31 +222,29 @@ class SDK:
 
         Returns: image
         """
-        return self.api.get_images(dataset_id, image_id)
-    
-    def search_images(self, class_list, task_list):
+        return self.api.get_images_by_id(dataset_id, image_id)
+
+    def get_image(self, url):
+        return self.api.get_image(url)
+
+    def search_images(self, classes=None, task=None, dataset_id=None, limit=None):
         """
         Search images by class and annotation task
         Args:
-            class_name: string.
-                Name of the class to filter dataset.
-            annotation_task:
-               object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
-               instance_segmentation = 'Instance segmentation'. Supports Coco
-               image_classification = 'Image classification'. ImageNet
+            classes: string or list of strings.
+                Name of the classes to filter dataset.
+            task: string
+                Name of the annotation task to filter dataset
+            dataset_id: int
+                Narrows search result to giving dataset
+            limit: int
+                Limits number of search results
+
         Returns: image_id, dataset_id, name, annotations
         """
-        return self.api.search_images(class_list, task_list)
-
-    def search_class(self, class_name):
-        """
-        Returns images with given class
-        WIP
-        """
-        return self.api.search_class(class_name)
+        return self.api.search_images(classes, task, dataset_id, limit)
 
     def view_search(self, cls=None, task=None):
-        # TODO: view search by class and task
         """
         Opens browser in search page
 
