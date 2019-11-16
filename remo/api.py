@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 import filetype
 import requests
-import urllib.parse
+from urllib.parse import quote
 
 from .endpoints import backend
 from .utils import FileResolver
@@ -87,13 +87,23 @@ class BaseAPI:
 
         params = []
         for key, val in kwargs.items():
-            if val:
+            if type(val) is str:
+                if ',' in val:
+                    values = val.split(',')
+                    values = ','.join(map(quote, values))
+                    params.append('{}={}'.format(key, values))
+                else:
+                    params.append('{}={}'.format(key, quote(val)))
+            elif type(val) is list:
+                values = ','.join(map(lambda v: quote(str(v)), val))
+                params.append('{}={}'.format(key, values))
+            elif val:
                 params.append('{}={}'.format(key, val))
 
         if len(params):
             joined_params = "&".join(params)
             separator = '&' if '?' in url else '/?'
-            url = "{}{}{}".format(url, separator, urllib.parse.quote(joined_params))
+            url = "{}{}{}".format(url, separator, joined_params)
         elif '?' not in url and tail_slash:
             url += '/'
 
@@ -234,31 +244,30 @@ class API(BaseAPI):
         content = self.get(url).json()
         image_url = self.url(content['image'])
         return self.get(image_url)
-    
+
     def get_image(self, url):
         return self.get(self.url(url))
 
-    def search_images(self, class_list, task, dataset_id):
+    def search_images(self, classes=None, task=None, dataset_id=None, limit=None):
         """
         Search images given a list of classes and tasks
         Args:
-            class_list: list of strings
-            task: string 
-            dataset_id: int
+            classes: string or list of strings - search for images which matches to all giving classes
+            task: string - annotation task
+            dataset_id: int - performs search in giving dataset otherwise in all datasets
+            limit: int - limits search result
         Returns: dictionary of image_id, dataset_id, name, preview, annotations, classes, dimensions
         """
         # TODO: adding task names on return
         params = {}
         if task:
             params['tasks'] = task
-        if class_list:
-            params['classes'] = tuple(class_list)
+        if classes:
+            params['classes'] = classes
         if dataset_id:
             params['dataset_id'] = dataset_id
-        
-        url = self.url(backend.v1_search)
-        results = self.get(url, params).json()['results']
-        return results
- 
-       
-    
+        if limit:
+            params['limit'] = limit
+
+        url = self.url(backend.v1_search, **params)
+        return self.get(url).json()['results']

@@ -227,18 +227,22 @@ class SDK:
     def get_image(self, url):
         return self.api.get_image(url)
 
-    def search_images(self, class_list, task, dataset_id):
+    def search_images(self, classes=None, task=None, dataset_id=None, limit=None):
         """
         Search images by class and annotation task
         Args:
-            class_list: list of strings.
+            classes: string or list of strings.
                 Name of the classes to filter dataset.
             task: string
                 Name of the annotation task to filter dataset
+            dataset_id: int
+                Narrows search result to giving dataset
+            limit: int
+                Limits number of search results
 
         Returns: image_id, dataset_id, name, annotations
         """
-        return self.api.search_images(class_list, task, dataset_id)
+        return self.api.search_images(classes, task, dataset_id, limit)
 
     def view_search(self, cls=None, task=None):
         """
