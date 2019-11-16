@@ -6,7 +6,6 @@ import filetype
 import requests
 import urllib.parse
 
-from .domain import task
 from .endpoints import backend
 from .utils import FileResolver
 
@@ -217,6 +216,10 @@ class API(BaseAPI):
         url = self.url(backend.v1_dataset_annotation_sets.format(dataset_id))
         return self.get(url).json()
 
+    def get_annotation_set(self, id):
+        url = self.url(backend.v1_annotation_set.format(id))
+        return self.get(url).json()
+
     def get_annotations(self, annotation_set_id, annotation_format='json'):
         """
         Args:
@@ -232,9 +235,8 @@ class API(BaseAPI):
         image_url = self.url(content['image'])
         return self.get(image_url)
     
-    def get_images_by_search(self, img_url):
-        image_url = self.url(img_url)
-        return self.get(image_url)
+    def get_image(self, url):
+        return self.get(self.url(url))
 
     def search_images(self, class_list, task, dataset_id):
         """
