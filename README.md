@@ -1,37 +1,57 @@
+
+<img src="https://github.com/rediscovery-io/remo-python/blob/master/img/remo_normal.png" width="200">
+
+# Welcome to Remo
+Remo is an open-access web-application for managing and visualising images and annotations for Computer Vision. 
+
+Use Remo to:
+
+- visualise and inspect both datasets and annotations
+- search for images with chosen classes or tags, and group them
+- visualise statistics like # objects / class
+- quickly annotate your images.
+
+Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and uses a lightweight database to store metadata.
+To read more about Remo and download it, visit [remo.ai](http://remo.ai).
+
+
+This repo is an open-source implementation of our python SDK
+
 ## Remo python SDK
 
-See examples of usage
+You can see example of usage of the SDK in the examples folder, and specifically in [the SDK examples Jupyer notebook](https://github.com/rediscovery-io/remo-python/blob/master/example/Rem_local_SDK_examples.ipynb)
 
 
 
 ## For contributors
 
-SDK organized in simple layers:
+The SDK is organized in 3 main layers:
 - api
 - sdk
-- domain objects
+- domain objects, such as datasets
 
-`API` responsible for low level communication with server and returns raw data.
+We exepect the end user to use mainly the SDK layer and domain objets.
 
-`SDK` doesn't access backend endpoints directly, only via `API`. Also this layer knows about domain objects, 
-so instead of raw data, it can return domain objects.
+`API` is responsible for low level communication with the server. It mostly returns raw data.
 
-`Domain objects` keeps entity information and knows about sdk, so most functions are simply short hands for sdk methods.
+`SDK` doesn't access backend endpoints directly, rather it uses the `API` layer for that. This layer knows about domain objects, 
+so instead of raw data, it returns domain objects.
+
+`Domain objects` keeps entity information and knows about the `SDK` layer. Most functions are simple short-hands for sdk methods.
 This layer doesn't know anything about `API`. 
 
-End user mainly uses SDK and domain objects.
 
 
-### Naming convension
+### Naming conventions
 
-* Function which responsible for open UI on specific page has prefix `view_`.
+* Functions which are responsible to open the UI on a specific page use the `view_` prefix
     
         view_dataset, view_annotations
 
-* Function which returns one object has singular form.
+* Functions which return always only one object, present the name of that object in singular form.
     
         get_image(id) - returns one image
 
-* Function which returns multiple objects has plural form.
+* Functions which might return multiple objects use the plural form of that object
     
         get_images() - may return multiple images 
