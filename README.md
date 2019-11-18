@@ -12,7 +12,7 @@ Use Remo to:
 - quickly annotate your images.
 
 Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and uses a lightweight database to store metadata.
-To read more about Remo and download it, visit [remo.ai](http://remo.ai).
+To read more about Remo and download it, visit [remo.ai](http://remo.ai) (the website is still under construction :) )
 
 
 This repo is an open-source implementation of our python SDK
