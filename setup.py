@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 
 setup(
     name='remo-sdk',
-    version='0.0.7',
-    author='Rediscovery',
+    version='0.0.8',
+    author='Rediscovery.io',
     author_email='hello@remo.ai',
     packages=find_packages(exclude=['backup', 'example']),
     url='https://github.com/rediscovery-io/remo-python',
