@@ -217,9 +217,7 @@ class API(BaseAPI):
 
     def get_dataset(self, id):
         url = self.url(backend.dataset, id, tail_slash=True)
-        print('url', url)
         r = self.get(url)
-        print(r.content)
         return r.json()
 
     def list_annotation_sets(self, dataset_id):

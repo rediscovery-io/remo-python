@@ -7,6 +7,7 @@ class AnnotationSet:
         self.task = kwargs.get('task')
         self.total_classes = kwargs.get('total_classes')
         self.updated_at = kwargs.get('updated_at')
+        self.released_at = kwargs.get('released_at')
         self.total_images = kwargs.get('total_images')
         self.top3_classes = kwargs.get('top3_classes')
         self.total_annotation_objects = kwargs.get('total_annotation_objects')
@@ -31,7 +32,7 @@ class AnnotationSet:
         Args:
             output_file: .csv path
         """
-        self.sdk.export_annotation_to_csv(self.id, output_file, self.task)
+        self.sdk.export_annotation_to_csv(self.id, output_file)
 
     def view(self):
         self.sdk.view_annotation_set(self.id)

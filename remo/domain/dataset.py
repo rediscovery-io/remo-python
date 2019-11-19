@@ -89,19 +89,33 @@ class Dataset:
 
         return self._get_annotation_set(annotation_set_id)
 
-    def get_annotation_statistics(self):
+    def get_annotation_statistics(self, annotation_set_id = None):
         """
+        #TODO ALR - Improve output formatting
+        #TODO ALR - Optional annotation set id as input
+        
         Prints annotation statistics of all the avaiable annotation sets of the dataset
         Returns: annotation set id, name, num of images, num of classes, num of objects, top3 classes, release and update dates
         """
         statistics = []
         for ann_set in self.annotation_sets:
-            stat = "Annotation set {}, name: {},  #images: {}, #classes: {}, #objects: {}, Top3 classes: {}, Released: {}, Updated {}".format(
-                ann_set.id, ann_set.name, ann_set.total_images, ann_set.total_classes, ann_set.total_annotation_objects,
-                ann_set.top3_classes, ann_set.released_at, ann_set.updated_at)
-            statistics.append(stat)
+            
+            if (annotation_set_id is None) or (annotation_set_id == ann_set.id):
+                
+                stat = {}
+                stat['AnnotationSet ID'] = ann_set.id
+                stat['AnnotationSet name'] = ann_set.name
+                stat['n_images'] = ann_set.total_images
+                stat['n_classes'] = ann_set.total_classes
+                stat['n_objects'] = ann_set.total_annotation_objects
+                stat['top_3_classes'] = ann_set.top3_classes
+                stat['creation_date'] = ann_set.released_at
+                stat['last_modified_date']= ann_set.updated_at
+            
+                statistics.append(stat)
         return statistics
 
+    
     def export_annotation_to_csv(self, output_file, annotation_set_id=None):
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
         if annotation_set:

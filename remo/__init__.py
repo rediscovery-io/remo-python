@@ -36,7 +36,9 @@ def __init__():
             version_endpoint = '{}/version'.format(server_url)
             try:
                 resp = requests.get(version_endpoint)
-                print('Remo server is running:', resp.json())
+                print('(\(\ ')
+                print("(>':') Remo server is running:", resp.json())
+            #    print('Remo server is running:', resp.json())
                 if open_browser:
                     browse('{}:{}'.format(config.server, config.port))
 
@@ -79,7 +81,9 @@ def __init__():
                 print('Wait a bit... ', retry)
                 try:
                     resp = requests.get(version_endpoint)
-                    print('Remo server is running:', resp.json())
+                    print('(\(\ ')
+                    print("(>':') Remo server is running:", resp.json())
+                  #  print('Remo server is running:', resp.json())
                     if open_browser:
                         browse(server_url)
 
