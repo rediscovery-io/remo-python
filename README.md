@@ -19,7 +19,7 @@ This repo is an open-source implementation of our python SDK
 
 ## Remo python SDK
 
-You can see example of usage of the SDK in the examples folder, and specifically in [the SDK examples Jupyer notebook](https://github.com/rediscovery-io/remo-python/blob/master/example/Rem_local_SDK_examples.ipynb)
+You can see example of usage of the SDK in the examples folder, and specifically in [the SDK examples Jupyer notebook](https://github.com/rediscovery-io/remo-python/blob/master/example/Python-SDK-examples.py)
 
 
 
