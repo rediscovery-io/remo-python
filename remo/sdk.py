@@ -8,8 +8,9 @@ from .exporter import get_json_to_csv_exporter
 
 
 class SDK:
-    def __init__(self, server, email, password):
+    def __init__(self, server, email, password, browse=browse):
         self.api = API(server, email, password)
+        self.browse=browse
 
     # MC: there is a problem in fetching annotation sets
     def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None):
@@ -283,4 +284,4 @@ class SDK:
         self._view(frontend.annotation_detail.format(annotation_id))
 
     def _view(self, url, *args, **kwargs):
-        browse(self.api.url(url, *args, **kwargs))
+        self.browse(self.api.url(url, *args, **kwargs))

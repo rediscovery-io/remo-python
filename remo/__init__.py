@@ -17,6 +17,10 @@ def __init__():
     config = parse_config(cfg_path)
 
     if config:
+        if config.viewer == 'electron':
+            from .electron import browse
+        else:
+            from .browser import browse
 
         server_url = '{}:{}'.format(config.server, config.port)
 
@@ -31,14 +35,15 @@ def __init__():
         def launch_server(open_browser=True):
             import time
             import requests
-            from .browser import browse
+
 
             version_endpoint = '{}/version'.format(server_url)
             try:
                 resp = requests.get(version_endpoint)
-                print('(\(\ ')
-                print("(>':') Remo server is running:", resp.json())
-            #    print('Remo server is running:', resp.json())
+                print("""
+    (\(\ 
+    (>':') Remo server is running: {}
+                """.format(resp.json()))
                 if open_browser:
                     browse('{}:{}'.format(config.server, config.port))
 
@@ -81,9 +86,10 @@ def __init__():
                 print('Wait a bit... ', retry)
                 try:
                     resp = requests.get(version_endpoint)
-                    print('(\(\ ')
-                    print("(>':') Remo server is running:", resp.json())
-                  #  print('Remo server is running:', resp.json())
+                    print("""
+    (\(\ 
+    (>':') Remo server is running: {}
+                    """.format(resp.json()))
                     if open_browser:
                         browse(server_url)
 
@@ -97,7 +103,7 @@ def __init__():
 
         launch_server(open_browser=False)
 
-        sdk = SDK(server_url, config.user_email, config.user_password)
+        sdk = SDK(server_url, config.user_email, config.user_password, browse)
 
         # set access to public SDK methods
         import sys
