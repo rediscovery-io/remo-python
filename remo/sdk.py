@@ -136,8 +136,10 @@ class SDK:
         result = self.api.get_dataset(dataset_id)
         dataset = Dataset(self, **result)
         dataset.initialize_annotation_set()
+        dataset.initialise_annotations()
+        dataset.initialise_images()
         return dataset
-
+    
     def list_annotation_sets(self, dataset_id):
         result = self.api.list_annotation_sets(dataset_id)
         return [
@@ -172,7 +174,7 @@ class SDK:
         result = self.api.get_annotations(annotation_set_id, annotation_format)
         return result
 
-    def export_annotation_to_csv(self, annotation_set_id, output_file):
+    def export_annotation_to_csv(self, annotation_set_id, output_file, dataset):
         """
         Takes annotations and saves as a .csv file
         Args:
@@ -185,7 +187,8 @@ class SDK:
             print("ERROR: for giving annotation task '{}' export function not implemented".format(annotation_set.task))
             return
 
-        annotation_results = self.get_annotations(annotation_set_id, annotation_format='json')
+        annotation_results = dataset.annotations
+
         with open(output_file, 'w', newline='') as output:
             csv_writer = csv.writer(output)
             exporter(annotation_results, csv_writer)
