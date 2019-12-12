@@ -193,7 +193,7 @@ class SDK:
             csv_writer = csv.writer(output)
             exporter(annotation_results, csv_writer)
 
-    def list_dataset_images(self, dataset_id, folder_id=None, **kwargs):
+    def list_dataset_images(self, dataset_id, folder_id=None, limit=None, **kwargs):
         """
         Given a dataset id returns list of the dataset images
         
@@ -204,9 +204,9 @@ class SDK:
         """
 
         if folder_id:
-            result = self.api.list_dataset_contents_by_folder(dataset_id, folder_id, **kwargs)
+            result = self.api.list_dataset_contents_by_folder(dataset_id, folder_id, limit, **kwargs)
         else:
-            result = self.api.list_dataset_contents(dataset_id, **kwargs)
+            result = self.api.list_dataset_contents(dataset_id, limit, **kwargs)
 
         images = [
             {
