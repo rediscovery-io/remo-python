@@ -24,7 +24,7 @@ class Dataset:
         self.initialise_annotations()
         new_self = deepcopy(self)
         new_self.images = self.images[sliced]
-        
+       
         new_img_name_list = [im.name for im in new_self.images]
         new_self.annotations = list(filter(lambda annotation: annotation.get('file_name') in new_img_name_list, self.annotations))
        
@@ -160,19 +160,23 @@ class Dataset:
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
         self.annotations = self.get_annotations(annotation_set.id)
     
-    def list_images(self, folder_id=None, limit=None, **kwargs):
+    def list_images(self, folder_id=None, limit=None):
         """
         Given a dataset id returns list of the dataset images
 
         Args:
-            - dataset_id: the id of the dataset to query
-            - folder_id: the id of the folder to query
+            - dataset_id: int.
+                the id of the dataset to query
+            - folder_id: int.
+                the id of the folder to query
+            - limit: int.
+                the number of images to be listed.
         Returns: list of images with their names and ids
         """
         if limit:
-            return self.sdk.list_dataset_images(self.id, folder_id, limit, **kwargs)
+            return self.sdk.list_dataset_images(self.id, folder_id, limit=limit)
         else:
-            return self.sdk.list_dataset_images(self.id, folder_id, limit=len(self.annotations), **kwargs)
+            return self.sdk.list_dataset_images(self.id, folder_id, limit=len(self.annotations))
 
     def get_images_by_id(self, image_id):
         """

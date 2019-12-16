@@ -32,7 +32,7 @@ class AnnotationSet:
         Args:
             output_file: .csv path
         """
-        self.sdk.export_annotation_to_csv(self.id, output_file, dataset)
+        self.sdk._export_annotation_to_csv(self.id, output_file, dataset)
 
     def view(self):
         self.sdk.view_annotation_set(self.id)

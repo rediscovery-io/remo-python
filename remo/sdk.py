@@ -47,6 +47,7 @@ class SDK:
         my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task)
         my_dataset.initialise_images()
         my_dataset.initialize_annotation_set()
+        my_dataset.initialise_annotations()
         return my_dataset
 
     def add_data_to_dataset(self, dataset_id, local_files=[],
@@ -174,7 +175,7 @@ class SDK:
         result = self.api.get_annotations(annotation_set_id, annotation_format)
         return result
 
-    def export_annotation_to_csv(self, annotation_set_id, output_file, dataset):
+    def _export_annotation_to_csv(self, annotation_set_id, output_file, dataset):
         """
         Takes annotations and saves as a .csv file
         Args:
@@ -193,20 +194,24 @@ class SDK:
             csv_writer = csv.writer(output)
             exporter(annotation_results, csv_writer)
 
-    def list_dataset_images(self, dataset_id, folder_id=None, limit=None, **kwargs):
+    def list_dataset_images(self, dataset_id, folder_id=None, **kwargs):
         """
         Given a dataset id returns list of the dataset images
         
         Args:
             - dataset_id: the id of the dataset to query
             - folder_id: the id of the folder to query
+            - **kwargs:
+                Keyword Arguments:
+                   - limit: int. 
+                       the number of images to be listed.
         Returns: list of images with their names and ids
         """
 
         if folder_id:
-            result = self.api.list_dataset_contents_by_folder(dataset_id, folder_id, limit, **kwargs)
+            result = self.api.list_dataset_contents_by_folder(dataset_id, folder_id, **kwargs)
         else:
-            result = self.api.list_dataset_contents(dataset_id, limit, **kwargs)
+            result = self.api.list_dataset_contents(dataset_id, **kwargs)
 
         images = [
             {

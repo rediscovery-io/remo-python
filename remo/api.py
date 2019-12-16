@@ -206,17 +206,13 @@ class API(BaseAPI):
         url = self.url(backend.v1_datasets)
         return self.get(url).json()
 
-    def list_dataset_contents(self, dataset_id, limit=None, **kwargs):
+    def list_dataset_contents(self, dataset_id, **kwargs):
         # TODO: need to filter with annotation_id
         url = self.url(backend.v1_dataset_images.format(dataset_id), **kwargs)
-        if limit:
-            url += '?limit={}'.format(limit)
         return self.get(url).json()
     
-    def list_dataset_contents_by_folder(self, dataset_id, folder_id, limit=None, **kwargs):
+    def list_dataset_contents_by_folder(self, dataset_id, folder_id, **kwargs):
         url = self.url(backend.dataset_folder_content.format(dataset_id, folder_id), **kwargs)
-        if limit:
-            url += '?limit={}'.format(limit)
         return self.get(url).json()
 
     def get_dataset(self, id):
