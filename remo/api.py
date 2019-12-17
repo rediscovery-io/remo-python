@@ -208,6 +208,7 @@ class API(BaseAPI):
 
     def list_dataset_contents(self, dataset_id, **kwargs):
         # TODO: need to filter with annotation_id
+        # TODO: remove kwargs, replace with limit url = self.url(backend.v1_dataset_images.format(dataset_id), limit=limit)
         url = self.url(backend.v1_dataset_images.format(dataset_id), **kwargs)
         return self.get(url).json()
     
