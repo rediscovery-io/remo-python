@@ -26,13 +26,13 @@ class AnnotationSet:
         """
         return self.sdk.get_annotations(self.id, annotation_format)
 
-    def export_annotation_to_csv(self, output_file):
+    def export_annotation_to_csv(self, output_file, dataset):
         """
         Takes annotations and saves as a .csv file
         Args:
             output_file: .csv path
         """
-        self.sdk.export_annotation_to_csv(self.id, output_file)
+        self.sdk._export_annotation_to_csv(self.id, output_file, dataset)
 
     def view(self):
         self.sdk.view_annotation_set(self.id)

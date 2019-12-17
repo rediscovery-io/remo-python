@@ -1,6 +1,6 @@
 from io import BytesIO
-
 from .image import Image
+from copy import deepcopy
 
 
 class Dataset:
@@ -11,9 +11,24 @@ class Dataset:
         self.images = []
         self.annotation_sets = []
         self.default_annotation_set = None
+        self.annotations = []
 
     def __str__(self):
         return "Dataset {id} - '{name}'".format(id=self.id, name=self.name)
+    
+    def __len__(self):
+        #return len(self.images)
+        return len(self.annotations)
+
+    def __getitem__(self, sliced):
+        self.initialise_annotations()
+        new_self = deepcopy(self)
+        new_self.images = self.images[sliced]
+       
+        new_img_name_list = [im.name for im in new_self.images]
+        new_self.annotations = list(filter(lambda annotation: annotation.get('file_name') in new_img_name_list, self.annotations))
+       
+        return new_self
 
     def __repr__(self):
         return self.__str__()
@@ -73,7 +88,7 @@ class Dataset:
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
         if annotation_set:
             return annotation_set.get_annotations(annotation_format)
-
+        
         print('ERROR: annotation set not defined')
 
     def _get_annotation_set(self, id):
@@ -114,12 +129,13 @@ class Dataset:
             
                 statistics.append(stat)
         return statistics
+    
 
     
     def export_annotation_to_csv(self, output_file, annotation_set_id=None):
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
         if annotation_set:
-            return annotation_set.export_annotation_to_csv(output_file)
+            return annotation_set.export_annotation_to_csv(output_file, self)
 
         print('ERROR: annotation set not defined')
 
@@ -127,27 +143,40 @@ class Dataset:
         self.default_annotation_set = self._get_annotation_set(annotation_set_id)
 
     def initialise_images(self):
-        images = self.list_images()
+        num_images = len(self.annotations)
+        images = self.list_images(limit=num_images)
+        # images = self.list_images()
         self.images = [
-            Image(id=None, path=img, dataset=self.name)
+            Image(id=img.get('id'), path=img, dataset=self.name, name=img.get('name'))
             for img in images
         ]
-
+  
     def initialize_annotation_set(self):
         self.annotation_sets = self.sdk.list_annotation_sets(self.id)
         if self.annotation_sets:
             self.default_annotation_set = self.annotation_sets[0]
-
-    def list_images(self, folder_id=None, **kwargs):
+            
+    def initialise_annotations(self, annotation_set_id=None):
+        annotation_set = self._get_annotation_set_or_default(annotation_set_id)
+        self.annotations = self.get_annotations(annotation_set.id)
+    
+    def list_images(self, folder_id=None, limit=None):
         """
         Given a dataset id returns list of the dataset images
 
         Args:
-            - dataset_id: the id of the dataset to query
-            - folder_id: the id of the folder to query
+            - dataset_id: int.
+                the id of the dataset to query
+            - folder_id: int.
+                the id of the folder to query
+            - limit: int.
+                the number of images to be listed.
         Returns: list of images with their names and ids
         """
-        return self.sdk.list_dataset_images(self.id, folder_id=folder_id, **kwargs)
+        if limit:
+            return self.sdk.list_dataset_images(self.id, folder_id, limit=limit)
+        else:
+            return self.sdk.list_dataset_images(self.id, folder_id, limit=len(self.annotations))
 
     def get_images_by_id(self, image_id):
         """
@@ -202,3 +231,6 @@ class Dataset:
 
     def view_objects(self, cls, tag):
         pass
+    
+
+    
