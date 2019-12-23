@@ -1,5 +1,4 @@
 import csv
-
 from .domain import Dataset, AnnotationSet
 from .api import API
 from .browser import browse
@@ -140,7 +139,7 @@ class SDK:
         dataset.initialise_annotations()
         dataset.initialise_images()
         return dataset
-    
+
     def list_annotation_sets(self, dataset_id):
         result = self.api.list_annotation_sets(dataset_id)
         return [
@@ -174,7 +173,10 @@ class SDK:
         """
         result = self.api.get_annotations(annotation_set_id, annotation_format)
         return result
-
+    
+    def _list_annotation_classes(self, annotation_set_id=None):
+        return self.api.list_annotation_classes(annotation_set_id)
+    
     def _export_annotation_to_csv(self, annotation_set_id, output_file, dataset):
         """
         Takes annotations and saves as a .csv file
@@ -278,7 +280,7 @@ class SDK:
         if not contain:
             msg = 'Image ID: %s' % str(image_id) + ' not in dataset %s' % str(dataset_id)
             print(msg)
-
+   
     def view_datasets(self):
         self._view(frontend.datasets)
 
@@ -288,8 +290,8 @@ class SDK:
     def view_annotation_set(self, id):
         self._view(frontend.annotation, id)
 
-    def view_annotation_stats(self, annotation_id):
-        self._view(frontend.annotation_detail.format(annotation_id))
+    def view_annotation_stats(self, annotation_set_id):
+        self._view(frontend.annotation_detail.format(annotation_set_id))
 
     def _view(self, url, *args, **kwargs):
         self.browse(self.api.url(url, *args, **kwargs))
