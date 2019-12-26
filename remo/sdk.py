@@ -282,15 +282,39 @@ class SDK:
             print(msg)
    
     def view_datasets(self):
+        """
+        Opens the main page of Remo
+        """
         self._view(frontend.datasets)
 
     def view_dataset(self, id):
+        """
+        Opens browser for the given dataset
+        Args:
+            id: int
+                dataset id
+        Returns: Browse UI of the selected dataset
+        """
         self._view(frontend.datasets, id)
 
     def view_annotation_set(self, id):
+        """
+        Opens browser in annotation view for the given annotation set
+        Args:
+            id: int
+               annotation set id
+        Returns: Browse UI of the selected annotation set
+        """
         self._view(frontend.annotation, id)
 
     def view_annotation_stats(self, annotation_set_id):
+        """
+        Opens browser in annotation statistics view for the given annotation set
+        Args:
+            id: int
+               annotation set id
+        Returns: Browse UI for the statistics of the selected annotation set
+        """
         self._view(frontend.annotation_detail.format(annotation_set_id))
 
     def _view(self, url, *args, **kwargs):

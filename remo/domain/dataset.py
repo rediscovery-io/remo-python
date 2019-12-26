@@ -135,9 +135,10 @@ class Dataset:
     def list_classes(self, annotation_set_id=None):
         """
         Lists information of the classes within the dataset
-        **Arguments**:
-             - annotation_set_id: id of annotation set for which to list the class. **_Default value:  None_**, which retrieves the default annotation set for that dataset
-        **Returns**: List of dictionaries containing class name, total annotation object and total images
+        Args:
+             - annotation_set_id: int. Default value:  None
+                 id of annotation set for which to list the classes. If not specified the default annotation set is considered.
+        Returns: List of dictionaries containing class name, total annotation object and total images
         """
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
         if annotation_set:
@@ -165,11 +166,20 @@ class Dataset:
         ]
   
     def initialize_annotation_set(self):
+        """
+        Initializes the default annotation set to the first annotation set of the dataset.
+        """
         self.annotation_sets = self.sdk.list_annotation_sets(self.id)
         if self.annotation_sets:
             self.default_annotation_set = self.annotation_sets[0]
 
     def initialise_annotations(self, annotation_set_id=None):
+        """
+        Initializes annotations of the dataset. If annotation set is not specified, assigns annotations of the default annotation set.
+        Args:
+            - annotation_set_id: int.
+                the id of the annotation set to query
+        """
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
         self.annotations = self.get_annotations(annotation_set.id)
     
@@ -220,7 +230,7 @@ class Dataset:
 
     def search(self, class_list, task):
         """
-        Given list of desired classes and an annotation task returns a subset of the dataset
+        Given list of desired classes and an annotation task, returns a subset of the dataset by limiting images and their annotations to that classes and the annotation task.
         Args:
             - class_list: list of strings. 
                 classes with the same images
