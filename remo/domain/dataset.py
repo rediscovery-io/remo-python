@@ -135,7 +135,9 @@ class Dataset:
     def list_classes(self, annotation_set_id=None):
         """
         Lists information of the classes within the dataset
-        Returns: List of dictionaries containing class name, total annotation object and total images
+        **Arguments**:
+             - annotation_set_id: id of annotation set for which to list the class. **_Default value:  None_**, which retrieves the default annotation set for that dataset
+        **Returns**: List of dictionaries containing class name, total annotation object and total images
         """
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
         if annotation_set:
