@@ -281,7 +281,7 @@ class SDK:
             msg = 'Image ID: %s' % str(image_id) + ' not in dataset %s' % str(dataset_id)
             print(msg)
    
-    def view_datasets(self):
+    def open_ui(self):
         """
         Opens the main page of Remo
         """
