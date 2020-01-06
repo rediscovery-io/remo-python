@@ -1,5 +1,4 @@
 import csv
-
 from .domain import Dataset, AnnotationSet
 from .api import API
 from .browser import browse
@@ -140,8 +139,9 @@ class SDK:
         dataset.initialise_annotations()
         dataset.initialise_images()
         return dataset
-    
+
     def list_annotation_sets(self, dataset_id):
+    #TODO test whether to hide the function
         result = self.api.list_annotation_sets(dataset_id)
         return [
             AnnotationSet(self,
@@ -174,7 +174,10 @@ class SDK:
         """
         result = self.api.get_annotations(annotation_set_id, annotation_format)
         return result
-
+    
+    def _list_annotation_classes(self, annotation_set_id=None):
+        return self.api.list_annotation_classes(annotation_set_id)
+    
     def _export_annotation_to_csv(self, annotation_set_id, output_file, dataset):
         """
         Takes annotations and saves as a .csv file
@@ -278,18 +281,42 @@ class SDK:
         if not contain:
             msg = 'Image ID: %s' % str(image_id) + ' not in dataset %s' % str(dataset_id)
             print(msg)
-
-    def view_datasets(self):
+   
+    def open_ui(self):
+        """
+        Opens the main page of Remo
+        """
         self._view(frontend.datasets)
 
     def view_dataset(self, id):
+        """
+        Opens browser for the given dataset
+        Args:
+            id: int
+                dataset id
+        Returns: Browse UI of the selected dataset
+        """
         self._view(frontend.datasets, id)
 
     def view_annotation_set(self, id):
+        """
+        Opens browser in annotation view for the given annotation set
+        Args:
+            id: int
+               annotation set id
+        Returns: Browse UI of the selected annotation set
+        """
         self._view(frontend.annotation, id)
 
-    def view_annotation_stats(self, annotation_id):
-        self._view(frontend.annotation_detail.format(annotation_id))
+    def view_annotation_stats(self, annotation_set_id):
+        """
+        Opens browser in annotation statistics view for the given annotation set
+        Args:
+            id: int
+               annotation set id
+        Returns: Browse UI for the statistics of the selected annotation set
+        """
+        self._view(frontend.annotation_detail.format(annotation_set_id))
 
     def _view(self, url, *args, **kwargs):
         self.browse(self.api.url(url, *args, **kwargs))

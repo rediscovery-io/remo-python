@@ -12,6 +12,7 @@ class Dataset:
         self.annotation_sets = []
         self.default_annotation_set = None
         self.annotations = []
+        #self.original = True
 
     def __str__(self):
         return "Dataset {id} - '{name}'".format(id=self.id, name=self.name)
@@ -19,8 +20,9 @@ class Dataset:
     def __len__(self):
         #return len(self.images)
         return len(self.annotations)
-
+    
     def __getitem__(self, sliced):
+        # TODO: add exception for the original dataset specific methods.
         self.initialise_annotations()
         new_self = deepcopy(self)
         new_self.images = self.images[sliced]
@@ -88,7 +90,7 @@ class Dataset:
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
         if annotation_set:
             return annotation_set.get_annotations(annotation_format)
-        
+
         print('ERROR: annotation set not defined')
 
     def _get_annotation_set(self, id):
@@ -129,9 +131,21 @@ class Dataset:
             
                 statistics.append(stat)
         return statistics
-    
 
-    
+    def list_classes(self, annotation_set_id=None):
+        """
+        Lists information of the classes within the dataset
+        Args:
+             - annotation_set_id: int. Default value:  None
+                 id of annotation set for which to list the classes. If not specified the default annotation set is considered.
+        Returns: List of dictionaries containing class name, total annotation object and total images
+        """
+        annotation_set = self._get_annotation_set_or_default(annotation_set_id)
+        if annotation_set:
+            return annotation_set.get_classes()
+
+        print('ERROR: annotation set not defined')
+        
     def export_annotation_to_csv(self, output_file, annotation_set_id=None):
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
         if annotation_set:
@@ -152,18 +166,27 @@ class Dataset:
         ]
   
     def initialize_annotation_set(self):
+        """
+        Initializes the default annotation set to the first annotation set of the dataset.
+        """
         self.annotation_sets = self.sdk.list_annotation_sets(self.id)
         if self.annotation_sets:
             self.default_annotation_set = self.annotation_sets[0]
-            
+
     def initialise_annotations(self, annotation_set_id=None):
+    #TODO test whether to hide this function
+        """
+        Initializes annotations of the dataset. If annotation set is not specified, assigns annotations of the default annotation set.
+        Args:
+            - annotation_set_id: int.
+                the id of the annotation set to query
+        """
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
         self.annotations = self.get_annotations(annotation_set.id)
     
     def list_images(self, folder_id=None, limit=None):
         """
         Given a dataset id returns list of the dataset images
-
         Args:
             - dataset_id: int.
                 the id of the dataset to query
@@ -177,7 +200,7 @@ class Dataset:
             return self.sdk.list_dataset_images(self.id, folder_id, limit=limit)
         else:
             return self.sdk.list_dataset_images(self.id, folder_id, limit=len(self.annotations))
-
+        
     def get_images_by_id(self, image_id):
         """
         Given an image id returns the image content
@@ -206,9 +229,25 @@ class Dataset:
             img_list.append({'classes': result[i]['annotations']['classes'], 'task': task, 'img': BytesIO(r.content)})
         return img_list
 
-    def search_images(self, class_list, task):
-        # TODO: convert result into list of dataset objects
-        return self.sdk.search_images(class_list, task, self.id)
+    def search(self, class_list, task):
+        """
+        Given list of desired classes and an annotation task, returns a subset of the dataset by limiting images and their annotations to that classes and the annotation task.
+        Args:
+            - class_list: list of strings. 
+                classes with the same images
+            - task: str.
+                annotation task
+        Returns: subset of the dataset 
+        """
+        # TODO: add exception for the original dataset specific methods.
+        result = self.sdk.search_images(class_list, task, self.id)
+        filtered_dataset = deepcopy(self)
+       
+        new_img_name_list = [im.get('name') for im in result]
+        filtered_dataset.images = list(filter(lambda im: im.name in new_img_name_list, self.images)) 
+        filtered_dataset.annotations = list(filter(lambda annotation: annotation.get('file_name') in new_img_name_list, self.annotations))
+        
+        return filtered_dataset
 
     def view(self):
         self.sdk.view_dataset(self.id)
@@ -231,6 +270,3 @@ class Dataset:
 
     def view_objects(self, cls, tag):
         pass
-    
-
-    

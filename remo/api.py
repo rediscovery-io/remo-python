@@ -207,15 +207,15 @@ class API(BaseAPI):
         return self.get(url).json()
 
     def list_dataset_contents(self, dataset_id, **kwargs):
-        # TODO: need to filter with annotation_id
+        # TODO: need to filter with annotation_set_id
         # TODO: remove kwargs, replace with limit url = self.url(backend.v1_dataset_images.format(dataset_id), limit=limit)
         url = self.url(backend.v1_dataset_images.format(dataset_id), **kwargs)
         return self.get(url).json()
-    
+
     def list_dataset_contents_by_folder(self, dataset_id, folder_id, **kwargs):
         url = self.url(backend.dataset_folder_content.format(dataset_id, folder_id), **kwargs)
         return self.get(url).json()
-
+    
     def get_dataset(self, id):
         url = self.url(backend.dataset, id, tail_slash=True)
         r = self.get(url)
@@ -236,6 +236,15 @@ class API(BaseAPI):
         Returns: annotations
         """
         url = self.url(backend.v1_export_annotations.format(annotation_set_id, annotation_format))
+        return self.get(url).json()
+    
+    def list_annotation_classes(self, annotation_set_id=None):
+        """
+        Args:
+            annotation_set_id: int. 
+        Returns: list of classes
+        """
+        url = self.url(backend.v1_annotation_classes.format(annotation_set_id))
         return self.get(url).json()
 
     def get_images_by_id(self, dataset_id, image_id):
