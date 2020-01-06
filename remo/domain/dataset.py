@@ -174,6 +174,7 @@ class Dataset:
             self.default_annotation_set = self.annotation_sets[0]
 
     def initialise_annotations(self, annotation_set_id=None):
+    #TODO test whether to hide this function
         """
         Initializes annotations of the dataset. If annotation set is not specified, assigns annotations of the default annotation set.
         Args:
