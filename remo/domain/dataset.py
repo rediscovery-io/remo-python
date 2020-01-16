@@ -69,7 +69,7 @@ class Dataset:
     def fetch(self):
         dataset = self.sdk.get_dataset(self.id)
         self.__dict__.update(dataset.__dict__)
-
+    
     def list_annotation_sets(self):
         """
         Lists of the annotation sets within the dataset
@@ -182,7 +182,8 @@ class Dataset:
                 the id of the annotation set to query
         """
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
-        self.annotations = self.get_annotations(annotation_set.id)
+        if annotation_set:
+            self.annotations = self.get_annotations(annotation_set.id)
     
     def list_images(self, folder_id=None, limit=None):
         """
