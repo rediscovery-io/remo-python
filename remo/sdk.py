@@ -114,7 +114,7 @@ class SDK:
             print(urls_upload_result)
             result['urls_upload_result'] = urls_upload_result
         return result
-
+    
     def list_datasets(self):
         """
         Lists the available datasets
@@ -174,6 +174,39 @@ class SDK:
         """
         result = self.api.get_annotations(annotation_set_id, annotation_format)
         return result
+    
+    def _create_annotation_set(self, annotation_task, dataset_id, name, classes):
+        """
+        Creates a new annotation set
+        Args:
+            - annotation_task: str.
+                specified for the annotation set to be created from 
+                ["Image classification", "Object detection", "Instance segmentation"]
+            - dataset_id: int.
+                the id of the dataset 
+            - name: str.
+                name of the annotation set
+            - classes: list.
+                list of classes.
+        """
+        task_ids = {'Object detection':1, 'Instance segmentation':2, 'Image classification':3}
+        task_id = task_ids.get(annotation_task)
+        if not task_id:
+            print('Choose an annotation task from: " + "["Image classification", "Object detection", "Instance segmentation"]"')
+            return
+        
+        num_classes = len(classes)
+        classes_with_ids = []
+        for i in range(num_classes):
+            classes_with_ids.append({"id":i, "name":classes[i]})
+            
+        return self.api.create_annotation_set(task_id, dataset_id, name, classes_with_ids)
+    
+    #def upload_annotations(self, dataset_id, path, annotation_task):
+    #    return self.api.upload_file(dataset_id, path, annotation_task)
+    
+    def _add_annotation(self, dataset_id, annotation_set_id, image_id, cls, coordinates=None, object_id=None):
+        return self.api.add_annotation(dataset_id, annotation_set_id, image_id, cls, coordinates, object_id)
     
     def _list_annotation_classes(self, annotation_set_id=None):
         return self.api.list_annotation_classes(annotation_set_id)
