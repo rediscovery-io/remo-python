@@ -35,7 +35,7 @@ class Dataset:
     def __repr__(self):
         return self.__str__()
 
-    def add_data(self, local_files=[], paths_to_upload=[], urls=[], annotation_task=None, folder_id=None):
+    def add_data(self, local_files=[], paths_to_upload=[], urls=[], annotation_task=None, folder_id=None, annotation_set_id=None):
         """
             
         Adds data to the dataset
@@ -64,7 +64,8 @@ class Dataset:
                                             paths_to_upload=paths_to_upload,
                                             urls=urls,
                                             annotation_task=annotation_task,
-                                            folder_id=folder_id)
+                                            folder_id=folder_id,
+                                            annotation_set_id=annotation_set_id)
 
     def fetch(self):
         dataset = self.sdk.get_dataset(self.id)
@@ -182,7 +183,8 @@ class Dataset:
                 the id of the annotation set to query
         """
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
-        self.annotations = self.get_annotations(annotation_set.id)
+        if annotation_set:
+            self.annotations = self.get_annotations(annotation_set.id)
     
     def list_images(self, folder_id=None, limit=None):
         """
