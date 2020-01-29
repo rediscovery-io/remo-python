@@ -239,7 +239,7 @@ class API(BaseAPI):
         if folder_id:
             payload['folder_id'] = folder_id
 
-        url = self.url(backend.dataset_upload.format(dataset_id, annotation_set_id=annotation_set_id))
+        url = self.url(backend.dataset_upload.format(dataset_id), annotation_set_id=annotation_set_id)
         return self.post(url, json=payload).json()
 
     def upload_urls(self, dataset_id, urls, annotation_task=None, folder_id=None, annotation_set_id=None):
@@ -249,7 +249,7 @@ class API(BaseAPI):
         if folder_id:
             payload['folder_id'] = folder_id
 
-        url = self.url(backend.dataset_upload.format(dataset_id, annotation_set_id=annotation_set_id))
+        url = self.url(backend.dataset_upload.format(dataset_id), annotation_set_id=annotation_set_id)
         return self.post(url, json=payload).json()
 
     def list_datasets(self):

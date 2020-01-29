@@ -85,7 +85,8 @@ class SDK:
                     'Function parameter "paths_to_add" should be a list of file or directory paths, but instead is a ' + str(
                         type(local_files)))
 
-            files_upload_result = self.api.upload_local_files(dataset_id, local_files, annotation_task, folder_id, annotation_set_id)
+            files_upload_result = self.api.upload_local_files(dataset_id, local_files, annotation_task, folder_id,
+                                                              annotation_set_id)
             result['files_link_result'] = files_upload_result
 
         if len(paths_to_upload):
@@ -116,7 +117,7 @@ class SDK:
             print(urls_upload_result)
             result['urls_upload_result'] = urls_upload_result
         return result
-    
+
     def list_datasets(self):
         """
         Lists the available datasets
@@ -147,26 +148,25 @@ class SDK:
         result = self.api.list_annotation_sets(dataset_id)
         return [
             AnnotationSet(self,
-                            id=annotation_set['id'],
-                            name=annotation_set['name'],
-                            updated_at=annotation_set['updated_at'],
-                            task=annotation_set['task']['name'],
-                            top3_classes=annotation_set['statistics']['top3_classes'],
-                            total_images=annotation_set['statistics']['annotated_images_count'],
-                            total_classes=annotation_set['statistics']['total_classes'],
-                            total_annotation_objects=annotation_set['statistics']['total_annotation_objects'])
+                          id=annotation_set['id'],
+                          name=annotation_set['name'],
+                          updated_at=annotation_set['updated_at'],
+                          task=annotation_set['task']['name'],
+                          top3_classes=annotation_set['statistics']['top3_classes'],
+                          total_images=annotation_set['statistics']['annotated_images_count'],
+                          total_classes=annotation_set['statistics']['total_classes'],
+                          total_annotation_objects=annotation_set['statistics']['total_annotation_objects'])
             for annotation_set in result.get('results', [])
         ]
 
     def get_annotation_set(self, id):
         annotation_set = self.api.get_annotation_set(id)
         return AnnotationSet(self,
-                              id=annotation_set['id'],
-                              name=annotation_set['name'],
-                              updated_at=annotation_set['updated_at'],
-                              task=annotation_set['task']['name'],
-                              total_classes=len(annotation_set['classes']))
-
+                             id=annotation_set['id'],
+                             name=annotation_set['name'],
+                             updated_at=annotation_set['updated_at'],
+                             task=annotation_set['task']['name'],
+                             total_classes=len(annotation_set['classes']))
 
     def get_annotations(self, annotation_set_id, annotation_format='json'):
         """
@@ -176,7 +176,7 @@ class SDK:
         """
         result = self.api.get_annotations(annotation_set_id, annotation_format)
         return result
-    
+
     def _create_annotation_set(self, annotation_task, dataset_id, name, classes):
         """
         Creates a new annotation set
@@ -191,28 +191,27 @@ class SDK:
             - classes: list.
                 list of classes.
         """
-        task_ids = {'Object detection':1, 'Instance segmentation':2, 'Image classification':3}
+        task_ids = {'Object detection': 1, 'Instance segmentation': 2, 'Image classification': 3}
         task_id = task_ids.get(annotation_task)
         if not task_id:
-            print('Choose an annotation task from: " + "["Image classification", "Object detection", "Instance segmentation"]"')
+            print('Choose an annotation task from: ["Image classification", "Object detection", "Instance segmentation"]')
             return
-        
-        num_classes = len(classes)
+
         classes_with_ids = []
-        for i in range(num_classes):
-            classes_with_ids.append({"id":i, "name":classes[i]})
-            
+        for i, name in enumerate(classes):
+            classes_with_ids.append({"id": i, "name": name})
+
         return self.api.create_annotation_set(task_id, dataset_id, name, classes_with_ids)
-    
-    #def upload_annotations(self, dataset_id, path, annotation_task):
+
+    # def upload_annotations(self, dataset_id, path, annotation_task):
     #    return self.api.upload_file(dataset_id, path, annotation_task)
-    
+
     def _add_annotation(self, dataset_id, annotation_set_id, image_id, cls, coordinates=None, object_id=None):
         return self.api.add_annotation(dataset_id, annotation_set_id, image_id, cls, coordinates, object_id)
-    
+
     def _list_annotation_classes(self, annotation_set_id=None):
         return self.api.list_annotation_classes(annotation_set_id)
-    
+
     def _export_annotation_to_csv(self, annotation_set_id, output_file, dataset):
         """
         Takes annotations and saves as a .csv file
@@ -316,7 +315,7 @@ class SDK:
         if not contain:
             msg = 'Image ID: %s' % str(image_id) + ' not in dataset %s' % str(dataset_id)
             print(msg)
-   
+
     def open_ui(self):
         """
         Opens the main page of Remo
