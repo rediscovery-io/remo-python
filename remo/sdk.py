@@ -138,9 +138,9 @@ class SDK:
         """
         result = self.api.get_dataset(dataset_id)
         dataset = Dataset(self, **result)
-        dataset.initialize_annotation_set()
-        dataset.initialise_annotations()
-        dataset.initialise_images()
+        dataset._initialize_annotation_set()
+        dataset._initialise_annotations()
+        dataset._initialise_images()
         return dataset
 
     def list_annotation_sets(self, dataset_id):

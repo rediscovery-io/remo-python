@@ -153,9 +153,9 @@ class API(BaseAPI):
         if object_id:
             # It's object detection
             payload = {"objects":[{"name":"OBJ " + str(object_id),
-                                   "coordinates":coordinates,
+                                   "coordinates":[{"x":float(coordinates[0]),"y":float(coordinates[1])}, {"x":float(coordinates[2]),"y":float(coordinates[3])}],
                                    "auto_created":False,
-                                   "position_number":1,
+                                   "position_number":object_id,
                                    "classes":[{"name":cls,"lower":cls.lower(),"questionable":False}],
                                    "objectId":object_id,
                                    "isHidden":False}]}
