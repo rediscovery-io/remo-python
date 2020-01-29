@@ -176,12 +176,16 @@ class API(BaseAPI):
         return self.post(url, files=files, data=data).json()
 
     # TODO: fix progress to include both local files and uploads
-    def upload_files(self, dataset_id, files_to_upload=[], annotation_task=None, folder_id=None, status=None, annotation_set_id=None):
+    def upload_files(self, dataset_id, files_to_upload=[], annotation_task=None, folder_id=None, status=None, annotation_set_id=None, class_encoding=None):
         files = [('files', (os.path.basename(path), open(path, 'rb'), filetype.guess_mime(path))) for path in
                  files_to_upload]
         data = {}
         if annotation_task:
             data['annotation_task'] = annotation_task
+
+        if isinstance(class_encoding, dict):
+            for key, val in class_encoding.items():
+                data['class_encoding_{}'.format(key)] = val
 
         url = self.url(backend.dataset_upload.format(dataset_id), folder_id=folder_id, annotation_set_id=annotation_set_id)
         r = self.post(url, files=files, data=data)
@@ -194,14 +198,14 @@ class API(BaseAPI):
         return r.json()
 
     # TODO: fix progress to include both local files and uploads
-    def bulk_upload_files(self, dataset_id, files_to_upload, annotation_task=None, folder_id=None, annotation_set_id=None):
+    def bulk_upload_files(self, dataset_id, files_to_upload, annotation_task=None, folder_id=None, annotation_set_id=None, class_encoding=None):
 
         # files to upload
         files = FileResolver(files_to_upload, annotation_task is not None).resolve()
         groups = self.split_files_by_size(files)
         status = UploadStatus(len(files))
         with ThreadPoolExecutor(1) as ex:
-            res = ex.map(lambda bulk: self.upload_files(dataset_id, bulk, annotation_task, folder_id, status, annotation_set_id),
+            res = ex.map(lambda bulk: self.upload_files(dataset_id, bulk, annotation_task, folder_id, status, annotation_set_id, class_encoding),
                          groups)
 
         results = res
@@ -232,22 +236,26 @@ class API(BaseAPI):
             groups.append(bulk)
         return groups
 
-    def upload_local_files(self, dataset_id, local_files, annotation_task=None, folder_id=None, annotation_set_id=None):
+    def upload_local_files(self, dataset_id, local_files, annotation_task=None, folder_id=None, annotation_set_id=None, class_encoding=None):
         payload = {"local_files": local_files}
         if annotation_task:
             payload['annotation_task'] = annotation_task
         if folder_id:
             payload['folder_id'] = folder_id
+        if isinstance(class_encoding, dict):
+            payload['class_encoding'] = class_encoding
 
         url = self.url(backend.dataset_upload.format(dataset_id), annotation_set_id=annotation_set_id)
         return self.post(url, json=payload).json()
 
-    def upload_urls(self, dataset_id, urls, annotation_task=None, folder_id=None, annotation_set_id=None):
+    def upload_urls(self, dataset_id, urls, annotation_task=None, folder_id=None, annotation_set_id=None, class_encoding=None):
         payload = {"urls": urls}
         if annotation_task:
             payload['annotation_task'] = annotation_task
         if folder_id:
             payload['folder_id'] = folder_id
+        if isinstance(class_encoding, dict):
+            payload['class_encoding'] = class_encoding
 
         url = self.url(backend.dataset_upload.format(dataset_id), annotation_set_id=annotation_set_id)
         return self.post(url, json=payload).json()
