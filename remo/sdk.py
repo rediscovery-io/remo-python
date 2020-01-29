@@ -85,7 +85,8 @@ class SDK:
                     'Function parameter "paths_to_add" should be a list of file or directory paths, but instead is a ' + str(
                         type(local_files)))
 
-            files_upload_result = self.api.upload_local_files(dataset_id, local_files, annotation_task, folder_id, annotation_set_id)
+            files_upload_result = self.api.upload_local_files(dataset_id, local_files, annotation_task, folder_id,
+                                                              annotation_set_id)
             result['files_link_result'] = files_upload_result
 
         if len(paths_to_upload):
@@ -175,6 +176,38 @@ class SDK:
         """
         result = self.api.get_annotations(annotation_set_id, annotation_format)
         return result
+
+    def _create_annotation_set(self, annotation_task, dataset_id, name, classes):
+        """
+        Creates a new annotation set
+        Args:
+            - annotation_task: str.
+                specified for the annotation set to be created from 
+                ["Image classification", "Object detection", "Instance segmentation"]
+            - dataset_id: int.
+                the id of the dataset 
+            - name: str.
+                name of the annotation set
+            - classes: list.
+                list of classes.
+        """
+        task_ids = {'Object detection': 1, 'Instance segmentation': 2, 'Image classification': 3}
+        task_id = task_ids.get(annotation_task)
+        if not task_id:
+            print('Choose an annotation task from: ["Image classification", "Object detection", "Instance segmentation"]')
+            return
+
+        classes_with_ids = []
+        for i, name in enumerate(classes):
+            classes_with_ids.append({"id": i, "name": name})
+
+        return self.api.create_annotation_set(task_id, dataset_id, name, classes_with_ids)
+
+    # def upload_annotations(self, dataset_id, path, annotation_task):
+    #    return self.api.upload_file(dataset_id, path, annotation_task)
+
+    def _add_annotation(self, dataset_id, annotation_set_id, image_id, cls, coordinates=None, object_id=None):
+        return self.api.add_annotation(dataset_id, annotation_set_id, image_id, cls, coordinates, object_id)
 
     def _list_annotation_classes(self, annotation_set_id=None):
         return self.api.list_annotation_classes(annotation_set_id)

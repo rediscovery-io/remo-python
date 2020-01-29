@@ -1,7 +1,7 @@
 from io import BytesIO
 from .image import Image
 from copy import deepcopy
-
+import csv
 
 class Dataset:
     def __init__(self, sdk, **kwargs):
@@ -12,6 +12,8 @@ class Dataset:
         self.annotation_sets = []
         self.default_annotation_set = None
         self.annotations = []
+        # TODO: move to the Image Class
+        self.images_dict = {}
         #self.original = True
 
     def __str__(self):
@@ -70,7 +72,7 @@ class Dataset:
     def fetch(self):
         dataset = self.sdk.get_dataset(self.id)
         self.__dict__.update(dataset.__dict__)
-
+    
     def list_annotation_sets(self):
         """
         Lists of the annotation sets within the dataset
@@ -93,7 +95,48 @@ class Dataset:
             return annotation_set.get_annotations(annotation_format)
 
         print('ERROR: annotation set not defined')
-
+        
+    def create_annotation_set(self, annotation_task, name, classes):
+        return self.sdk._create_annotation_set(annotation_task, self.id, name, classes)
+    
+    #def upload_annotations(self, path, task):
+    #    return self.sdk.upload_annotations(self.id, path, task)
+    
+    def _add_annotation(self, image_name, annotation_set_id, cls, coordinates=None, object_id=None): 
+        """
+        Adds annotations to the specified annotation set
+        Args:
+           
+            - image_name: str.
+                file name of the image
+            - annotation_set_id: int.
+                the id of the annotation set 
+            - cls: str. 
+                class of the detected object
+            - coordinates: list. Default None.
+                list of dictionaries containing coordinates of the annotations.
+            - object_id: int. Default None.
+                id of the object in the given image. If not feed any value considered as Image classification task. 
+        """
+            
+        image_id = self.images_dict.get(image_name)
+        return self.sdk._add_annotation(self.id, annotation_set_id, image_id, cls, coordinates=None, object_id=None)
+      
+        
+    def add_annotations_by_csv(self, path_to_annotation_file, annotation_set_id):
+        # TODO: add object detection case
+        coordinates = None
+        object_id = None
+        
+        self.initialize_images_dict()
+        with open(path_to_annotation_file) as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            next(csv_reader, None)
+            for row in csv_reader:
+                img_name = row[0]
+                cls = row[1]
+                self._add_annotation(img_name, annotation_set_id, cls, coordinates, object_id)
+            
     def _get_annotation_set(self, id):
         for annotation_set in self.annotation_sets:
             if annotation_set.id == id:
@@ -230,7 +273,12 @@ class Dataset:
             r = self.sdk.get_image(result[i]['preview'])
             img_list.append({'classes': result[i]['annotations']['classes'], 'task': task, 'img': BytesIO(r.content)})
         return img_list
-
+    
+    # TODO: update Image class to access all image ids by name
+    def initialize_images_dict(self):
+        for item in self.images:
+            self.images_dict[item.name] = item.id
+    
     def search(self, class_list, task):
         """
         Given list of desired classes and an annotation task, returns a subset of the dataset by limiting images and their annotations to that classes and the annotation task.
