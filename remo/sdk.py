@@ -198,8 +198,8 @@ class SDK:
             return
 
         classes_with_ids = []
-        for i, name in enumerate(classes):
-            classes_with_ids.append({"id": i, "name": name})
+        for i, class_name in enumerate(classes):
+            classes_with_ids.append({"id": i, "name": class_name})
 
         return self.api.create_annotation_set(task_id, dataset_id, name, classes_with_ids)
 

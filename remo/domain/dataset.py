@@ -95,8 +95,15 @@ class Dataset:
 
         print('ERROR: annotation set not defined')
         
-    def create_annotation_set(self, annotation_task, name, classes):
-        return self.sdk._create_annotation_set(annotation_task, self.id, name, classes)
+    def create_annotation_set(self, annotation_task, name, classes, path_to_annotation_file=None):
+        self.sdk._create_annotation_set(annotation_task, self.id, name, classes)
+        self.fetch()
+        annotation_set_id = None
+        if path_to_annotation_file:
+            for annotation_set in self.annotation_sets:
+                if annotation_set.name == name:
+                    annotation_set_id = annotation_set.id 
+            self.add_annotations_by_csv(path_to_annotation_file, annotation_set_id)
     
     #def upload_annotations(self, path, task):
     #    return self.sdk.upload_annotations(self.id, path, task)
@@ -160,6 +167,8 @@ class Dataset:
                     # It's image classification
                     img_name = row[0]
                     self._add_annotation(img_name, annotation_set_id, cls)
+        # fetch the dataset 
+        self.fetch()
             
     def _get_annotation_set(self, id):
         for annotation_set in self.annotation_sets:
