@@ -96,6 +96,18 @@ class Dataset:
         print('ERROR: annotation set not defined')
         
     def create_annotation_set(self, annotation_task, name, classes, path_to_annotation_file=None):
+        """
+        Creates a new empty annotation set and pushes the annotations if path_to_annotation_file is provided.
+        Args:
+            - annotation_task: str.
+                annotation task chosen from ['Image classification', 'Object detection', 'Instance segmentation'] 
+            - name: str.
+                Name of the annotation set to create.
+            - classes: list.
+                example: ['Cat', 'Dog']
+            - path_to_annotation_file: str.
+                path to .csv file of the annotations
+        """
         self.sdk._create_annotation_set(annotation_task, self.id, name, classes)
         self.fetch()
         annotation_set_id = None

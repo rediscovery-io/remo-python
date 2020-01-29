@@ -117,7 +117,7 @@ class API(BaseAPI):
     
     def create_annotation_set(self, task_id, dataset_id, name, classes_with_ids):
         """
-        Adds annotations to the specified annotation set
+        Creates a new empty annotation set
         Args:
             - task_id: int.
                 the id of the annotation task
