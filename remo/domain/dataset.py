@@ -122,22 +122,44 @@ class Dataset:
         return self.sdk._add_annotation(self.id, annotation_set_id, image_id, cls, coordinates=None, object_id=None)
       
         
-    def add_annotations_by_csv(self, path_to_annotation_file, annotation_set_id):        
+    def add_annotations_by_csv(self, path_to_annotation_file, annotation_set_id): 
+        """
+        Gets annotations in a csv format and adds annotations line by line.  
+        Args:
+           
+            - path_to_annotation_file: str. 
+                path to the .csv file of the annotations. 
+                annotations are in the format given below:
+                    Object detection: file_name, class, xmin, ymin, xmax, ymax
+                    Image classification: file_name, class
+            - annotation_set_id: int.
+           
+        """
         self._initialize_images_dict()
         
         with open(path_to_annotation_file) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
-            next(csv_reader, None)
+            headers = next(csv_reader, None)
+            # Initialize object counter 
+            object_id = 0
+            # We initialize img_name with null and then assign file_name in each row
+            # Each iteration, we compare if we pass a new image in order to reset object counters
             img_name = ''
             for row in csv_reader:
-                # we are at a new image and we can reset object counter
-                if row[0] != img_name:
-                    object_id = 0 if 5 < len(row) else None
-                img_name = row[0]
                 cls = row[1]
-                coordinates = row[2:] if 5 < len(row) else None
-                self._add_annotation(img_name, annotation_set_id, cls, coordinates, object_id)
-                object_id = object_id + 1 if 5 < len(row) else None
+                if len(headers) > 5:
+                    # It's object detection
+                    if row[0] != img_name:
+                        # Reset the object counter at a new image
+                        object_id = 0
+                    img_name = row[0]
+                    coordinates = row[2:] 
+                    self._add_annotation(img_name, annotation_set_id, cls, coordinates, object_id)
+                    object_id += 1
+                else:
+                    # It's image classification
+                    img_name = row[0]
+                    self._add_annotation(img_name, annotation_set_id, cls)
             
     def _get_annotation_set(self, id):
         for annotation_set in self.annotation_sets:
