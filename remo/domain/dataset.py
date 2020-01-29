@@ -35,7 +35,7 @@ class Dataset:
     def __repr__(self):
         return self.__str__()
 
-    def add_data(self, local_files=[], paths_to_upload=[], urls=[], annotation_task=None, folder_id=None, annotation_set_id=None):
+    def add_data(self, local_files=[], paths_to_upload=[], urls=[], annotation_task=None, folder_id=None, annotation_set_id=None, class_encoding=None):
         """
             
         Adds data to the dataset
@@ -56,7 +56,7 @@ class Dataset:
                object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
                instance_segmentation = 'Instance segmentation'. Supports Coco
                image_classification = 'Image classification'. ImageNet
-            - folder_id: if there is a folder in the targer remo id, and you want to add images to a specific folder, you can specify it here.
+            - folder_id: if there is a folder in the target remo id, and you want to add images to a specific folder, you can specify it here.
         """
 
         return self.sdk.add_data_to_dataset(dataset_id=self.id,
@@ -65,7 +65,8 @@ class Dataset:
                                             urls=urls,
                                             annotation_task=annotation_task,
                                             folder_id=folder_id,
-                                            annotation_set_id=annotation_set_id)
+                                            annotation_set_id=annotation_set_id,
+                                            class_encoding=class_encoding)
 
     def fetch(self):
         dataset = self.sdk.get_dataset(self.id)

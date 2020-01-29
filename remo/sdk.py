@@ -12,7 +12,7 @@ class SDK:
         self.browse = browse
 
     # MC: there is a problem in fetching annotation sets
-    def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None):
+    def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None, class_encoding=None):
         """ 
         Creates a new dataset in Remo and optionally populate it with images and annotation from local drive or URL
 
@@ -43,14 +43,14 @@ class SDK:
         result = self.api.create_dataset(name)
         my_dataset = Dataset(self, **result)
         print(result)
-        my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task)
+        my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task, class_encoding=class_encoding)
         my_dataset.initialise_images()
         my_dataset.initialize_annotation_set()
         my_dataset.initialise_annotations()
         return my_dataset
 
     def add_data_to_dataset(self, dataset_id, local_files=[],
-                            paths_to_upload=[], urls=[], annotation_task=None, folder_id=None, annotation_set_id=None):
+                            paths_to_upload=[], urls=[], annotation_task=None, folder_id=None, annotation_set_id=None, class_encoding=None):
         """
         Adds data to existing dataset
 
@@ -85,7 +85,7 @@ class SDK:
                     'Function parameter "paths_to_add" should be a list of file or directory paths, but instead is a ' + str(
                         type(local_files)))
 
-            files_upload_result = self.api.upload_local_files(dataset_id, local_files, annotation_task, folder_id, annotation_set_id)
+            files_upload_result = self.api.upload_local_files(dataset_id, local_files, annotation_task, folder_id, annotation_set_id, class_encoding)
             result['files_link_result'] = files_upload_result
 
         if len(paths_to_upload):
@@ -98,7 +98,8 @@ class SDK:
                                                              files_to_upload=paths_to_upload,
                                                              annotation_task=annotation_task,
                                                              folder_id=folder_id,
-                                                             annotation_set_id=annotation_set_id)
+                                                             annotation_set_id=annotation_set_id,
+                                                             class_encoding=class_encoding)
 
             result['files_upload_result'] = files_upload_result
 
@@ -111,7 +112,8 @@ class SDK:
                                                       urls=urls,
                                                       annotation_task=annotation_task,
                                                       folder_id=folder_id,
-                                                      annotation_set_id=annotation_set_id)
+                                                      annotation_set_id=annotation_set_id,
+                                                      class_encoding=class_encoding)
 
             print(urls_upload_result)
             result['urls_upload_result'] = urls_upload_result
