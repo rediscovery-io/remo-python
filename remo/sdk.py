@@ -9,7 +9,7 @@ from .exporter import get_json_to_csv_exporter
 class SDK:
     def __init__(self, server, email, password, browse=browse):
         self.api = API(server, email, password)
-        self.browse=browse
+        self.browse = browse
 
     # MC: there is a problem in fetching annotation sets
     def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None):
@@ -50,7 +50,7 @@ class SDK:
         return my_dataset
 
     def add_data_to_dataset(self, dataset_id, local_files=[],
-                            paths_to_upload=[], urls=[], annotation_task=None, folder_id=None):
+                            paths_to_upload=[], urls=[], annotation_task=None, folder_id=None, annotation_set_id=None):
         """
         Adds data to existing dataset
 
@@ -85,7 +85,7 @@ class SDK:
                     'Function parameter "paths_to_add" should be a list of file or directory paths, but instead is a ' + str(
                         type(local_files)))
 
-            files_upload_result = self.api.upload_local_files(dataset_id, local_files, annotation_task, folder_id)
+            files_upload_result = self.api.upload_local_files(dataset_id, local_files, annotation_task, folder_id, annotation_set_id)
             result['files_link_result'] = files_upload_result
 
         if len(paths_to_upload):
@@ -97,7 +97,8 @@ class SDK:
             files_upload_result = self.api.bulk_upload_files(dataset_id=dataset_id,
                                                              files_to_upload=paths_to_upload,
                                                              annotation_task=annotation_task,
-                                                             folder_id=folder_id)
+                                                             folder_id=folder_id,
+                                                             annotation_set_id=annotation_set_id)
 
             result['files_upload_result'] = files_upload_result
 
@@ -109,7 +110,8 @@ class SDK:
             urls_upload_result = self.api.upload_urls(dataset_id=dataset_id,
                                                       urls=urls,
                                                       annotation_task=annotation_task,
-                                                      folder_id=folder_id)
+                                                      folder_id=folder_id,
+                                                      annotation_set_id=annotation_set_id)
 
             print(urls_upload_result)
             result['urls_upload_result'] = urls_upload_result
@@ -141,29 +143,29 @@ class SDK:
         return dataset
 
     def list_annotation_sets(self, dataset_id):
-    #TODO test whether to hide the function
+        # TODO test whether to hide the function
         result = self.api.list_annotation_sets(dataset_id)
         return [
             AnnotationSet(self,
-                          id=annotation_set['id'],
-                          name=annotation_set['name'],
-                          updated_at=annotation_set['updated_at'],
-                          task=annotation_set['task']['name'],
-                          top3_classes=annotation_set['statistics']['top3_classes'],
-                          total_images=annotation_set['statistics']['annotated_images_count'],
-                          total_classes=annotation_set['statistics']['total_classes'],
-                          total_annotation_objects=annotation_set['statistics']['total_annotation_objects'])
+                            id=annotation_set['id'],
+                            name=annotation_set['name'],
+                            updated_at=annotation_set['updated_at'],
+                            task=annotation_set['task']['name'],
+                            top3_classes=annotation_set['statistics']['top3_classes'],
+                            total_images=annotation_set['statistics']['annotated_images_count'],
+                            total_classes=annotation_set['statistics']['total_classes'],
+                            total_annotation_objects=annotation_set['statistics']['total_annotation_objects'])
             for annotation_set in result.get('results', [])
         ]
 
     def get_annotation_set(self, id):
         annotation_set = self.api.get_annotation_set(id)
         return AnnotationSet(self,
-                      id=annotation_set['id'],
-                      name=annotation_set['name'],
-                      updated_at=annotation_set['updated_at'],
-                      task=annotation_set['task']['name'],
-                      total_classes=len(annotation_set['classes']))
+                              id=annotation_set['id'],
+                              name=annotation_set['name'],
+                              updated_at=annotation_set['updated_at'],
+                              task=annotation_set['task']['name'],
+                              total_classes=len(annotation_set['classes']))
 
 
     def get_annotations(self, annotation_set_id, annotation_format='json'):

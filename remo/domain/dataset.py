@@ -37,7 +37,7 @@ class Dataset:
     def __repr__(self):
         return self.__str__()
 
-    def add_data(self, local_files=[], paths_to_upload=[], urls=[], annotation_task=None, folder_id=None):
+    def add_data(self, local_files=[], paths_to_upload=[], urls=[], annotation_task=None, folder_id=None, annotation_set_id=None):
         """
             
         Adds data to the dataset
@@ -66,7 +66,8 @@ class Dataset:
                                             paths_to_upload=paths_to_upload,
                                             urls=urls,
                                             annotation_task=annotation_task,
-                                            folder_id=folder_id)
+                                            folder_id=folder_id,
+                                            annotation_set_id=annotation_set_id)
 
     def fetch(self):
         dataset = self.sdk.get_dataset(self.id)
@@ -101,7 +102,7 @@ class Dataset:
     #def upload_annotations(self, path, task):
     #    return self.sdk.upload_annotations(self.id, path, task)
     
-    def add_annotation(self, image_name, annotation_set_id, cls, coordinates=None, object_id=None): 
+    def _add_annotation(self, image_name, annotation_set_id, cls, coordinates=None, object_id=None): 
         """
         Adds annotations to the specified annotation set
         Args:
@@ -122,19 +123,19 @@ class Dataset:
         return self.sdk._add_annotation(self.id, annotation_set_id, image_id, cls, coordinates=None, object_id=None)
       
         
-    def add_annotations_by_csv(self, path, annotation_set_id):
+    def add_annotations_by_csv(self, path_to_annotation_file, annotation_set_id):
         # TODO: add object detection case
         coordinates = None
         object_id = None
         
         self.initialize_images_dict()
-        with open(path) as csv_file:
+        with open(path_to_annotation_file) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             next(csv_reader, None)
             for row in csv_reader:
                 img_name = row[0]
                 cls = row[1]
-                self.add_annotation(img_name, annotation_set_id, cls, coordinates, object_id)
+                self._add_annotation(img_name, annotation_set_id, cls, coordinates, object_id)
             
     def _get_annotation_set(self, id):
         for annotation_set in self.annotation_sets:
