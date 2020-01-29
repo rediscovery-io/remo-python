@@ -43,20 +43,6 @@ def search_images():
 
 
 if __name__ == '__main__':
-    class_encoding = {
-        'type': 'custom',
-        'raw_content': [
-            'id,name',
-            'DR3,person',
-            'SP2,rock'
-        ]
-        # 'local_path': '/Users/vovka/Downloads/pascal2/class_encoding.csv',
-        # 'classes': {
-        #     'DR3': 'person',
-        #     'SP2': 'rock'
-        # }
-    }
+    d = remo.get_dataset(1)
+    show_dataset(d)
 
-    dataset = remo.create_dataset('DEV-1063-up', paths_to_upload=['/Users/vovka/Downloads/pascal2'],
-                                  annotation_task=remo.task.object_detection, class_encoding=class_encoding)
-    print(dataset)

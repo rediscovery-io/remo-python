@@ -133,10 +133,9 @@ class API(BaseAPI):
         if annotation_task:
             data['annotation_task'] = annotation_task
 
-        if class_encoding:
-            data['class_encoding'] = class_encoding
-
-        print('data to upload:', data)
+        if isinstance(class_encoding, dict):
+            for key, val in class_encoding.items():
+                data['class_encoding_{}'.format(key)] = val
 
         url = self.url(backend.dataset_upload.format(dataset_id), folder_id=folder_id, annotation_set_id=annotation_set_id)
         r = self.post(url, files=files, data=data)
@@ -193,7 +192,7 @@ class API(BaseAPI):
             payload['annotation_task'] = annotation_task
         if folder_id:
             payload['folder_id'] = folder_id
-        if class_encoding:
+        if isinstance(class_encoding, dict):
             payload['class_encoding'] = class_encoding
 
         url = self.url(backend.dataset_upload.format(dataset_id), annotation_set_id=annotation_set_id)
@@ -205,7 +204,7 @@ class API(BaseAPI):
             payload['annotation_task'] = annotation_task
         if folder_id:
             payload['folder_id'] = folder_id
-        if class_encoding:
+        if isinstance(class_encoding, dict):
             payload['class_encoding'] = class_encoding
 
         url = self.url(backend.dataset_upload.format(dataset_id), annotation_set_id=annotation_set_id)
