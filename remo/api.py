@@ -114,7 +114,57 @@ class API(BaseAPI):
 
     def create_dataset(self, name):
         return self.post(self.url(backend.dataset), json={"name": name}).json()
+    
+    def create_annotation_set(self, task_id, dataset_id, name, classes_with_ids):
+        """
+        Adds annotations to the specified annotation set
+        Args:
+            - task_id: int.
+                the id of the annotation task
+            - dataset_id: int.
+                the id of the dataset to create new annotation set
+            - name: str.
+                Name of the annotation set to create.
+            - classes_with_ids: list of dicts.
+                contains dictionary of classes with their ids.
+                Example: [{'id': 1, 'name': 'Cat'}, {'id': 2, 'name': 'Dog'}]
+        """
+        payload = {"task":task_id,"classes":classes_with_ids,"dataset":dataset_id,"name":name,"type":"image"}
+        return self.post(self.url(backend.create_annotation), json=payload).json()
 
+    def add_annotation(self, dataset_id,  annotation_set_id, image_id, cls, coordinates=None, object_id=None):
+        # TODO: get dataset_id from annotation_set_id
+        """
+        Adds annotations to the specified annotation set
+        Args:
+           
+            - image_id: int.
+            - annotation_set_id: int.
+            - cls: str. 
+                class of the detected object
+            - coordinates: list.
+                list of dictionaries containing annotation coordinates.
+            - object_id: int. Default None.
+                id of the object in the given image. If not feed any value considered as Image classification task. 
+        """
+        
+        url = self.url(backend.add_annotation).format(dataset_id, annotation_set_id, image_id)
+        
+        if object_id:
+            # It's object detection
+            payload = {"objects":[{"name":"OBJ " + str(object_id),
+                                   "coordinates":coordinates,
+                                   "auto_created":False,
+                                   "position_number":1,
+                                   "classes":[{"name":cls,"lower":cls.lower(),"questionable":False}],
+                                   "objectId":object_id,
+                                   "isHidden":False}]}
+        else:
+            # It's classification 
+            payload = {"classes":[{"name":cls,"lower":cls.lower(),"questionable":False}]}
+        return self.post(url, json=payload).json()
+
+    
     def upload_file(self, dataset_id, path, annotation_task=None, folder_id=None):
         name = os.path.basename(path)
         files = {'files': (name, open(path, 'rb'), filetype.guess_mime(path))}
