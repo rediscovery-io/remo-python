@@ -196,9 +196,9 @@ class SDK:
         """
         result = self.api.get_dataset(dataset_id)
         dataset = Dataset(self, **result)
-        dataset.initialize_annotation_set()
-        dataset.initialise_annotations()
-        dataset.initialise_images()
+        dataset._initialize_annotation_set()
+        dataset._initialise_annotations()
+        dataset._initialise_images()
         return dataset
 
     def list_annotation_sets(self, dataset_id):
@@ -256,8 +256,8 @@ class SDK:
             return
 
         classes_with_ids = []
-        for i, name in enumerate(classes):
-            classes_with_ids.append({"id": i, "name": name})
+        for i, class_name in enumerate(classes):
+            classes_with_ids.append({"id": i, "name": class_name})
 
         return self.api.create_annotation_set(task_id, dataset_id, name, classes_with_ids)
 

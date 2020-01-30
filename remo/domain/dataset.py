@@ -12,7 +12,6 @@ class Dataset:
         self.annotation_sets = []
         self.default_annotation_set = None
         self.annotations = []
-        # TODO: move to the Image Class
         self.images_dict = {}
         #self.original = True
 
@@ -25,7 +24,7 @@ class Dataset:
     
     def __getitem__(self, sliced):
         # TODO: add exception for the original dataset specific methods.
-        self.initialise_annotations()
+        self._initialise_annotations()
         new_self = deepcopy(self)
         new_self.images = self.images[sliced]
        
@@ -97,8 +96,27 @@ class Dataset:
 
         print('ERROR: annotation set not defined')
         
-    def create_annotation_set(self, annotation_task, name, classes):
-        return self.sdk._create_annotation_set(annotation_task, self.id, name, classes)
+    def create_annotation_set(self, annotation_task, name, classes, path_to_annotation_file=None):
+        """
+        Creates a new empty annotation set and pushes the annotations if path_to_annotation_file is provided.
+        Args:
+            - annotation_task: str.
+                annotation task chosen from ['Image classification', 'Object detection', 'Instance segmentation'] 
+            - name: str.
+                Name of the annotation set to create.
+            - classes: list.
+                example: ['Cat', 'Dog']
+            - path_to_annotation_file: str.
+                path to .csv file of the annotations
+        """
+        self.sdk._create_annotation_set(annotation_task, self.id, name, classes)
+        self.fetch()
+        annotation_set_id = None
+        if path_to_annotation_file:
+            for annotation_set in self.annotation_sets:
+                if annotation_set.name == name:
+                    annotation_set_id = annotation_set.id 
+            self.add_annotations_by_csv(path_to_annotation_file, annotation_set_id)
     
     #def upload_annotations(self, path, task):
     #    return self.sdk.upload_annotations(self.id, path, task)
@@ -124,19 +142,46 @@ class Dataset:
         return self.sdk._add_annotation(self.id, annotation_set_id, image_id, cls, coordinates=None, object_id=None)
       
         
-    def add_annotations_by_csv(self, path_to_annotation_file, annotation_set_id):
-        # TODO: add object detection case
-        coordinates = None
-        object_id = None
+    def add_annotations_by_csv(self, path_to_annotation_file, annotation_set_id): 
+        """
+        Gets annotations in a csv format and adds annotations line by line.  
+        Args:
+           
+            - path_to_annotation_file: str. 
+                path to the .csv file of the annotations. 
+                annotations are in the format given below:
+                    Object detection: file_name, class, xmin, ymin, xmax, ymax
+                    Image classification: file_name, class
+            - annotation_set_id: int.
+           
+        """
+        self._initialize_images_dict()
         
-        self.initialize_images_dict()
         with open(path_to_annotation_file) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
-            next(csv_reader, None)
+            headers = next(csv_reader, None)
+            # Initialize object counter 
+            object_id = 0
+            # We initialize img_name with null and then assign file_name in each row
+            # Each iteration, we compare if we pass a new image in order to reset object counters
+            img_name = ''
             for row in csv_reader:
-                img_name = row[0]
                 cls = row[1]
-                self._add_annotation(img_name, annotation_set_id, cls, coordinates, object_id)
+                if len(headers) > 5:
+                    # It's object detection
+                    if row[0] != img_name:
+                        # Reset the object counter at a new image
+                        object_id = 0
+                    img_name = row[0]
+                    coordinates = row[2:] 
+                    self._add_annotation(img_name, annotation_set_id, cls, coordinates, object_id)
+                    object_id += 1
+                else:
+                    # It's image classification
+                    img_name = row[0]
+                    self._add_annotation(img_name, annotation_set_id, cls)
+        # fetch the dataset 
+        self.fetch()
             
     def _get_annotation_set(self, id):
         for annotation_set in self.annotation_sets:
@@ -201,7 +246,7 @@ class Dataset:
     def set_default_annotations(self, annotation_set_id):
         self.default_annotation_set = self._get_annotation_set(annotation_set_id)
 
-    def initialise_images(self):
+    def _initialise_images(self):
         num_images = len(self.annotations)
         images = self.list_images(limit=num_images)
         # images = self.list_images()
@@ -210,7 +255,7 @@ class Dataset:
             for img in images
         ]
   
-    def initialize_annotation_set(self):
+    def _initialize_annotation_set(self):
         """
         Initializes the default annotation set to the first annotation set of the dataset.
         """
@@ -218,8 +263,7 @@ class Dataset:
         if self.annotation_sets:
             self.default_annotation_set = self.annotation_sets[0]
 
-    def initialise_annotations(self, annotation_set_id=None):
-    #TODO test whether to hide this function
+    def _initialise_annotations(self, annotation_set_id=None):
         """
         Initializes annotations of the dataset. If annotation set is not specified, assigns annotations of the default annotation set.
         Args:
@@ -275,8 +319,7 @@ class Dataset:
             img_list.append({'classes': result[i]['annotations']['classes'], 'task': task, 'img': BytesIO(r.content)})
         return img_list
     
-    # TODO: update Image class to access all image ids by name
-    def initialize_images_dict(self):
+    def _initialize_images_dict(self):
         for item in self.images:
             self.images_dict[item.name] = item.id
     
