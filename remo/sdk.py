@@ -1,4 +1,6 @@
 import csv
+import os
+
 from .domain import Dataset, AnnotationSet
 from .api import API
 from .browser import browse
@@ -12,7 +14,7 @@ class SDK:
         self.browse = browse
 
     # MC: there is a problem in fetching annotation sets
-    def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None):
+    def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None, class_encoding=None):
         """ 
         Creates a new dataset in Remo and optionally populate it with images and annotation from local drive or URL
 
@@ -43,14 +45,14 @@ class SDK:
         result = self.api.create_dataset(name)
         my_dataset = Dataset(self, **result)
         print(result)
-        my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task)
+        my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task, class_encoding=class_encoding)
         my_dataset.initialise_images()
         my_dataset.initialize_annotation_set()
         my_dataset.initialise_annotations()
         return my_dataset
 
     def add_data_to_dataset(self, dataset_id, local_files=[],
-                            paths_to_upload=[], urls=[], annotation_task=None, folder_id=None, annotation_set_id=None):
+                            paths_to_upload=[], urls=[], annotation_task=None, folder_id=None, annotation_set_id=None, class_encoding=None):
         """
         Adds data to existing dataset
 
@@ -77,7 +79,23 @@ class SDK:
                instance_segmentation = 'Instance segmentation'. Supports Coco
                image_classification = 'Image classification'. ImageNet
             - folder_id: if there is a folder in the targer remo id, and you want to add images to a specific folder, you can specify it here.
+            - annotation_set_id: allows to specify in which particular annotation set to add annotations
+
+            - class_encoding: Allows to specify how to convert class_labels from annotation files to classes
+                class_encoding can be one of predefined value: 'ImageNet', 'OpenImages'
+                class_encoding can be local path to csv file with labels and classes, like: '/Users/admin/Downloads/class_encoding.csv'
+                class_encoding can be raw content of csv file, like: '''id,name
+                                                                    DR3,person
+                                                                    SP2,rock'''
+                class_encoding can be dictionary with labels and classes, like: {'DR3': 'person',
+                                                                                'SP2': 'rock'}
+
+
         """
+
+        class_encoding_for_upload = self._prepare_class_encoding_for_upload(class_encoding)
+        class_encoding_for_linking = self._prepare_class_encoding_for_linking(class_encoding)
+
         result = {}
         if len(local_files):
             if type(local_files) is not list:
@@ -85,8 +103,7 @@ class SDK:
                     'Function parameter "paths_to_add" should be a list of file or directory paths, but instead is a ' + str(
                         type(local_files)))
 
-            files_upload_result = self.api.upload_local_files(dataset_id, local_files, annotation_task, folder_id,
-                                                              annotation_set_id)
+            files_upload_result = self.api.upload_local_files(dataset_id, local_files, annotation_task, folder_id, annotation_set_id, class_encoding_for_linking)
             result['files_link_result'] = files_upload_result
 
         if len(paths_to_upload):
@@ -99,7 +116,8 @@ class SDK:
                                                              files_to_upload=paths_to_upload,
                                                              annotation_task=annotation_task,
                                                              folder_id=folder_id,
-                                                             annotation_set_id=annotation_set_id)
+                                                             annotation_set_id=annotation_set_id,
+                                                             class_encoding=class_encoding_for_upload)
 
             result['files_upload_result'] = files_upload_result
 
@@ -112,11 +130,51 @@ class SDK:
                                                       urls=urls,
                                                       annotation_task=annotation_task,
                                                       folder_id=folder_id,
-                                                      annotation_set_id=annotation_set_id)
+                                                      annotation_set_id=annotation_set_id,
+                                                      class_encoding=class_encoding_for_linking)
 
             print(urls_upload_result)
             result['urls_upload_result'] = urls_upload_result
         return result
+
+    def _prepare_class_encoding_for_upload(self, class_encoding):
+        class_encoding = self._prepare_class_encoding_for_linking(class_encoding)
+        if isinstance(class_encoding, dict):
+            if 'local_path' in class_encoding:
+                local_path = class_encoding.pop('local_path')
+                class_encoding['raw_content'] = ''.join(open(local_path).readlines())
+                return class_encoding
+
+            if 'classes' in class_encoding:
+                classes = class_encoding.pop('classes')
+                lines = map(lambda v: '{},{}'.format(v[0], v[1]), classes.items())
+                class_encoding['raw_content'] = '\n'.join(lines)
+                return class_encoding
+
+        return class_encoding
+
+
+    def _prepare_class_encoding_for_linking(self, class_encoding):
+        custom_class_encoding = {'type': 'custom'}
+        predefined_class_encodings = ['ImageNet', 'OpenImages']
+        if isinstance(class_encoding, dict):
+            custom_class_encoding['classes'] = class_encoding
+            return custom_class_encoding
+
+        if isinstance(class_encoding, str):
+            if os.path.exists(class_encoding):
+                custom_class_encoding['local_path'] = class_encoding
+                return custom_class_encoding
+
+            if class_encoding in predefined_class_encodings:
+                return {'type': class_encoding}
+
+            if '\n' in class_encoding:
+                custom_class_encoding['raw_content'] = class_encoding
+                return custom_class_encoding
+
+        return class_encoding
+
 
     def list_datasets(self):
         """
