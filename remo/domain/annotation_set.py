@@ -7,6 +7,7 @@ class AnnotationSet:
         self.id = kwargs.get('id')
         self.name = kwargs.get('name')
         self.task = kwargs.get('task')
+        self.dataset_id = kwargs.get('dataset_id')
         self.total_classes = kwargs.get('total_classes')
         self.updated_at = kwargs.get('updated_at')
         self.released_at = kwargs.get('released_at')

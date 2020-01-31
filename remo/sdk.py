@@ -14,7 +14,8 @@ class SDK:
         self.browse = browse
 
     # MC: there is a problem in fetching annotation sets
-    def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None, class_encoding=None):
+    def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None,
+                       class_encoding=None):
         """ 
         Creates a new dataset in Remo and optionally populate it with images and annotation from local drive or URL
 
@@ -46,13 +47,14 @@ class SDK:
         my_dataset = Dataset(self, **result)
         print(result)
         my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task, class_encoding=class_encoding)
-        my_dataset.initialise_images()
-        my_dataset.initialize_annotation_set()
-        my_dataset.initialise_annotations()
+        my_dataset._initialise_images()
+        my_dataset._initialize_annotation_set()
+        my_dataset._initialise_annotations()
         return my_dataset
 
     def add_data_to_dataset(self, dataset_id, local_files=[],
-                            paths_to_upload=[], urls=[], annotation_task=None, folder_id=None, annotation_set_id=None, class_encoding=None):
+                            paths_to_upload=[], urls=[], annotation_task=None, folder_id=None, annotation_set_id=None,
+                            class_encoding=None):
         """
         Adds data to existing dataset
 
@@ -103,7 +105,8 @@ class SDK:
                     'Function parameter "paths_to_add" should be a list of file or directory paths, but instead is a ' + str(
                         type(local_files)))
 
-            files_upload_result = self.api.upload_local_files(dataset_id, local_files, annotation_task, folder_id, annotation_set_id, class_encoding_for_linking)
+            files_upload_result = self.api.upload_local_files(dataset_id, local_files, annotation_task, folder_id,
+                                                              annotation_set_id, class_encoding_for_linking)
             result['files_link_result'] = files_upload_result
 
         if len(paths_to_upload):
@@ -153,7 +156,6 @@ class SDK:
 
         return class_encoding
 
-
     def _prepare_class_encoding_for_linking(self, class_encoding):
         custom_class_encoding = {'type': 'custom'}
         predefined_class_encodings = ['ImageNet', 'OpenImages']
@@ -174,7 +176,6 @@ class SDK:
                 return custom_class_encoding
 
         return class_encoding
-
 
     def list_datasets(self):
         """
@@ -210,6 +211,7 @@ class SDK:
                           name=annotation_set['name'],
                           updated_at=annotation_set['updated_at'],
                           task=annotation_set['task']['name'],
+                          dataset_id=dataset_id,
                           top3_classes=annotation_set['statistics']['top3_classes'],
                           total_images=annotation_set['statistics']['annotated_images_count'],
                           total_classes=annotation_set['statistics']['total_classes'],
@@ -224,6 +226,7 @@ class SDK:
                              name=annotation_set['name'],
                              updated_at=annotation_set['updated_at'],
                              task=annotation_set['task']['name'],
+                             dataset_id=annotation_set['dataset']['id'],
                              total_classes=len(annotation_set['classes']))
 
     def get_annotations(self, annotation_set_id, annotation_format='json'):
@@ -235,7 +238,7 @@ class SDK:
         result = self.api.get_annotations(annotation_set_id, annotation_format)
         return result
 
-    def _create_annotation_set(self, annotation_task, dataset_id, name, classes):
+    def create_annotation_set(self, annotation_task, dataset_id, name, classes):
         """
         Creates a new annotation set
         Args:
@@ -249,22 +252,22 @@ class SDK:
             - classes: list.
                 list of classes.
         """
-        task_ids = {'Object detection': 1, 'Instance segmentation': 2, 'Image classification': 3}
-        task_id = task_ids.get(annotation_task)
-        if not task_id:
-            print('Choose an annotation task from: ["Image classification", "Object detection", "Instance segmentation"]')
-            return
+        annotation_set = self.api.create_annotation_set(annotation_task, dataset_id, name, classes)
+        if 'error' in annotation_set:
+            print('ERROR:', annotation_set['error'])
+            return None
 
-        classes_with_ids = []
-        for i, class_name in enumerate(classes):
-            classes_with_ids.append({"id": i, "name": class_name})
-
-        return self.api.create_annotation_set(task_id, dataset_id, name, classes_with_ids)
+        return AnnotationSet(self,
+                             id=annotation_set['id'],
+                             name=annotation_set['name'],
+                             task=annotation_set['task'],
+                             dataset_id=annotation_set['dataset_id'],
+                             total_classes=len(annotation_set['classes']))
 
     # def upload_annotations(self, dataset_id, path, annotation_task):
     #    return self.api.upload_file(dataset_id, path, annotation_task)
 
-    def _add_annotation(self, dataset_id, annotation_set_id, image_id, cls, coordinates=None, object_id=None):
+    def add_annotation(self, dataset_id, annotation_set_id, image_id, cls, coordinates=None, object_id=None):
         return self.api.add_annotation(dataset_id, annotation_set_id, image_id, cls, coordinates, object_id)
 
     def _list_annotation_classes(self, annotation_set_id=None):

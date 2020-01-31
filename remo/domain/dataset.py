@@ -3,6 +3,7 @@ from .image import Image
 from copy import deepcopy
 import csv
 
+
 class Dataset:
     def __init__(self, sdk, **kwargs):
         self.sdk = sdk
@@ -13,30 +14,32 @@ class Dataset:
         self.default_annotation_set = None
         self.annotations = []
         self.images_dict = {}
-        #self.original = True
+        # self.original = True
 
     def __str__(self):
         return "Dataset {id} - '{name}'".format(id=self.id, name=self.name)
-    
+
     def __len__(self):
-        #return len(self.images)
+        # return len(self.images)
         return len(self.annotations)
-    
+
     def __getitem__(self, sliced):
         # TODO: add exception for the original dataset specific methods.
         self._initialise_annotations()
         new_self = deepcopy(self)
         new_self.images = self.images[sliced]
-       
+
         new_img_name_list = [im.name for im in new_self.images]
-        new_self.annotations = list(filter(lambda annotation: annotation.get('file_name') in new_img_name_list, self.annotations))
-       
+        new_self.annotations = list(
+            filter(lambda annotation: annotation.get('file_name') in new_img_name_list, self.annotations))
+
         return new_self
 
     def __repr__(self):
         return self.__str__()
 
-    def add_data(self, local_files=[], paths_to_upload=[], urls=[], annotation_task=None, folder_id=None, annotation_set_id=None, class_encoding=None):
+    def add_data(self, local_files=[], paths_to_upload=[], urls=[], annotation_task=None, folder_id=None,
+                 annotation_set_id=None, class_encoding=None):
         """
             
         Adds data to the dataset
@@ -72,7 +75,7 @@ class Dataset:
     def fetch(self):
         dataset = self.sdk.get_dataset(self.id)
         self.__dict__.update(dataset.__dict__)
-    
+
     def list_annotation_sets(self):
         """
         Lists of the annotation sets within the dataset
@@ -95,7 +98,7 @@ class Dataset:
             return annotation_set.get_annotations(annotation_format)
 
         print('ERROR: annotation set not defined')
-        
+
     def create_annotation_set(self, annotation_task, name, classes, path_to_annotation_file=None):
         """
         Creates a new empty annotation set and pushes the annotations if path_to_annotation_file is provided.
@@ -109,19 +112,16 @@ class Dataset:
             - path_to_annotation_file: str.
                 path to .csv file of the annotations
         """
-        self.sdk._create_annotation_set(annotation_task, self.id, name, classes)
-        self.fetch()
-        annotation_set_id = None
-        if path_to_annotation_file:
-            for annotation_set in self.annotation_sets:
-                if annotation_set.name == name:
-                    annotation_set_id = annotation_set.id 
-            self.add_annotations_by_csv(path_to_annotation_file, annotation_set_id)
-    
-    #def upload_annotations(self, path, task):
+        annotation_set = self.sdk.create_annotation_set(annotation_task, self.id, name, classes)
+        if annotation_set is not None and path_to_annotation_file is not None:
+            self.add_data(paths_to_upload=[path_to_annotation_file], annotation_task=annotation_task, annotation_set_id=annotation_set.id)
+            annotation_set = self.sdk.get_annotation_set(annotation_set.id)
+        return annotation_set
+
+    # def upload_annotations(self, path, task):
     #    return self.sdk.upload_annotations(self.id, path, task)
-    
-    def _add_annotation(self, image_name, annotation_set_id, cls, coordinates=None, object_id=None): 
+
+    def add_annotation(self, image_name, annotation_set_id, cls, coordinates=None, object_id=None):
         """
         Adds annotations to the specified annotation set
         Args:
@@ -137,12 +137,12 @@ class Dataset:
             - object_id: int. Default None.
                 id of the object in the given image. If not feed any value considered as Image classification task. 
         """
-            
+
         image_id = self.images_dict.get(image_name)
-        return self.sdk._add_annotation(self.id, annotation_set_id, image_id, cls, coordinates=None, object_id=None)
-      
-        
-    def add_annotations_by_csv(self, path_to_annotation_file, annotation_set_id): 
+        return self.sdk.add_annotation(self.id, annotation_set_id, image_id, cls, coordinates, object_id)
+
+    def add_annotations_by_csv(self, path_to_annotation_file, annotation_set_id):
+        # WARNING: this function doesn't work as expected
         """
         Gets annotations in a csv format and adds annotations line by line.  
         Args:
@@ -156,7 +156,7 @@ class Dataset:
            
         """
         self._initialize_images_dict()
-        
+
         with open(path_to_annotation_file) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             headers = next(csv_reader, None)
@@ -173,20 +173,25 @@ class Dataset:
                         # Reset the object counter at a new image
                         object_id = 0
                     img_name = row[0]
-                    coordinates = row[2:] 
-                    self._add_annotation(img_name, annotation_set_id, cls, coordinates, object_id)
+                    coordinates = row[2:]
+                    self.add_annotation(img_name, annotation_set_id, cls, coordinates, object_id)
                     object_id += 1
                 else:
                     # It's image classification
                     img_name = row[0]
-                    self._add_annotation(img_name, annotation_set_id, cls)
+                    self.add_annotation(img_name, annotation_set_id, cls)
         # fetch the dataset 
         self.fetch()
-            
-    def _get_annotation_set(self, id):
+
+    def get_annotation_set(self, id):
         for annotation_set in self.annotation_sets:
             if annotation_set.id == id:
                 return annotation_set
+
+        annotation_set = self.sdk.get_annotation_set(id)
+        if annotation_set.dataset_id == self.id:
+            self.annotation_sets.append(annotation_set)
+            return annotation_set
 
         print('ERROR: annotation set with id={} was not found'.format(id))
 
@@ -194,9 +199,9 @@ class Dataset:
         if not annotation_set_id:
             return self.default_annotation_set
 
-        return self._get_annotation_set(annotation_set_id)
+        return self.get_annotation_set(annotation_set_id)
 
-    def get_annotation_statistics(self, annotation_set_id = None):
+    def get_annotation_statistics(self, annotation_set_id=None):
         """
         #TODO ALR - Improve output formatting
         #TODO ALR - Optional annotation set id as input
@@ -206,9 +211,8 @@ class Dataset:
         """
         statistics = []
         for ann_set in self.annotation_sets:
-            
+
             if (annotation_set_id is None) or (annotation_set_id == ann_set.id):
-                
                 stat = {}
                 stat['AnnotationSet ID'] = ann_set.id
                 stat['AnnotationSet name'] = ann_set.name
@@ -217,8 +221,8 @@ class Dataset:
                 stat['n_objects'] = ann_set.total_annotation_objects
                 stat['top_3_classes'] = ann_set.top3_classes
                 stat['creation_date'] = ann_set.released_at
-                stat['last_modified_date']= ann_set.updated_at
-            
+                stat['last_modified_date'] = ann_set.updated_at
+
                 statistics.append(stat)
         return statistics
 
@@ -235,7 +239,7 @@ class Dataset:
             return annotation_set.get_classes()
 
         print('ERROR: annotation set not defined')
-        
+
     def export_annotation_to_csv(self, output_file, annotation_set_id=None):
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
         if annotation_set:
@@ -244,7 +248,7 @@ class Dataset:
         print('ERROR: annotation set not defined')
 
     def set_default_annotations(self, annotation_set_id):
-        self.default_annotation_set = self._get_annotation_set(annotation_set_id)
+        self.default_annotation_set = self.get_annotation_set(annotation_set_id)
 
     def _initialise_images(self):
         num_images = len(self.annotations)
@@ -254,7 +258,7 @@ class Dataset:
             Image(id=img.get('id'), path=img, dataset=self.name, name=img.get('name'))
             for img in images
         ]
-  
+
     def _initialize_annotation_set(self):
         """
         Initializes the default annotation set to the first annotation set of the dataset.
@@ -273,7 +277,7 @@ class Dataset:
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
         if annotation_set:
             self.annotations = self.get_annotations(annotation_set.id)
-    
+
     def list_images(self, folder_id=None, limit=None):
         """
         Given a dataset id returns list of the dataset images
@@ -290,7 +294,7 @@ class Dataset:
             return self.sdk.list_dataset_images(self.id, folder_id, limit=limit)
         else:
             return self.sdk.list_dataset_images(self.id, folder_id, limit=len(self.annotations))
-        
+
     def get_images_by_id(self, image_id):
         """
         Given an image id returns the image content
@@ -312,17 +316,17 @@ class Dataset:
         """
         # TODO: add tags 
         # TODO: turn into an image object
-        result = self.search_images(class_list, task)
+        result = self.search(class_list, task)
         img_list = []
         for i in range(len(result)):
             r = self.sdk.get_image(result[i]['preview'])
             img_list.append({'classes': result[i]['annotations']['classes'], 'task': task, 'img': BytesIO(r.content)})
         return img_list
-    
+
     def _initialize_images_dict(self):
         for item in self.images:
             self.images_dict[item.name] = item.id
-    
+
     def search(self, class_list, task):
         """
         Given list of desired classes and an annotation task, returns a subset of the dataset by limiting images and their annotations to that classes and the annotation task.
@@ -336,11 +340,12 @@ class Dataset:
         # TODO: add exception for the original dataset specific methods.
         result = self.sdk.search_images(class_list, task, self.id)
         filtered_dataset = deepcopy(self)
-       
+
         new_img_name_list = [im.get('name') for im in result]
-        filtered_dataset.images = list(filter(lambda im: im.name in new_img_name_list, self.images)) 
-        filtered_dataset.annotations = list(filter(lambda annotation: annotation.get('file_name') in new_img_name_list, self.annotations))
-        
+        filtered_dataset.images = list(filter(lambda im: im.name in new_img_name_list, self.images))
+        filtered_dataset.annotations = list(
+            filter(lambda annotation: annotation.get('file_name') in new_img_name_list, self.annotations))
+
         return filtered_dataset
 
     def view(self):

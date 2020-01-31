@@ -114,25 +114,33 @@ class API(BaseAPI):
 
     def create_dataset(self, name):
         return self.post(self.url(backend.dataset), json={"name": name}).json()
-    
-    def create_annotation_set(self, task_id, dataset_id, name, classes_with_ids):
+
+    def create_annotation_set(self, annotation_task, dataset_id, name, classes=[]):
         """
         Creates a new empty annotation set
         Args:
-            - task_id: int.
-                the id of the annotation task
+            - annotation_task: str.
+                name of the annotation task
             - dataset_id: int.
                 the id of the dataset to create new annotation set
             - name: str.
                 Name of the annotation set to create.
-            - classes_with_ids: list of dicts.
-                contains dictionary of classes with their ids.
-                Example: [{'id': 1, 'name': 'Cat'}, {'id': 2, 'name': 'Dog'}]
+            - classes: list of str.
+                list of classes.
+                Example: ['Cat', 'Dog']
         """
-        payload = {"task":task_id,"classes":classes_with_ids,"dataset":dataset_id,"name":name,"type":"image"}
-        return self.post(self.url(backend.create_annotation), json=payload).json()
 
-    def add_annotation(self, dataset_id,  annotation_set_id, image_id, cls, coordinates=None, object_id=None):
+        payload = {
+            "annotation_task": annotation_task,
+            "classes": classes,
+            "dataset_id": dataset_id,
+            "name": name
+        }
+
+        return self.post(self.url(backend.v1_create_annotation_set), json=payload).json()
+
+    def add_annotation(self, dataset_id, annotation_set_id, image_id, cls, coordinates=None, object_id=None):
+        # WARNING: this function replaces existing annotations
         # TODO: get dataset_id from annotation_set_id
         """
         Adds annotations to the specified annotation set
@@ -147,24 +155,24 @@ class API(BaseAPI):
             - object_id: int. Default None.
                 id of the object in the given image. If not feed any value considered as Image classification task. 
         """
-        
         url = self.url(backend.add_annotation).format(dataset_id, annotation_set_id, image_id)
-        
+
         if object_id:
             # It's object detection
-            payload = {"objects":[{"name":"OBJ " + str(object_id),
-                                   "coordinates":[{"x":float(coordinates[0]),"y":float(coordinates[1])}, {"x":float(coordinates[2]),"y":float(coordinates[3])}],
-                                   "auto_created":False,
-                                   "position_number":object_id,
-                                   "classes":[{"name":cls,"lower":cls.lower(),"questionable":False}],
-                                   "objectId":object_id,
-                                   "isHidden":False}]}
+            payload = {"objects": [{"name": "OBJ " + str(object_id),
+                                    "coordinates": [{"x": float(coordinates[0]), "y": float(coordinates[1])},
+                                                    {"x": float(coordinates[2]), "y": float(coordinates[3])}],
+                                    "auto_created": False,
+                                    "position_number": object_id,
+                                    "classes": [{"name": cls, "lower": cls.lower(), "questionable": False}],
+                                    "objectId": object_id,
+                                    "isHidden": False}]}
         else:
             # It's classification 
-            payload = {"classes":[{"name":cls,"lower":cls.lower(),"questionable":False}]}
+            payload = {"classes": [{"name": cls, "lower": cls.lower(), "questionable": False}]}
+
         return self.post(url, json=payload).json()
 
-    
     def upload_file(self, dataset_id, path, annotation_task=None, folder_id=None):
         name = os.path.basename(path)
         files = {'files': (name, open(path, 'rb'), filetype.guess_mime(path))}
@@ -176,7 +184,8 @@ class API(BaseAPI):
         return self.post(url, files=files, data=data).json()
 
     # TODO: fix progress to include both local files and uploads
-    def upload_files(self, dataset_id, files_to_upload=[], annotation_task=None, folder_id=None, status=None, annotation_set_id=None, class_encoding=None):
+    def upload_files(self, dataset_id, files_to_upload=[], annotation_task=None, folder_id=None, status=None,
+                     annotation_set_id=None, class_encoding=None):
         files = [('files', (os.path.basename(path), open(path, 'rb'), filetype.guess_mime(path))) for path in
                  files_to_upload]
         data = {}
@@ -187,7 +196,8 @@ class API(BaseAPI):
             for key, val in class_encoding.items():
                 data['class_encoding_{}'.format(key)] = val
 
-        url = self.url(backend.dataset_upload.format(dataset_id), folder_id=folder_id, annotation_set_id=annotation_set_id)
+        url = self.url(backend.dataset_upload.format(dataset_id), folder_id=folder_id,
+                       annotation_set_id=annotation_set_id)
         r = self.post(url, files=files, data=data)
 
         if r.status_code != http.HTTPStatus.OK:
@@ -198,15 +208,18 @@ class API(BaseAPI):
         return r.json()
 
     # TODO: fix progress to include both local files and uploads
-    def bulk_upload_files(self, dataset_id, files_to_upload, annotation_task=None, folder_id=None, annotation_set_id=None, class_encoding=None):
+    def bulk_upload_files(self, dataset_id, files_to_upload, annotation_task=None, folder_id=None,
+                          annotation_set_id=None, class_encoding=None):
 
         # files to upload
         files = FileResolver(files_to_upload, annotation_task is not None).resolve()
         groups = self.split_files_by_size(files)
         status = UploadStatus(len(files))
         with ThreadPoolExecutor(1) as ex:
-            res = ex.map(lambda bulk: self.upload_files(dataset_id, bulk, annotation_task, folder_id, status, annotation_set_id, class_encoding),
-                         groups)
+            res = ex.map(
+                lambda bulk: self.upload_files(dataset_id, bulk, annotation_task, folder_id, status, annotation_set_id,
+                                               class_encoding),
+                groups)
 
         results = res
         return results
@@ -236,7 +249,8 @@ class API(BaseAPI):
             groups.append(bulk)
         return groups
 
-    def upload_local_files(self, dataset_id, local_files, annotation_task=None, folder_id=None, annotation_set_id=None, class_encoding=None):
+    def upload_local_files(self, dataset_id, local_files, annotation_task=None, folder_id=None, annotation_set_id=None,
+                           class_encoding=None):
         payload = {"local_files": local_files}
         if annotation_task:
             payload['annotation_task'] = annotation_task
@@ -248,7 +262,8 @@ class API(BaseAPI):
         url = self.url(backend.dataset_upload.format(dataset_id), annotation_set_id=annotation_set_id)
         return self.post(url, json=payload).json()
 
-    def upload_urls(self, dataset_id, urls, annotation_task=None, folder_id=None, annotation_set_id=None, class_encoding=None):
+    def upload_urls(self, dataset_id, urls, annotation_task=None, folder_id=None, annotation_set_id=None,
+                    class_encoding=None):
         payload = {"urls": urls}
         if annotation_task:
             payload['annotation_task'] = annotation_task
@@ -273,7 +288,7 @@ class API(BaseAPI):
     def list_dataset_contents_by_folder(self, dataset_id, folder_id, **kwargs):
         url = self.url(backend.dataset_folder_content.format(dataset_id, folder_id), **kwargs)
         return self.get(url).json()
-    
+
     def get_dataset(self, id):
         url = self.url(backend.dataset, id, tail_slash=True)
         r = self.get(url)
@@ -295,7 +310,7 @@ class API(BaseAPI):
         """
         url = self.url(backend.v1_export_annotations.format(annotation_set_id, annotation_format))
         return self.get(url).json()
-    
+
     def list_annotation_classes(self, annotation_set_id=None):
         """
         Args:
