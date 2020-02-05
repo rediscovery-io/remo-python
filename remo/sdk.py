@@ -1,7 +1,7 @@
 import csv
 import os
 
-from .domain import Dataset, AnnotationSet
+from .domain import Dataset, AnnotationSet, class_encodings
 from .api import API
 from .browser import browse
 from .endpoints import frontend
@@ -157,8 +157,8 @@ class SDK:
         return class_encoding
 
     def _prepare_class_encoding_for_linking(self, class_encoding):
-        custom_class_encoding = {'type': 'custom'}
-        predefined_class_encodings = ['ImageNet', 'OpenImages']
+        custom_class_encoding = {'type': class_encodings.custom}
+
         if isinstance(class_encoding, dict):
             custom_class_encoding['classes'] = class_encoding
             return custom_class_encoding
@@ -168,7 +168,7 @@ class SDK:
                 custom_class_encoding['local_path'] = class_encoding
                 return custom_class_encoding
 
-            if class_encoding in predefined_class_encodings:
+            if class_encoding in class_encodings.predefined:
                 return {'type': class_encoding}
 
             if '\n' in class_encoding:
