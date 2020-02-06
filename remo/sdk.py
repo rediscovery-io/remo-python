@@ -84,7 +84,7 @@ class SDK:
             - annotation_set_id: allows to specify in which particular annotation set to add annotations
 
             - class_encoding: Allows to specify how to convert class_labels from annotation files to classes
-                class_encoding can be one of predefined value: 'ImageNet', 'OpenImages'
+                class_encoding can be one of predefined value: 'WordNet', 'GoogleKnowledgeGraph'
                 class_encoding can be local path to csv file with labels and classes, like: '/Users/admin/Downloads/class_encoding.csv'
                 class_encoding can be raw content of csv file, like: '''id,name
                                                                     DR3,person
