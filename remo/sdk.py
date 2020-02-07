@@ -229,13 +229,17 @@ class SDK:
                              dataset_id=annotation_set['dataset']['id'],
                              total_classes=len(annotation_set['classes']))
 
-    def get_annotations(self, annotation_set_id, annotation_format='json'):
+    def get_annotations(self, annotation_set_id, annotation_format='json', export_coordinates='pixel',
+                        full_path='true'):
         """
         Args:
-            annotation_format: can be one of ['json', 'coco'], default='json'
+            annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
+            full_path: uses full image path (e.g. local path), can be one of ['true', 'false'], default='false'
+            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
         Returns: annotations
         """
-        result = self.api.get_annotations(annotation_set_id, annotation_format)
+        result = self.api.get_annotations(annotation_set_id, annotation_format=annotation_format,
+                                          export_coordinates=export_coordinates, full_path=full_path)
         return result
 
     def create_annotation_set(self, annotation_task, dataset_id, name, classes):

@@ -83,19 +83,22 @@ class Dataset:
         """
         return self.sdk.list_annotation_sets(self.id)
 
-    def get_annotations(self, annotation_set_id=None, annotation_format='json'):
+    def get_annotations(self, annotation_set_id=None, annotation_format='json', export_coordinates='pixel',
+                        full_path='true'):
         """
         Get annotation of the dataset
         
         Args:
             - annotation_set_id: int default: default_annotation_set
-            - annotation_format: string. can be one of ['json', 'coco'], default='json'
+            - annotation_format: string. can be one of ['json', 'coco', 'csv'], default='json'
+            - full_path: uses full image path (e.g. local path), can be one of ['true', 'false'], default='false'
+            - export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
 
         Returns: file_name, height, width, tags, task, annotations with classes and coordinates
         """
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
         if annotation_set:
-            return annotation_set.get_annotations(annotation_format)
+            return annotation_set.get_annotations(annotation_format=annotation_format, export_coordinates=export_coordinates, full_path=full_path)
 
         print('ERROR: annotation set not defined')
 
