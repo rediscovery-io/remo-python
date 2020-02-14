@@ -333,7 +333,7 @@ class API(BaseAPI):
     def get_annotations(self, annotation_set_id, annotation_format='json', export_coordinates='pixel',
                         full_path='true'):
         """
-        Exports annotations in giving format
+        Exports annotations in given format
 
         Args:
             annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
@@ -381,9 +381,9 @@ class API(BaseAPI):
         """
         Search images given a list of classes and tasks
         Args:
-            classes: string or list of strings - search for images which matches to all giving classes
+            classes: string or list of strings - search for images which match all given classes
             task: string - annotation task
-            dataset_id: int - performs search in giving dataset otherwise in all datasets
+            dataset_id: int - performs search in given dataset otherwise in all datasets
             limit: int - limits search result
         Returns: dictionary of image_id, dataset_id, name, preview, annotations, classes, dimensions
         """
