@@ -242,6 +242,9 @@ class SDK:
                                           export_coordinates=export_coordinates, full_path=full_path)
         return result
 
+    def get_annotation_info(self, dataset_id, annotation_set_id, image_id):
+        return self.api.get_annotation_info(dataset_id, annotation_set_id, image_id)
+
     def create_annotation_set(self, annotation_task, dataset_id, name, classes):
         """
         Creates a new annotation set
@@ -271,8 +274,45 @@ class SDK:
     # def upload_annotations(self, dataset_id, path, annotation_task):
     #    return self.api.upload_file(dataset_id, path, annotation_task)
 
-    def add_annotation(self, dataset_id, annotation_set_id, image_id, cls, coordinates=None, object_id=None):
-        return self.api.add_annotation(dataset_id, annotation_set_id, image_id, cls, coordinates, object_id)
+    def add_annotation(self, annotation_set_id, image_id, cls, coordinates=None, object_id=None):
+        return self.api.add_annotation(annotation_set_id, image_id, cls, coordinates, object_id)
+
+    # TODO: rename it
+    def add_new_annotation(self, annotation_set_id, image_id, annotation):
+        annotation_set_json = self.get_annotation_set(annotation_set_id)
+        dataset_id = annotation_set_json['dataset']['id']
+
+        resp = self.get_annotation_info(dataset_id, annotation_set_id, image_id)
+        annotation_info = resp.get('annotation_info', [])
+
+        object_id = len(annotation_info)
+
+        objects = []
+        classes = []
+
+        for item in annotation.items:
+            if item.bbox:
+                objects.append(
+                    {
+                        "name": "OBJ " + str(object_id),
+                        "coordinates": [
+                            {"x": item.bbox.xmin, "y": item.bbox.ymin},
+                            {"x": item.bbox.xmax, "y": item.bbox.ymax}
+                        ],
+                        "auto_created": False,
+                        "position_number": object_id,
+                        "classes": [
+                            {"name": cls, "lower": cls.lower(), "questionable": False} for cls in item.classes
+                        ],
+                        "objectId": object_id,
+                        "isHidden": False
+                    }
+                )
+                object_id += 1
+            else:
+                classes += [{"name": cls, "lower": cls.lower(), "questionable": False} for cls in item.classes]
+
+        return self.api.add_new_annotation(dataset_id, annotation_set_id, image_id, annotation_info, classes=classes, objects=objects)
 
     def _list_annotation_classes(self, annotation_set_id=None):
         return self.api.list_annotation_classes(annotation_set_id)
