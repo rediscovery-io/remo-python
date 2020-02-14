@@ -192,9 +192,12 @@ class Dataset:
 
     def add_annotations_from_file(self, annotation_set_id, file_path, parser_function):
         """
-        Args
-            file_path: path to annotation file
-            parser_function: function which receives file_path and returns annotations
+        Uploads annotations from an annotation file to an annotation set
+        
+        Args:
+            - annotation_set_id: id of the annotation set to use
+            - file_path: path to annotation file to upload
+            - parser_function: function which receives file_path and returns annotations
         """
         annotations = parser_function(file_path)
 
