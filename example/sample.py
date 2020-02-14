@@ -3,7 +3,7 @@ import time
 import remo
 from remo import AnnotationSet
 from example.data.data import show_dataset
-from remo.annotations import parse_plain_csv_object_detection
+from remo.annotation_utils import parse_plain_csv_object_detection
 
 
 def create_dataset_from_local_files(sdk):
