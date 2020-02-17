@@ -1,6 +1,6 @@
 from io import BytesIO
 
-from . import Annotation
+from .annotation import Annotation
 from .image import Image
 from copy import deepcopy
 
