@@ -21,7 +21,11 @@ This repo is an open-source implementation of our python SDK
 
 You can see example of usage of the SDK in the examples folder, and specifically in [the SDK examples Jupyer notebook](https://github.com/rediscovery-io/remo-python/blob/master/example/Python-SDK-examples.ipynb)
 
-
+What | Notebook
+---|---
+Quick Tour | quick_tour
+Parsing annotations | parsing_annotations
+Visualising predictions | visualise_predictions
 
 ## For contributors
 
