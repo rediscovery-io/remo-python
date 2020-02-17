@@ -1,8 +1,8 @@
 import time
-
 import remo
 from remo import AnnotationSet
 from example.data.data import show_dataset
+from remo.annotation_utils import parse_csv_obj_det
 
 
 def create_dataset_from_local_files(sdk):
@@ -43,6 +43,8 @@ def search_images():
 
 
 if __name__ == '__main__':
-    d = remo.get_dataset(1)
-    show_dataset(d)
+    ds = remo.get_dataset(1)
 
+    ds.add_annotations_from_file('/plain.csv', parse_csv_obj_det)
+
+    # d.add_annotation('ILSVRC2012_val_00000003.JPEG', 77, 'N01751748', [200, 200, 300, 300], 3)

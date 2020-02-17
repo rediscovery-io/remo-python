@@ -1,7 +1,7 @@
 import csv
 import os
 
-from .domain import Dataset, AnnotationSet, class_encodings
+from .domain import Dataset, AnnotationSet, class_encodings, Annotation
 from .api import API
 from .browser import browse
 from .endpoints import frontend
@@ -43,14 +43,13 @@ class SDK:
         Returns: remo Dataset
         """
 
-        result = self.api.create_dataset(name)
-        my_dataset = Dataset(self, **result)
-        print(result)
-        my_dataset.add_data(local_files, paths_to_upload, urls, annotation_task, class_encoding=class_encoding)
-        my_dataset._initialise_images()
-        my_dataset._initialize_annotation_set()
-        my_dataset._initialise_annotations()
-        return my_dataset
+        resp = self.api.create_dataset(name)
+        ds = Dataset(self, id=resp.get('id'), name=resp.get('name'))
+        print(resp)
+
+        ds.add_data(local_files, paths_to_upload, urls, annotation_task, class_encoding=class_encoding)
+        ds.fetch()
+        return ds
 
     def add_data_to_dataset(self, dataset_id, local_files=[],
                             paths_to_upload=[], urls=[], annotation_task=None, folder_id=None, annotation_set_id=None,
@@ -185,7 +184,7 @@ class SDK:
         resp = self.api.list_datasets()
         result = []
         for dataset in resp.get('results', []):
-            result.append(Dataset(self, id=dataset['id'], name=dataset['name']))
+            result.append(Dataset(self, id=dataset['id'], name=dataset['name'], quantity=dataset['quantity']))
         return result
 
     def get_dataset(self, dataset_id):
@@ -195,8 +194,8 @@ class SDK:
             dataset_id: int
         Returns: remo dataset
         """
-        result = self.api.get_dataset(dataset_id)
-        dataset = Dataset(self, **result)
+        resp = self.api.get_dataset(dataset_id)
+        dataset = Dataset(self, id=resp['id'], name=resp['name'], quantity=resp['quantity'])
         dataset._initialize_annotation_set()
         dataset._initialise_annotations()
         dataset._initialise_images()
@@ -229,18 +228,33 @@ class SDK:
                              dataset_id=annotation_set['dataset']['id'],
                              total_classes=len(annotation_set['classes']))
 
-    def get_annotations(self, annotation_set_id, annotation_format='json', export_coordinates='pixel',
-                        full_path='true'):
+    def export_annotations(self, annotation_set_id, annotation_format='json', export_coordinates='pixel',
+                           full_path='true'):
         """
+        Exports annotations in given format
+
         Args:
             annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
             full_path: uses full image path (e.g. local path), can be one of ['true', 'false'], default='false'
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
         Returns: annotations
         """
-        result = self.api.get_annotations(annotation_set_id, annotation_format=annotation_format,
-                                          export_coordinates=export_coordinates, full_path=full_path)
+        result = self.api.export_annotations(annotation_set_id, annotation_format=annotation_format,
+                                             export_coordinates=export_coordinates, full_path=full_path)
         return result
+
+    def get_annotation_info(self, dataset_id, annotation_set_id, image_id):
+        """
+        Returns current annotations for the image
+        Args:
+            dataset_id: dataset id
+            annotation_set_id: annotation set id
+            image_id: image id
+
+        Returns: annotations info - list of annotation objects or classes
+        """
+        resp = self.api.get_annotation_info(dataset_id, annotation_set_id, image_id)
+        return resp.get('annotation_info', [])
 
     def create_annotation_set(self, annotation_task, dataset_id, name, classes):
         """
@@ -268,11 +282,48 @@ class SDK:
                              dataset_id=annotation_set['dataset_id'],
                              total_classes=len(annotation_set['classes']))
 
-    # def upload_annotations(self, dataset_id, path, annotation_task):
-    #    return self.api.upload_file(dataset_id, path, annotation_task)
+    def add_annotation(self, annotation_set_id, image_id, annotation: Annotation):
+        """
+        Adds annotation to the giving image
 
-    def add_annotation(self, dataset_id, annotation_set_id, image_id, cls, coordinates=None, object_id=None):
-        return self.api.add_annotation(dataset_id, annotation_set_id, image_id, cls, coordinates, object_id)
+        Args:
+            annotation_set_id: annotation set id
+            image_id: image id
+            annotation: Annotation object
+        """
+        annotation_set_json = self.get_annotation_set(annotation_set_id)
+        dataset_id = annotation_set_json['dataset']['id']
+
+        annotation_info = self.get_annotation_info(dataset_id, annotation_set_id, image_id)
+
+        object_id = len(annotation_info)
+
+        objects = []
+        classes = []
+
+        for item in annotation.items:
+            if item.bbox:
+                objects.append(
+                    {
+                        "name": "OBJ " + str(object_id),
+                        "coordinates": [
+                            {"x": item.bbox.xmin, "y": item.bbox.ymin},
+                            {"x": item.bbox.xmax, "y": item.bbox.ymax}
+                        ],
+                        "auto_created": False,
+                        "position_number": object_id,
+                        "classes": [
+                            {"name": cls, "lower": cls.lower(), "questionable": False} for cls in item.classes
+                        ],
+                        "objectId": object_id,
+                        "isHidden": False
+                    }
+                )
+                object_id += 1
+            else:
+                classes += [{"name": cls, "lower": cls.lower(), "questionable": False} for cls in item.classes]
+
+        return self.api.add_annotation(dataset_id, annotation_set_id, image_id, annotation_info, classes=classes, objects=objects)
 
     def _list_annotation_classes(self, annotation_set_id=None):
         return self.api.list_annotation_classes(annotation_set_id)
@@ -296,24 +347,22 @@ class SDK:
             csv_writer = csv.writer(output)
             exporter(annotation_results, csv_writer)
 
-    def list_dataset_images(self, dataset_id, folder_id=None, **kwargs):
+    def list_dataset_images(self, dataset_id, folder_id=None, limit=None):
         """
         Given a dataset id returns list of the dataset images
         
         Args:
             - dataset_id: the id of the dataset to query
             - folder_id: the id of the folder to query
-            - **kwargs:
-                Keyword Arguments:
-                   - limit: int. 
-                       the number of images to be listed.
+            - limit: int.
+                the number of images to be listed.
         Returns: list of images with their names and ids
         """
 
         if folder_id:
-            result = self.api.list_dataset_contents_by_folder(dataset_id, folder_id, **kwargs)
+            result = self.api.list_dataset_contents_by_folder(dataset_id, folder_id, limit=limit)
         else:
-            result = self.api.list_dataset_contents(dataset_id, **kwargs)
+            result = self.api.list_dataset_contents(dataset_id, limit=limit)
 
         images = [
             {
