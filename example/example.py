@@ -1,9 +1,8 @@
 import time
-https://github.com/rediscovery-io/remo-python/blob/annotation-conversions/example/sample.py
 import remo
 from remo import AnnotationSet
 from example.data.data import show_dataset
-from remo.annotation_utils import parse_plain_csv_object_detection
+from remo.annotation_utils import parse_csv_obj_det
 
 
 def create_dataset_from_local_files(sdk):
@@ -44,8 +43,8 @@ def search_images():
 
 
 if __name__ == '__main__':
-    d = remo.get_dataset(1)
+    ds = remo.get_dataset(1)
 
-    d.add_annotations_from_file('/plain.csv', parse_plain_csv_object_detection)
+    ds.add_annotations_from_file('/plain.csv', parse_csv_obj_det)
 
     # d.add_annotation('ILSVRC2012_val_00000003.JPEG', 77, 'N01751748', [200, 200, 300, 300], 3)

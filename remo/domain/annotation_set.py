@@ -23,19 +23,23 @@ class AnnotationSet:
     def __repr__(self):
         return self.__str__()
 
-    def get_annotations(self, annotation_format='json', export_coordinates='pixel',
-                        full_path='true'):
+    def export_annotations(self, annotation_format='json', export_coordinates='pixel',
+                           full_path='true'):
         """
+        Exports annotations in giving format
+
         :param annotation_format: choose format from this list ['json', 'coco', 'csv']
         :param full_path: uses full image path (e.g. local path), can be one of ['true', 'false'], default='false'
         :param export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
         :return: annotations
         """
-        return self.sdk.get_annotations(self.id, annotation_format=annotation_format,
-                                        export_coordinates=export_coordinates, full_path=full_path)
+        return self.sdk.export_annotations(self.id, annotation_format=annotation_format,
+                                           export_coordinates=export_coordinates, full_path=full_path)
 
     def export_annotation_to_csv(self, output_file, dataset):
         """
+        @deprecated: use `export_annotations` instead
+
         Takes annotations and saves as a .csv file
         Args:
             output_file: .csv path

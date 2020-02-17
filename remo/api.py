@@ -139,53 +139,8 @@ class API(BaseAPI):
 
         return self.post(self.url(backend.v1_create_annotation_set), json=payload).json()
 
-    def add_annotation(self, annotation_set_id, image_id, cls, coordinates=None, object_id=None):
-        """
-        Adds annotations to the specified annotation set
-        Args:
-           
-            - image_id: int.
-            - annotation_set_id: int.
-            - cls: str. 
-                class of the detected object
-            - coordinates: list.
-                list of dictionaries containing annotation coordinates.
-            - object_id: int. Default None.
-                id of the object in the given image. If not feed any value considered as Image classification task. 
-        """
-        annotation_set_json = self.get_annotation_set(annotation_set_id)
-        dataset_id = annotation_set_json['dataset']['id']
-
-        resp = self.get_annotation_info(dataset_id, annotation_set_id, image_id)
-        annotation_info = resp.get('annotation_info', [])
-
-        url = self.url(backend.add_annotation).format(dataset_id, annotation_set_id, image_id)
-
-        if object_id:
-            # It's object detection
-            payload = {"objects": annotation_info +
-                                  [
-                                      {"name": "OBJ " + str(object_id),
-                                       "coordinates": [
-                                           {"x": float(coordinates[0]), "y": float(coordinates[1])},
-                                           {"x": float(coordinates[2]), "y": float(coordinates[3])}],
-                                       "auto_created": False,
-                                       "position_number": object_id,
-                                       "classes": [
-                                           {"name": cls, "lower": cls.lower(), "questionable": False}],
-                                       "objectId": object_id,
-                                       "isHidden": False}
-                                  ]
-                       }
-        else:
-            # It's classification 
-            payload = {"classes": annotation_info + [{"name": cls, "lower": cls.lower(), "questionable": False}]}
-
-        return self.post(url, json=payload).json()
-
-    # TODO: rename it
-    def add_new_annotation(self, dataset_id, annotation_set_id, image_id,
-                           existing_annotations=None, classes=None, objects=None):
+    def add_annotation(self, dataset_id, annotation_set_id, image_id,
+                       existing_annotations=None, classes=None, objects=None):
 
         url = self.url(backend.add_annotation).format(dataset_id, annotation_set_id, image_id)
         existing_annotations = existing_annotations if existing_annotations else []
@@ -307,14 +262,12 @@ class API(BaseAPI):
         url = self.url(backend.v1_datasets)
         return self.get(url).json()
 
-    def list_dataset_contents(self, dataset_id, **kwargs):
-        # TODO: need to filter with annotation_set_id
-        # TODO: remove kwargs, replace with limit url = self.url(backend.v1_dataset_images.format(dataset_id), limit=limit)
-        url = self.url(backend.v1_dataset_images.format(dataset_id), **kwargs)
+    def list_dataset_contents(self, dataset_id, limit=None):
+        url = self.url(backend.v1_dataset_images.format(dataset_id), limit=limit)
         return self.get(url).json()
 
-    def list_dataset_contents_by_folder(self, dataset_id, folder_id, **kwargs):
-        url = self.url(backend.dataset_folder_content.format(dataset_id, folder_id), **kwargs)
+    def list_dataset_contents_by_folder(self, dataset_id, folder_id, limit=None):
+        url = self.url(backend.dataset_folder_content.format(dataset_id, folder_id), limit=limit)
         return self.get(url).json()
 
     def get_dataset(self, id):
@@ -330,8 +283,8 @@ class API(BaseAPI):
         url = self.url(backend.v1_annotation_set.format(id))
         return self.get(url).json()
 
-    def get_annotations(self, annotation_set_id, annotation_format='json', export_coordinates='pixel',
-                        full_path='true'):
+    def export_annotations(self, annotation_set_id, annotation_format='json', export_coordinates='pixel',
+                           full_path='true'):
         """
         Exports annotations in given format
 

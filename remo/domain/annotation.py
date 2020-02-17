@@ -45,14 +45,14 @@ class Annotation:
             if segment:
                 self.segments.append(Annotation.Segment(segment))
 
-    __slots__ = ['file_name', 'status', 'task', 'tags', 'items']
+    __slots__ = ['img_filename', 'status', 'task', 'tags', 'items']
 
-    def __init__(self, file_name=None, status=None, task=None, tags=None):
+    def __init__(self, img_filename=None, status=None, task=None, tags=None):
         """
         Args:
             status: can be "not_annotated", "done" and "skipped"
         """
-        self.file_name = file_name
+        self.img_filename = img_filename
         self.status = status
         self.task = task
         self.tags = tags if tags else []

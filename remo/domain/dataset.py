@@ -1,20 +1,26 @@
 from io import BytesIO
+
+from . import Annotation
 from .image import Image
 from copy import deepcopy
-import csv
 
 
 class Dataset:
-    def __init__(self, sdk, **kwargs):
+    def __init__(self, sdk, id=None, name=None, quantity=None):
         self.sdk = sdk
-        self.id = kwargs.get('id')
-        self.name = kwargs.get('name')
+        self.id = id
+        self.name = name
         self.images = []
         self.annotation_sets = []
         self.default_annotation_set = None
         self.annotations = []
         self.images_dict = {}
-        # self.original = True
+        self.images_by_id = {}
+        try:
+            self.quantity = int(quantity)
+        except ValueError:
+            self.quantity = 0
+        # TODO: find images quick by ids and by name
 
     def __str__(self):
         return "Dataset {id} - '{name}'".format(id=self.id, name=self.name)
@@ -83,10 +89,10 @@ class Dataset:
         """
         return self.sdk.list_annotation_sets(self.id)
 
-    def get_annotations(self, annotation_set_id=None, annotation_format='json', export_coordinates='pixel',
-                        full_path='true'):
+    def export_annotations(self, annotation_set_id=None, annotation_format='json', export_coordinates='pixel',
+                           full_path='true'):
         """
-        Get annotation of the dataset
+        Export annotations
         
         Args:
             - annotation_set_id: int default: default_annotation_set
@@ -98,10 +104,37 @@ class Dataset:
         """
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
         if annotation_set:
-            return annotation_set.get_annotations(annotation_format=annotation_format,
-                                                  export_coordinates=export_coordinates, full_path=full_path)
+            return annotation_set.export_annotations(annotation_format=annotation_format,
+                                                     export_coordinates=export_coordinates, full_path=full_path)
 
         print('ERROR: annotation set not defined')
+
+    def get_annotation(self, dataset_id, annotation_set_id, image_id) -> Annotation:
+        """
+        Returns annotation for giving image
+        Args:
+            dataset_id: dataset
+            annotation_set_id:
+            image_id:
+        :return: Annotation
+        """
+        items = self.sdk.get_annotation_info(dataset_id, annotation_set_id, image_id)
+        image_name = self.images_by_id.get(image_id)
+        if not image_name:
+            print('ERROR: Image with id - {}, was not found'.format(image_id))
+            return None
+
+        annotation = Annotation(img_filename=image_name)
+        for item in items:
+            if 'lower' in item:
+                class_name = item.get('name')
+                annotation.add_item(classes=[class_name])
+            else:
+                bbox = item.get('coordinates')
+                bbox = [bbox[0]['x'], bbox[0]['y'], bbox[1]['x'], bbox[1]['y']]
+                classes = [cls.get('name') for cls in item.get('classes', [])]
+                annotation.add_item(classes=classes, bbox=bbox)
+        return annotation
 
     def create_annotation_set(self, annotation_task, name, classes, path_to_annotation_file=None):
         """
@@ -123,107 +156,53 @@ class Dataset:
             annotation_set = self.sdk.get_annotation_set(annotation_set.id)
         return annotation_set
 
-    # def upload_annotations(self, path, task):
-    #    return self.sdk.upload_annotations(self.id, path, task)
-
-    def add_annotation(self, image_name, annotation_set_id, cls, coordinates=None, object_id=None):
+    def add_annotations_from_file(self, file_path, parser_function, annotation_set_id=None):
         """
-        Adds annotations to the specified annotation set
-        Args:
-           
-            - image_name: str.
-                file name of the image
-            - annotation_set_id: int.
-                the id of the annotation set 
-            - cls: str. 
-                class of the detected object
-            - coordinates: list. Default None.
-                list of dictionaries containing coordinates of the annotations.
-            - object_id: int. Default None.
-                id of the object in the given image. If not feed any value considered as Image classification task. 
-        """
-
-        image_id = self.images_dict.get(image_name)
-        if not image_id:
-            raise Exception('Image {} was not found in {}'.format(image_name, self))
-
-        return self.sdk.add_annotation(annotation_set_id, image_id, cls, coordinates, object_id)
-
-    def add_annotations_by_csv(self, path_to_annotation_file, annotation_set_id):
-        # WARNING: this function doesn't work as expected
-        """
-        Gets annotations in a csv format and adds annotations line by line.  
-        Args:
-           
-            - path_to_annotation_file: str. 
-                path to the .csv file of the annotations. 
-                annotations are in the format given below:
-                    Object detection: file_name, class, xmin, ymin, xmax, ymax
-                    Image classification: file_name, class
-            - annotation_set_id: int.
-           
-        """
-
-        with open(path_to_annotation_file) as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            headers = next(csv_reader, None)
-            # Initialize object counter 
-            object_id = 0
-            # We initialize img_name with null and then assign file_name in each row
-            # Each iteration, we compare if we pass a new image in order to reset object counters
-            img_name = ''
-            for row in csv_reader:
-                cls = row[1]
-                if len(headers) > 5:
-                    # It's object detection
-                    if row[0] != img_name:
-                        # Reset the object counter at a new image
-                        object_id = 0
-                    img_name = row[0]
-                    coordinates = row[2:]
-                    self.add_annotation(img_name, annotation_set_id, cls, coordinates, object_id)
-                    object_id += 1
-                else:
-                    # It's image classification
-                    img_name = row[0]
-                    self.add_annotation(img_name, annotation_set_id, cls)
-        # fetch the dataset 
-        self.fetch()
-
-    def add_annotations_from_file(self, annotation_set_id, file_path, parser_function):
-        """
-        Uploads annotations from an annotation file to an annotation set
+        Uploads annotations from a custom annotation file to an annotation set.
+        For supported annotation files format it's easier to use `add_data` function
         
         Args:
-            - annotation_set_id: id of the annotation set to use
             - file_path: path to annotation file to upload
-            - parser_function: function which receives file_path and returns annotations
+            - parser_function: function which receives file_path and returns a list of remo.domain.Annotation objects
+            - annotation_set_id: id of the annotation set to use
 
             Example:
                 import csv
                 from remo.domain import Annotation
 
                 def parser_function(file_path):
+                '''
+                File example:
+                file_name,class_name
+                000012dasd21e.jpg,Dog
+                000012dasd221.jpg,Cat
+
+                '''
                     annotations = []
                     with open(file_path, 'r') as f:
                         csv_file = csv.reader(f, delimiter=',')
                         for row in csv_file:
-                            file_name = row[0].strip()
-                            class_name = row[1].strip()
-                            annotation = Annotation(file_name=file_name)
+                            file_name, class_name = row
+                            annotation = Annotation(img_filename=file_name)
                             annotation.add_item(classes=[class_name])
                             annotations.append(annotation)
                     return annotations
 
         """
+
+        annotation_set = self._get_annotation_set_or_default(annotation_set_id)
+        if not annotation_set:
+            print('ERROR: Annotation set was not found')
+            return
+
         annotations = parser_function(file_path)
 
         for annotation in annotations:
-            image_id = self.images_dict.get(annotation.file_name)
+            image_id = self.images_dict.get(annotation.img_filename)
             if not image_id:
-                print('WARNING: Image {} was not found in {}'.format(annotation.file_name, self))
+                print('WARNING: Image {} was not found in {}'.format(annotation.img_filename, self))
 
-            self.sdk.add_new_annotation(annotation_set_id, image_id, annotation)
+            self.sdk.add_annotation(annotation_set_id, image_id, annotation)
 
     def get_annotation_set(self, id):
         for annotation_set in self.annotation_sets:
@@ -293,17 +272,11 @@ class Dataset:
         self.default_annotation_set = self.get_annotation_set(annotation_set_id)
 
     def _initialise_images(self):
-        # TODO: why we use this limit?
-        num_images = len(self.annotations)
-        images = self.list_images(limit=num_images)
-
-        self.images = [
-            Image(id=img.get('id'), path=img, dataset=self.name, name=img.get('name'))
-            for img in images
-        ]
+        self.images = self.list_images()
 
         for item in self.images:
             self.images_dict[item.name] = item.id
+            self.images_by_id[item.id] = item.name
 
     def _initialize_annotation_set(self):
         """
@@ -322,7 +295,7 @@ class Dataset:
         """
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
         if annotation_set:
-            self.annotations = self.get_annotations(annotation_set.id)
+            self.annotations = self.export_annotations(annotation_set.id)
 
     def list_images(self, folder_id=None, limit=None):
         """
@@ -336,10 +309,16 @@ class Dataset:
                 the number of images to be listed.
         Returns: list of images with their names and ids
         """
-        if limit:
-            return self.sdk.list_dataset_images(self.id, folder_id, limit=limit)
-        else:
-            return self.sdk.list_dataset_images(self.id, folder_id, limit=len(self.annotations))
+        if not limit:
+            limit = self.quantity
+
+        images = self.sdk.list_dataset_images(self.id, folder_id, limit=limit)
+
+        # TODO: check the issue with Image.path
+        return [
+            Image(id=img.get('id'), path=img, dataset=self.name, name=img.get('name'))
+            for img in images
+        ]
 
     def get_images_by_id(self, image_id):
         """

@@ -208,7 +208,7 @@ my_dataset.view_annotation_statistics(38)
 # In[23]:
 
 
-annotation_sample = my_dataset.get_annotations()
+annotation_sample = my_dataset.export_annotations()
 
 
 # In[24]:
