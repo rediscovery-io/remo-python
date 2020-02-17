@@ -243,6 +243,15 @@ class SDK:
         return result
 
     def get_annotation_info(self, dataset_id, annotation_set_id, image_id):
+        """
+        Returns current annotations for the image
+        Args:
+            dataset_id: dataset id
+            annotation_set_id: annotation set id
+            image_id: image id
+
+        Returns: annotations info
+        """
         return self.api.get_annotation_info(dataset_id, annotation_set_id, image_id)
 
     def create_annotation_set(self, annotation_task, dataset_id, name, classes):

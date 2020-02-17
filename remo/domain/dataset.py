@@ -198,6 +198,23 @@ class Dataset:
             - annotation_set_id: id of the annotation set to use
             - file_path: path to annotation file to upload
             - parser_function: function which receives file_path and returns annotations
+
+            Example:
+                import csv
+                from remo.domain import Annotation
+
+                def parser_function(file_path):
+                    annotations = []
+                    with open(file_path, 'r') as f:
+                        csv_file = csv.reader(f, delimiter=',')
+                        for row in csv_file:
+                            file_name = row[0].strip()
+                            class_name = row[1].strip()
+                            annotation = Annotation(file_name=file_name)
+                            annotation.add_item(classes=[class_name])
+                            annotations.append(annotation)
+                    return annotations
+
         """
         annotations = parser_function(file_path)
 
