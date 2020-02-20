@@ -1,14 +1,19 @@
+import os
 from .domain.annotation_set import AnnotationSet
 from .domain.dataset import Dataset, Image
 from .domain import task
 from .sdk import SDK
 
+__version__ = '0.0.13'
+
 _logs = None
 _server = None
 
 
-def __init__():
-    import os
+def __init__(skip_sdk_init=os.getenv('REMO_SKIP_SDK_INIT', False)):
+    if skip_sdk_init == 'True':
+        return
+
     from pathlib import Path
     from .config import parse_config
 

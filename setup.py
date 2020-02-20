@@ -1,11 +1,12 @@
 from setuptools import setup, find_packages
+from remo import __version__
 
 setup(
     name='remo-sdk',
-    version='0.0.13',
+    version=__version__,
     author='Rediscovery.io',
     author_email='hello@remo.ai',
-    packages=find_packages(exclude=['backup', 'example']),
+    packages=find_packages(exclude=['examples']),
     url='https://github.com/rediscovery-io/remo-python',
     license='LICENSE.txt',
     description='Remo sdk',

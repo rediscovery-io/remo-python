@@ -1,5 +1,6 @@
 import csv
 import os
+from typing import List, Callable
 
 from .domain import Dataset, AnnotationSet, class_encodings, Annotation
 from .api import API
@@ -9,38 +10,44 @@ from .exporter import get_json_to_csv_exporter
 
 
 class SDK:
-    def __init__(self, server, email, password, browse=browse):
+    def __init__(self, server: str, email: str, password: str, browse: Callable[[str], None] = browse):
         self.api = API(server, email, password)
         self.browse = browse
 
     # MC: there is a problem in fetching annotation sets
-    def create_dataset(self, name, local_files=[], paths_to_upload=[], urls=[], annotation_task=None,
-                       class_encoding=None):
+    def create_dataset(self, name: str,
+                       local_files: List[str] = [], paths_to_upload: List[str] = [], urls: List[str] = [],
+                       annotation_task: str = None, class_encoding=None):
         """ 
         Creates a new dataset in Remo and optionally populate it with images and annotation from local drive or URL
 
         Args:
-           name: string, name of the Dataset
+            name: name of the dataset.
 
-           local_files: list of files or directories.
-                Function will scan for .png, .jpeg, .tiff and .jpg in the folders and sub-folders.
+            local_files: list of files or directories. Function will scan for .png, .jpeg, .tiff and .jpg in the folders
+                and sub-folders.
 
-           paths_to_upload: list of files or directories.
-            These files will be uploaded to the local disk.
-              - files supported: image files, annotation files and archive files.
-              - Annotation files: json, xml, csv. If annotation file is provided, you need to provide annotation task.
-              - Archive files: zip, tar, gzip. These files are unzipped, and then we scan for images, annotations and other archives. Support for nested archive files, image and annotation files in the same format supported elsewhere
+            paths_to_upload: list of files or directories.
+                These files will be uploaded to the local disk.
 
-           urls: list of urls pointing to downloadable target, which should be an archive file.
-              The function will download the target of the URL, scan for archive files, unpack them and the results will be scanned for images, annotations and other archives.
+                - files supported: image files, annotation files and archive files.
+                - Annotation files: json, xml, csv. If annotation file is provided, you need to provide annotation task.
+                - Archive files: zip, tar, gzip. These files are unzipped, and then we scan for images, annotations and
+                other archives. Support for nested archive files, image and annotation files in the same format.
 
-           annotation_task:
-               object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
-               instance_segmentation = 'Instance segmentation'. Supports Coco
-               image_classification = 'Image classification'. ImageNet
+            urls: list of urls pointing to downloadable target, which should be an archive file.
+                The function will download the target of the URL, scan for archive files, unpack them and the results will
+                be scanned for images, annotations and other archives.
 
+            annotation_task: can be one of the following values:
 
-        Returns: remo Dataset
+                - object_detection = 'Object detection'. Supports Coco, Open Images, Pascal
+                - instance_segmentation = 'Instance segmentation'. Supports Coco
+                - image_classification = 'Image classification'. ImageNet
+
+        Returns:
+            :class:`remo.domain.dataset.Dataset`
+
         """
 
         resp = self.api.create_dataset(name)
@@ -323,7 +330,8 @@ class SDK:
             else:
                 classes += [{"name": cls, "lower": cls.lower(), "questionable": False} for cls in item.classes]
 
-        return self.api.add_annotation(dataset_id, annotation_set_id, image_id, annotation_info, classes=classes, objects=objects)
+        return self.api.add_annotation(dataset_id, annotation_set_id, image_id, annotation_info, classes=classes,
+                                       objects=objects)
 
     def _list_annotation_classes(self, annotation_set_id=None):
         return self.api.list_annotation_classes(annotation_set_id)
