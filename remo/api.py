@@ -262,6 +262,10 @@ class API(BaseAPI):
         url = self.url(backend.v1_datasets)
         return self.get(url).json()
 
+    def get_all_dataset_images(self, dataset_id):
+        url = self.url(backend.v1_sdk_dataset_images.format(dataset_id))
+        return self.get(url).json()
+
     def list_dataset_contents(self, dataset_id, limit=None):
         url = self.url(backend.v1_dataset_images.format(dataset_id), limit=limit)
         return self.get(url).json()
@@ -271,7 +275,7 @@ class API(BaseAPI):
         return self.get(url).json()
 
     def get_dataset(self, id):
-        url = self.url(backend.dataset, id, tail_slash=True)
+        url = self.url(backend.v1_datasets, id, tail_slash=True)
         r = self.get(url)
         return r.json()
 
@@ -322,6 +326,7 @@ class API(BaseAPI):
         return self.get(url).json()
 
     def get_images_by_id(self, dataset_id, image_id):
+        # @deprecated
         url = self.url(backend.v1_dataset_image_annotations.format(dataset_id, image_id))
         content = self.get(url).json()
         image_url = self.url(content['image'])
@@ -329,6 +334,10 @@ class API(BaseAPI):
 
     def get_image(self, url):
         return self.get(self.url(url))
+
+    def get_image_by_id(self, image_id):
+        url = self.url(backend.v1_sdk_images, image_id, tail_slash=True)
+        return self.get(url).json()
 
     def search_images(self, classes=None, task=None, dataset_id=None, limit=None):
         """

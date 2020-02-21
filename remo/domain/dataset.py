@@ -6,7 +6,7 @@ from copy import deepcopy
 
 
 class Dataset:
-    def __init__(self, sdk, id=None, name=None, quantity=None):
+    def __init__(self, sdk, id: int = None, name: str = None, quantity: int = 0):
         self.sdk = sdk
         self.id = id
         self.name = name
@@ -18,12 +18,15 @@ class Dataset:
         self.images_by_id = {}
         try:
             self.quantity = int(quantity)
-        except ValueError:
+        except (ValueError, TypeError):
             self.quantity = 0
         # TODO: find images quick by ids and by name
 
     def __str__(self):
         return "Dataset {id} - '{name}'".format(id=self.id, name=self.name)
+
+    def __repr__(self):
+        return self.__str__()
 
     def __len__(self):
         # return len(self.images)
@@ -31,18 +34,18 @@ class Dataset:
 
     def __getitem__(self, sliced):
         # TODO: add exception for the original dataset specific methods.
+
         self._initialise_annotations()
         new_self = deepcopy(self)
         new_self.images = self.images[sliced]
+        if not isinstance(new_self.images, list):
+            new_self.images = [new_self.images]
 
-        new_img_name_list = [im.name for im in new_self.images]
+        new_img_name_list = [img.name for img in new_self.images]
         new_self.annotations = list(
             filter(lambda annotation: annotation.get('file_name') in new_img_name_list, self.annotations))
 
         return new_self
-
-    def __repr__(self):
-        return self.__str__()
 
     def add_data(self, local_files=[], paths_to_upload=[], urls=[], annotation_task=None, folder_id=None,
                  annotation_set_id=None, class_encoding=None):
@@ -297,6 +300,12 @@ class Dataset:
         if annotation_set:
             self.annotations = self.export_annotations(annotation_set.id)
 
+    def get_annotations(self, annotation_set_id=None):
+        annotation_set = self._get_annotation_set_or_default()
+        if annotation_set:
+            return self.sdk.get_annotations(self.id, annotation_set.id)
+        print('ERROR: annotation set was not defined.')
+
     def list_images(self, folder_id=None, limit=None):
         """
         Given a dataset id returns list of the dataset images
@@ -316,7 +325,7 @@ class Dataset:
 
         # TODO: check the issue with Image.path
         return [
-            Image(id=img.get('id'), path=img, dataset=self.name, name=img.get('name'))
+            Image(self.sdk, id=img.get('id'), path=img, dataset=self.name, name=img.get('name'))
             for img in images
         ]
 
@@ -332,6 +341,7 @@ class Dataset:
         return BytesIO(r.content)
 
     def get_images_by_search(self, class_list, task):
+        #  TODO: doesn't work
         """
         Given a class list and task returns image list 
         Args:
@@ -344,8 +354,8 @@ class Dataset:
         result = self.search(class_list, task)
         img_list = []
         for i in range(len(result)):
-            r = self.sdk.get_image(result[i]['preview'])
-            img_list.append({'classes': result[i]['annotations']['classes'], 'task': task, 'img': BytesIO(r.content)})
+            r = self.sdk.get_image(result.images[i]['preview'])
+            img_list.append({'classes': result.annotations[i]['classes'], 'task': task, 'img': BytesIO(r.content)})
         return img_list
 
     def search(self, class_list, task):

@@ -2,6 +2,7 @@ import csv
 import os
 from typing import List, Callable
 
+from . import Image
 from .domain import Dataset, AnnotationSet, class_encodings, Annotation
 from .api import API
 from .browser import browse
@@ -50,9 +51,8 @@ class SDK:
 
         """
 
-        resp = self.api.create_dataset(name)
-        ds = Dataset(self, id=resp.get('id'), name=resp.get('name'))
-        print(resp)
+        json_data = self.api.create_dataset(name)
+        ds = Dataset(self, id=json_data.get('id'), name=json_data.get('name'))
 
         ds.add_data(local_files, paths_to_upload, urls, annotation_task, class_encoding=class_encoding)
         ds.fetch()
@@ -263,6 +263,49 @@ class SDK:
         resp = self.api.get_annotation_info(dataset_id, annotation_set_id, image_id)
         return resp.get('annotation_info', [])
 
+    def get_annotation(self, dataset_id: int, annotation_set_id: int, image_id: int) -> Annotation:
+        """
+        Returns annotation for giving image
+
+        Args:
+            dataset_id: dataset id
+            annotation_set_id: annotation set id
+            image_id: image id
+
+        Returns:
+             :class:`remo.domain.annotation.Annotation`
+        """
+        annotation_items = self.get_annotation_info(dataset_id, annotation_set_id, image_id)
+        img = self.get_image_by_id(image_id)
+        if not img:
+            return None
+
+        annotation = Annotation(img_filename=img.name)
+        for item in annotation_items:
+            if 'lower' in item:
+                class_name = item.get('name')
+                annotation.add_item(classes=[class_name])
+            else:
+                bbox = item.get('coordinates')
+                bbox = [bbox[0]['x'], bbox[0]['y'], bbox[1]['x'], bbox[1]['y']]
+                classes = [cls.get('name') for cls in item.get('classes', [])]
+                annotation.add_item(classes=classes, bbox=bbox)
+        return annotation
+
+    def get_annotations(self, dataset_id: int, annotation_set_id: int) -> List[Annotation]:
+        """
+            Returns all annotations for giving annotation set
+
+            Args:
+                dataset_id: dataset id
+                annotation_set_id: annotation set id
+
+            Returns:
+                 List[:class:`remo.domain.annotation.Annotation`]
+            """
+        images = self.get_all_dataset_images(dataset_id)
+        return [self.get_annotation(dataset_id, annotation_set_id, img.id) for img in images]
+
     def create_annotation_set(self, annotation_task, dataset_id, name, classes):
         """
         Creates a new annotation set
@@ -381,6 +424,27 @@ class SDK:
         ]
         return images
 
+    def get_all_dataset_images(self, dataset_id: int) -> List[Image]:
+        """
+        Returns all images for giving dataset.
+
+        Args:
+            dataset_id: dataset id
+
+        Returns:
+             List[:class:`remo.domain.image.Image`]
+        """
+        json_data = self.api.get_all_dataset_images(dataset_id)
+        if 'error' in json_data:
+            print('ERROR: failed to get all images for dataset id:{}, error: {}'.format(dataset_id,
+                                                                                        json_data.get('error')))
+            return None
+
+        return [
+            Image(self, id=img.get('id'), name=img.get('name'))
+            for img in json_data.get('results', [])
+        ]
+
     def get_images_by_id(self, dataset_id, image_id):
         """
         Get image file by dataset_id and image_id
@@ -394,6 +458,22 @@ class SDK:
 
     def get_image(self, url):
         return self.api.get_image(url)
+
+    def get_image_by_id(self, image_id: int) -> Image:
+        """
+        Retrieves image by giving id.
+
+        Args:
+            image_id: image id
+
+        Returns:
+            :class:`remo.domain.image.Image`
+        """
+        json_data = self.api.get_image_by_id(image_id)
+        if 'error' in json_data:
+            print('ERROR: failed to get image by id:{}, err: {}'.format(image_id, json_data.get('error')))
+            return None
+        return Image(self, id=json_data.get('id'), name=json_data.get('name'))
 
     def search_images(self, classes=None, task=None, dataset_id=None, limit=None):
         """

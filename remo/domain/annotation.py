@@ -58,6 +58,12 @@ class Annotation:
         self.tags = tags if tags else []
         self.items = []
 
+    def __str__(self):
+        return 'Annotation for image: {}, n_items: {}'.format(self.img_filename, len(self.items))
+
+    def __repr__(self):
+        return self.__str__()
+
     def add_item(self, classes=None, bbox=None, segment=None):
         """
         Args:
