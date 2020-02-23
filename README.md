@@ -11,6 +11,10 @@ Use Remo to:
 - visualise statistics like # objects / class
 - quickly annotate your images.
 
+
+<img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
+
+
 Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and uses a lightweight database to store metadata.
 To read more about Remo and download it, visit [remo.ai](http://remo.ai) (the website is still under construction :) )
 
