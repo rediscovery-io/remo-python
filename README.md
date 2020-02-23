@@ -23,7 +23,7 @@ You can see example of usage of the SDK in the examples folder, and specifically
 
 What | Notebook
 ---|---
-Quick Tour | quick_tour
+Quick Tour | [examples/Intro to Remo-SDK.ipynb](https://github.com/rediscovery-io/remo-python/blob/master/examples/Intro to Remo-SDK.ipynb)
 Parsing annotations | parsing_annotations
 Visualising predictions | visualise_predictions
 
