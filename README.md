@@ -19,13 +19,11 @@ This repo is an open-source implementation of our python SDK
 
 ## Remo python SDK
 
-You can see example of usage of the SDK in the examples folder, and specifically in [the SDK examples Jupyer notebook](https://github.com/rediscovery-io/remo-python/blob/master/examples/Python-SDK-examples.ipynb)
-
-[examples/Intro to Remo-SDK.ipynb](https://github.com/rediscovery-io/remo-python/blob/master/examples/Intro to Remo-SDK.ipynb)
+You can see example of usage of the SDK in the examples folder, and specifically through the following notebooks:
 
 What | Notebook
 ---|---
-Quick Tour | [examples/Intro to Remo-SDK.ipynb](examples/Intro to Remo-SDK.ipynb)
+Quick Tour | [examples/Intro to Remo-SDK.ipynb](examples/intro_to_remo-SDK.ipynb)
 Parsing annotations | parsing_annotations
 Visualising predictions | visualise_predictions
 
