@@ -20,6 +20,8 @@ Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and
 
 To read more about Remo and download it, visit [remo.ai](http://remo.ai) (the website is still under construction :) )
 
+<br/>
+
 ## Remo python SDK
 
 You can see example of usage of the SDK in our documentiation or in the examples folder. 
@@ -31,10 +33,13 @@ Intro Notebook | [Intro to Remo-SDK.ipynb](examples/intro_to_remo-SDK.ipynb)
 Parsing annotations | parsing_annotations - Coming soon
 Visualising predictions | visualise_predictions - Coming soon
 
+<br/>
+
 ## Get in touch
 If you have any issues around the SDK, feel free to open an issue in the repo.
 For general questions around Remo, you can get in touch at hello AT remo.ai
 
+------
 
 ## For contributors
 
