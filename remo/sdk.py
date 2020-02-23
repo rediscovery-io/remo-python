@@ -142,7 +142,6 @@ class SDK:
                                                       annotation_set_id=annotation_set_id,
                                                       class_encoding=class_encoding_for_linking)
 
-            print(urls_upload_result)
             result['urls_upload_result'] = urls_upload_result
         return result
 
