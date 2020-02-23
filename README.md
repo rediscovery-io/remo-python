@@ -2,6 +2,8 @@
 <img src="https://github.com/rediscovery-io/remo-python/blob/master/img/remo_normal.png" width="200">
 
 # Welcome to Remo
+This our open source python library to call Remo from code.
+
 Remo is an open-access web-application for managing and visualising images and annotations for Computer Vision. 
 
 Use Remo to:
@@ -11,15 +13,12 @@ Use Remo to:
 - visualise statistics like # objects / class
 - quickly annotate your images.
 
+Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and uses a lightweight database to store metadata.
+
 
 <img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
 
-
-Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and uses a lightweight database to store metadata.
 To read more about Remo and download it, visit [remo.ai](http://remo.ai) (the website is still under construction :) )
-
-
-This repo is an open-source implementation of our python SDK
 
 ## Remo python SDK
 
