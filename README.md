@@ -8,10 +8,10 @@ Remo is an open-access web-application for managing and visualising images and a
 
 Use Remo to:
 
-- visualise and inspect both datasets and annotations
-- search for images with chosen classes or tags, and group them
-- visualise statistics like # objects / class
-- quickly annotate your images.
+- **visualise and inspect** datasets and annotations
+- **organise and search** your images
+- **visualise statistics** like # objects per class
+- **quickly annotate** your images
 
 Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and uses a lightweight database to store metadata.
 
