@@ -23,9 +23,9 @@ You can see example of usage of the SDK in the examples folder, and specifically
 
 What | Notebook
 ---|---
-Quick Tour | [examples/Intro to Remo-SDK.ipynb](examples/intro_to_remo-SDK.ipynb)
-Parsing annotations | parsing_annotations
-Visualising predictions | visualise_predictions
+Quick Tour | [Intro to Remo-SDK.ipynb](examples/intro_to_remo-SDK.ipynb)
+Parsing annotations | parsing_annotations - Coming soon
+Visualising predictions | visualise_predictions - Coming soon
 
 ## For contributors
 
