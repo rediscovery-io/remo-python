@@ -2,7 +2,7 @@
 <img src="https://github.com/rediscovery-io/remo-python/blob/master/img/remo_normal.png" width="200">
 
 # Welcome to Remo
-This our open source python library to call Remo from code.
+This the open source repository for Remo python library.
 
 Remo is an open-access web-application for managing and visualising images and annotations for Computer Vision. 
 
@@ -22,13 +22,19 @@ To read more about Remo and download it, visit [remo.ai](http://remo.ai) (the we
 
 ## Remo python SDK
 
-You can see example of usage of the SDK in the examples folder, and specifically through the following notebooks:
+You can see example of usage of the SDK in our documentiation or in the examples folder. 
 
-What | Notebook
+What | Where
 ---|---
-Quick Tour | [Intro to Remo-SDK.ipynb](examples/intro_to_remo-SDK.ipynb)
+Documentation | [Official Docs](https://remo.ai/docs/sdk/)
+Intro Notebook | [Intro to Remo-SDK.ipynb](examples/intro_to_remo-SDK.ipynb)
 Parsing annotations | parsing_annotations - Coming soon
 Visualising predictions | visualise_predictions - Coming soon
+
+## Get in touch
+If you have any issues around the SDK, feel free to open an issue in the repo.
+For general questions around Remo, you can get in touch at hello AT remo.ai
+
 
 ## For contributors
 
