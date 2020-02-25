@@ -9,7 +9,11 @@ Welcome to Remo SDK documentation!
 .. toctree::
    :maxdepth: 2
 
-   api
+   sdk
+   dataset
+   annotation_set
+   annotation
+   class_encoding
 
 
 Index

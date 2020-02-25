@@ -1,4 +1,4 @@
 sphinx
 sphinx-material
 sphinxcontrib-napoleon
-# sphinx_markdown_builder
+sphinx_markdown_builder
