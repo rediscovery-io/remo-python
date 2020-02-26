@@ -1,6 +1,2 @@
-Class encodings
-------------------
-
-.. automodule:: remo.domain.class_encodings
+.. automodule:: remo.class_encodings
     :members:
-    :undoc-members:

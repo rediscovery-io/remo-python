@@ -2,8 +2,7 @@ import csv
 import os
 from typing import List, Callable
 
-from . import Image
-from .domain import Dataset, AnnotationSet, class_encodings, Annotation
+from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
 from .api import API
 from .browser import browse
 from .endpoints import frontend

@@ -1,8 +1,6 @@
 import os
-from .domain.annotation_set import AnnotationSet
-from .domain.dataset import Dataset, Image
-from .domain import task
 from .sdk import SDK
+from .domain import task, class_encodings, Dataset, Image, Annotation, AnnotationSet
 
 __version__ = '0.0.13'
 
@@ -40,7 +38,6 @@ def __init__(skip_sdk_init=os.getenv('REMO_SKIP_SDK_INIT', False)):
         def launch_server(open_browser=True):
             import time
             import requests
-
 
             version_endpoint = '{}/version'.format(server_url)
             try:

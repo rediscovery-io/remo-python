@@ -1,6 +1,5 @@
-Annotation
-------------------
+Class Annotation allows to add/export annotations.
 
-.. automodule:: remo.domain.annotation
+.. automodule:: remo.Annotation
     :members:
     :undoc-members:

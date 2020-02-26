@@ -1,6 +1,5 @@
-Dataset
-------------------
+Dataset class allows to manipulate with Remo datasets, add new data, etc.
 
-.. automodule:: remo.domain.dataset
+.. autoclass:: remo.Dataset
     :members:
     :undoc-members:

@@ -1,0 +1,2 @@
+.. automodule:: remo.task
+   :members:

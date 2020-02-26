@@ -1,6 +1,5 @@
-Annotation set
-------------------
+Annotation set allows to work with Remo annotation sets.
 
-.. automodule:: remo.domain.annotation_set
+.. autoclass:: remo.AnnotationSet
     :members:
     :undoc-members:

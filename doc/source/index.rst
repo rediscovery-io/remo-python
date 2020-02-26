@@ -13,6 +13,7 @@ Welcome to Remo SDK documentation!
    dataset
    annotation_set
    annotation
+   task
    class_encoding
 
 

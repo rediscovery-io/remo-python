@@ -6,7 +6,23 @@ from copy import deepcopy
 
 
 class Dataset:
+    """
+    Main Remo dataset - from py file
+    """
     def __init__(self, sdk, id: int = None, name: str = None, quantity: int = 0):
+        """
+        Creates dataset
+
+
+        Args:
+            sdk: test
+            id: test
+            name: test
+            quantity: test
+
+
+        """
+
         self.sdk = sdk
         self.id = id
         self.name = name
