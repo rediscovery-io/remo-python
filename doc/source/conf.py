@@ -42,7 +42,7 @@ extensions = [
     # 'sphinx.ext.imgmath',
     # 'sphinx.ext.ifconfig',
     'sphinxcontrib.napoleon',
-    # 'sphinx_markdown_builder'
+    'sphinx_markdown_builder'
 ]
 
 # autosummary_generate = True
