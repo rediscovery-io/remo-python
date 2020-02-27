@@ -444,7 +444,7 @@ class SDK:
 
     def list_dataset_images(self, dataset_id: int, folder_id: int = None, limit: int = None) -> list:
         """
-        Given a dataset id returns list of the dataset images
+        Returns a list of images within a dataset with given dataset_id
 
         Args:
             dataset_id: dataset id

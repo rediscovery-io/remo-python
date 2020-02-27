@@ -72,7 +72,7 @@ class Dataset:
     ) -> dict:
         """
         Adds images and/or annotations into dataset.
-        To be able add annotations, you need to provide annotation task.
+        To add annotations you need to specify an annotation task.
 
         Args:
             local_files: list of files or directories.
@@ -129,7 +129,7 @@ class Dataset:
 
     def list_annotation_sets(self) -> List[AnnotationSet]:
         """
-        Lists of the annotation sets within the dataset
+        Lists the annotation sets within the dataset
 
         Returns:
             List[:class:`remo.AnnotationSet`]
@@ -199,7 +199,8 @@ class Dataset:
         self, annotation_task: str, name: str, classes: List[str], path_to_annotation_file: str = None
     ) -> AnnotationSet:
         """
-        Creates a new empty annotation set and pushes the annotations if path_to_annotation_file is provided.
+        Creates a new annotation set.
+        If path_to_annotation_file is provided, it populates it with the given annotations.
 
         Args:
             annotation_task: annotation task. See also: :class:`remo.task`
@@ -231,7 +232,7 @@ class Dataset:
     ):
         """
         Uploads annotations from a custom annotation file to an annotation set.
-        For supported annotation files format use :func:`add_data` function
+        If using a supported annotation format, you can directly use :func:`add_data` function
 
         Args:
             file_path: path to annotation file to upload
@@ -278,7 +279,7 @@ class Dataset:
 
     def get_annotation_set(self, id: int) -> AnnotationSet:
         """
-        Retrieves annotation set by id
+        Retrieves annotation set with given id
 
         Args:
             id: annotation set id
@@ -300,7 +301,7 @@ class Dataset:
 
     def _get_annotation_set_or_default(self, annotation_set_id: int = None) -> AnnotationSet:
         """
-        Retrieves default annotation set or get by id
+        Retrieves default annotation set, or the annotation set with the given id
 
         Args:
             annotation_set_id: annotation set id
@@ -315,7 +316,7 @@ class Dataset:
 
     def get_annotation_statistics(self, annotation_set_id: int = None):
         """
-        Prints annotation statistics of all the available annotation sets of the dataset
+        Prints annotation statistics of all the available annotation sets within the dataset
 
         Returns:
             list of dictionaries with fields annotation set id, name, num of images, num of classes, num of objects, top3 classes, release and update dates
@@ -343,7 +344,7 @@ class Dataset:
 
     def list_classes(self, annotation_set_id: int = None) -> List[str]:
         """
-        Lists information of the classes within the dataset
+        Lists all the classes within the dataset
 
         Args:
              annotation_set_id: annotation set id. If not specified the default annotation set is considered.
@@ -384,7 +385,7 @@ class Dataset:
 
     def _initialize_annotation_set(self):
         """
-        Initializes the default annotation set to the first annotation set of the dataset.
+        Initializes the default annotation set for the dataset to the first-created annotation set
         """
         self.annotation_sets = self.sdk.list_annotation_sets(self.id)
         if self.annotation_sets:
@@ -392,7 +393,7 @@ class Dataset:
 
     def _initialise_annotations(self, annotation_set_id: int = None):
         """
-        Initializes annotations of the dataset. If annotation set is not specified, assigns annotations of the default annotation set.
+        Initializes annotations of the dataset. If a annotation set id is not specified, it assigns annotations to the default annotation set.
 
         Args:
             annotation_set_id: annotation set id
@@ -457,7 +458,7 @@ class Dataset:
     def get_images_by_search(self, class_list: List[str], task: str):
         #  TODO: doesn't work
         """
-        Given a class list and task returns image list
+        Given a list of classes and annotation task, it returns a list of all the images with mathcing annotations
 
         Args:
             class_list: list of classes
@@ -479,8 +480,8 @@ class Dataset:
 
     def search(self, class_list: List[str], task: str):
         """
-        Given list of desired classes and an annotation task, returns a subset of the dataset by limiting images and their annotations to that classes and the annotation task.
-
+        Given a list of classes and annotation task, it returns a list of all the images with mathcing annotations
+        
         Args:
             class_list: list of classes with the same images
             task: annotation task. See also: :class:`remo.task`
