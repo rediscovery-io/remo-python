@@ -313,15 +313,15 @@ class SDK:
 
     def get_annotations(self, dataset_id: int, annotation_set_id: int) -> List[Annotation]:
         """
-            Returns all annotations for giving annotation set
+        Returns all annotations for giving annotation set
 
-            Args:
-                dataset_id: dataset id
-                annotation_set_id: annotation set id
+        Args:
+            dataset_id: dataset id
+            annotation_set_id: annotation set id
 
-            Returns:
-                 List[:class:`remo.Annotation`]
-            """
+        Returns:
+             List[:class:`remo.Annotation`]
+        """
         images = self.get_all_dataset_images(dataset_id)
         return [self.get_annotation(dataset_id, annotation_set_id, img.id) for img in images]
 

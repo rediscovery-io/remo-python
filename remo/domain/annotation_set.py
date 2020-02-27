@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, TypeVar
 
-from .dataset import Dataset
+Dataset = TypeVar('Dataset')
 
 
 class AnnotationSet:
@@ -10,7 +10,7 @@ class AnnotationSet:
     Args:
         id: annotation set id
         name: annotation set name
-        task: annotation task. See also: `:class:remo.task`
+        task: annotation task. See also: :class:`remo.task`
         dataset_id: dataset id
         total_classes: total annotation classes
         updated_at: date, when annotation set was last updated
@@ -35,18 +35,18 @@ class AnnotationSet:
     )
 
     def __init__(
-        self,
-        sdk,
-        id: int = None,
-        name: str = None,
-        task: str = None,
-        dataset_id: int = None,
-        total_classes=None,
-        updated_at=None,
-        released_at=None,
-        total_images: int = None,
-        top3_classes=None,
-        total_annotation_objects: int = None,
+            self,
+            sdk,
+            id: int = None,
+            name: str = None,
+            task: str = None,
+            dataset_id: int = None,
+            total_classes=None,
+            updated_at=None,
+            released_at=None,
+            total_images: int = None,
+            top3_classes=None,
+            total_annotation_objects: int = None,
     ):
         self.sdk = sdk
         self.id = id
@@ -69,7 +69,7 @@ class AnnotationSet:
         return self.__str__()
 
     def export_annotations(
-        self, annotation_format: str = 'json', export_coordinates: str = 'pixel', full_path: str = 'true'
+            self, annotation_format: str = 'json', export_coordinates: str = 'pixel', full_path: str = 'true'
     ):
         """
         Exports annotations in giving format
@@ -104,6 +104,9 @@ class AnnotationSet:
     def get_classes(self) -> List[str]:
         """
         List classes within the annotation set
+
+        Returns:
+            List of classes
         """
         return self.sdk.list_annotation_classes(self.id)
 
