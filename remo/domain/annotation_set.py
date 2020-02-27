@@ -21,13 +21,33 @@ class AnnotationSet:
     """
 
     __slots__ = (
-        'sdk', 'id', 'name', 'task', 'dataset_id', 'total_classes', 'updated_at', 'released_at',
+        'sdk',
+        'id',
+        'name',
+        'task',
+        'dataset_id',
+        'total_classes',
+        'updated_at',
+        'released_at',
         'total_images',
-        'top3_classes', 'total_annotation_objects')
+        'top3_classes',
+        'total_annotation_objects',
+    )
 
-    def __init__(self, sdk, id: int = None, name: str = None, task: str = None, dataset_id: int = None,
-                 total_classes=None, updated_at=None, released_at=None, total_images: int = None,
-                 top3_classes=None, total_annotation_objects: int = None):
+    def __init__(
+        self,
+        sdk,
+        id: int = None,
+        name: str = None,
+        task: str = None,
+        dataset_id: int = None,
+        total_classes=None,
+        updated_at=None,
+        released_at=None,
+        total_images: int = None,
+        top3_classes=None,
+        total_annotation_objects: int = None,
+    ):
         self.sdk = sdk
         self.id = id
         self.name = name
@@ -42,13 +62,15 @@ class AnnotationSet:
 
     def __str__(self):
         return "Annotation set {id} - '{name}', task: {task}, #classes: {total_classes}".format(
-            id=self.id, name=self.name, task=self.task, total_classes=self.total_classes)
+            id=self.id, name=self.name, task=self.task, total_classes=self.total_classes
+        )
 
     def __repr__(self):
         return self.__str__()
 
-    def export_annotations(self, annotation_format: str = 'json', export_coordinates: str = 'pixel',
-                           full_path: str = 'true'):
+    def export_annotations(
+        self, annotation_format: str = 'json', export_coordinates: str = 'pixel', full_path: str = 'true'
+    ):
         """
         Exports annotations in giving format
 
@@ -60,8 +82,12 @@ class AnnotationSet:
         Returns:
             annotation file content
         """
-        return self.sdk.export_annotations(self.id, annotation_format=annotation_format,
-                                           export_coordinates=export_coordinates, full_path=full_path)
+        return self.sdk.export_annotations(
+            self.id,
+            annotation_format=annotation_format,
+            export_coordinates=export_coordinates,
+            full_path=full_path,
+        )
 
     def export_annotation_to_csv(self, output_file: str, dataset: Dataset):
         """
