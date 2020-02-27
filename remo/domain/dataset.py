@@ -55,17 +55,21 @@ class Dataset:
 
         new_img_name_list = [img.name for img in new_self.images]
         new_self.annotations = list(
-            filter(lambda annotation: annotation.get('file_name') in new_img_name_list, self.annotations))
+            filter(lambda annotation: annotation.get('file_name') in new_img_name_list, self.annotations)
+        )
 
         return new_self
 
-    def add_data(self, local_files: List[str] = None,
-                 paths_to_upload: List[str] = None,
-                 urls: List[str] = None,
-                 annotation_task: str = None,
-                 folder_id: int = None,
-                 annotation_set_id: int = None,
-                 class_encoding=None) -> dict:
+    def add_data(
+        self,
+        local_files: List[str] = None,
+        paths_to_upload: List[str] = None,
+        urls: List[str] = None,
+        annotation_task: str = None,
+        folder_id: int = None,
+        annotation_set_id: int = None,
+        class_encoding=None,
+    ) -> dict:
         """
         Adds images and/or annotations into dataset.
         To be able add annotations, you need to provide annotation task.
@@ -105,14 +109,16 @@ class Dataset:
 
         """
 
-        return self.sdk.add_data_to_dataset(self.id,
-                                            local_files=local_files,
-                                            paths_to_upload=paths_to_upload,
-                                            urls=urls,
-                                            annotation_task=annotation_task,
-                                            folder_id=folder_id,
-                                            annotation_set_id=annotation_set_id,
-                                            class_encoding=class_encoding)
+        return self.sdk.add_data_to_dataset(
+            self.id,
+            local_files=local_files,
+            paths_to_upload=paths_to_upload,
+            urls=urls,
+            annotation_task=annotation_task,
+            folder_id=folder_id,
+            annotation_set_id=annotation_set_id,
+            class_encoding=class_encoding,
+        )
 
     def fetch(self):
         """
@@ -130,9 +136,13 @@ class Dataset:
         """
         return self.sdk.list_annotation_sets(self.id)
 
-    def export_annotations(self, annotation_set_id: int = None, annotation_format: str = 'json',
-                           export_coordinates: str = 'pixel',
-                           full_path: str = 'true'):
+    def export_annotations(
+        self,
+        annotation_set_id: int = None,
+        annotation_format: str = 'json',
+        export_coordinates: str = 'pixel',
+        full_path: str = 'true',
+    ):
         """
         Export annotations
         
@@ -147,9 +157,11 @@ class Dataset:
         """
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
         if annotation_set:
-            return annotation_set.export_annotations(annotation_format=annotation_format,
-                                                     export_coordinates=export_coordinates,
-                                                     full_path=full_path)
+            return annotation_set.export_annotations(
+                annotation_format=annotation_format,
+                export_coordinates=export_coordinates,
+                full_path=full_path,
+            )
 
         print('ERROR: annotation set not defined')
 
@@ -183,8 +195,9 @@ class Dataset:
                 annotation.add_item(classes=classes, bbox=bbox)
         return annotation
 
-    def create_annotation_set(self, annotation_task: str, name: str, classes: List[str],
-                              path_to_annotation_file: str = None) -> AnnotationSet:
+    def create_annotation_set(
+        self, annotation_task: str, name: str, classes: List[str], path_to_annotation_file: str = None
+    ) -> AnnotationSet:
         """
         Creates a new empty annotation set and pushes the annotations if path_to_annotation_file is provided.
 
@@ -200,15 +213,22 @@ class Dataset:
         annotation_set = self.sdk.create_annotation_set(annotation_task, self.id, name, classes)
 
         if annotation_set and path_to_annotation_file:
-            self.add_data(paths_to_upload=[path_to_annotation_file], annotation_task=annotation_task,
-                          annotation_set_id=annotation_set.id)
+            self.add_data(
+                paths_to_upload=[path_to_annotation_file],
+                annotation_task=annotation_task,
+                annotation_set_id=annotation_set.id,
+            )
 
             annotation_set = self.sdk.get_annotation_set(annotation_set.id)
 
         return annotation_set
 
-    def add_annotations_from_file(self, file_path: str, parser_function: Callable[[str], List[Annotation]],
-                                  annotation_set_id: int = None):
+    def add_annotations_from_file(
+        self,
+        file_path: str,
+        parser_function: Callable[[str], List[Annotation]],
+        annotation_set_id: int = None,
+    ):
         """
         Uploads annotations from a custom annotation file to an annotation set.
         For supported annotation files format use :func:`add_data` function
@@ -307,10 +327,16 @@ class Dataset:
         for ann_set in self.annotation_sets:
 
             if (annotation_set_id is None) or (annotation_set_id == ann_set.id):
-                stat = {'AnnotationSet ID': ann_set.id, 'AnnotationSet name': ann_set.name,
-                        'n_images': ann_set.total_images, 'n_classes': ann_set.total_classes,
-                        'n_objects': ann_set.total_annotation_objects, 'top_3_classes': ann_set.top3_classes,
-                        'creation_date': ann_set.released_at, 'last_modified_date': ann_set.updated_at}
+                stat = {
+                    'AnnotationSet ID': ann_set.id,
+                    'AnnotationSet name': ann_set.name,
+                    'n_images': ann_set.total_images,
+                    'n_classes': ann_set.total_classes,
+                    'n_objects': ann_set.total_annotation_objects,
+                    'top_3_classes': ann_set.top3_classes,
+                    'creation_date': ann_set.released_at,
+                    'last_modified_date': ann_set.updated_at,
+                }
 
                 statistics.append(stat)
         return statistics
@@ -439,14 +465,15 @@ class Dataset:
         Returns:
             list of dictionaries containing classes, task and image content
         """
-        # TODO: add tags 
+        # TODO: add tags
         # TODO: turn into an image object
         result = self.search(class_list, task)
         img_list = []
         for i in range(len(result)):
             r = self.sdk.get_image(result.images[i]['preview'])
             img_list.append(
-                {'classes': result.annotations[i]['classes'], 'task': task, 'img': BytesIO(r.content)})
+                {'classes': result.annotations[i]['classes'], 'task': task, 'img': BytesIO(r.content)}
+            )
         return img_list
 
     def search(self, class_list: List[str], task: str):
@@ -467,7 +494,8 @@ class Dataset:
         new_img_name_list = [im.get('name') for im in result]
         filtered_dataset.images = list(filter(lambda im: im.name in new_img_name_list, self.images))
         filtered_dataset.annotations = list(
-            filter(lambda annotation: annotation.get('file_name') in new_img_name_list, self.annotations))
+            filter(lambda annotation: annotation.get('file_name') in new_img_name_list, self.annotations)
+        )
 
         return filtered_dataset
 
