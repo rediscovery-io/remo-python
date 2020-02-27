@@ -3,7 +3,7 @@ Class encodings allows to do converting between labels and class names on import
 
 Class encoding can be:
 
-- one of predefined value: `WordNet`, `GoogleKnowledgeGraph`
+- one of predefined value: ``WordNet``, ``GoogleKnowledgeGraph``
 
 - local path to csv file with labels and classes::
 

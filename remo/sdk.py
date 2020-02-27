@@ -1,4 +1,5 @@
 import csv
+from io import BytesIO
 from operator import itemgetter
 from typing import List, Callable, Union
 
@@ -496,7 +497,7 @@ class SDK:
         """
         return self.api.get_images_by_id(dataset_id, image_id)
 
-    def get_image(self, url: str) -> bytes:
+    def get_image_content(self, url: str) -> bytes:
         """
         Get image file content by url
 
@@ -506,7 +507,8 @@ class SDK:
         Returns:
             image binary data
         """
-        return self.api.get_image(url)
+        r = self.api.get_image_content(url)
+        return BytesIO(r.content)
 
     def get_image_by_id(self, image_id: int) -> Image:
         """

@@ -340,7 +340,7 @@ class API(BaseAPI):
         image_url = self.url(content['image'])
         return self.get(image_url)
 
-    def get_image(self, url):
+    def get_image_content(self, url):
         return self.get(self.url(url))
 
     def get_image_by_id(self, image_id):

@@ -470,9 +470,9 @@ class Dataset:
         result = self.search(class_list, task)
         img_list = []
         for i in range(len(result)):
-            r = self.sdk.get_image(result.images[i]['preview'])
+            content = self.sdk.get_image_content(result.images[i]['preview'])
             img_list.append(
-                {'classes': result.annotations[i]['classes'], 'task': task, 'img': BytesIO(r.content)}
+                {'classes': result.annotations[i]['classes'], 'task': task, 'img': content}
             )
         return img_list
 
