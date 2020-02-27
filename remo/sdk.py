@@ -1,4 +1,5 @@
 import csv
+from operator import itemgetter
 from typing import List, Callable, Union
 
 from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
@@ -257,7 +258,7 @@ class SDK:
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
 
         Returns:
-            annotations
+            annotation file content
         """
         return self.api.export_annotations(
             annotation_set_id,
@@ -399,8 +400,19 @@ class SDK:
             dataset_id, annotation_set_id, image_id, annotation_info, classes=classes, objects=objects
         )
 
-    def _list_annotation_classes(self, annotation_set_id: int = None):
-        return self.api.list_annotation_classes(annotation_set_id)
+    def list_annotation_classes(self, annotation_set_id: int) -> List[str]:
+        """
+        List classes within the annotation set
+
+        Args:
+            annotation_set_id: annotation set id
+
+        Returns:
+            list of classes
+        """
+        json_data = self.api.list_annotation_classes(annotation_set_id)
+        results = json_data.get('results', [])
+        return list(map(itemgetter('class'), results))
 
     def export_annotation_to_csv(self, annotation_set_id: int, output_file: str, dataset: Dataset):
         """

@@ -28,10 +28,13 @@ class UploadStatus:
             avg_speed = self.current_count / elapsed
             eta = timedelta(seconds=(self.total_count - self.current_count) / avg_speed)
             print(
-                'Progress {}% - {}/{} - elapsed {} - speed: {} img / s, ETA: {}'.format(percentage, self.current_count,
+                'Progress {}% - {}/{} - elapsed {} - speed: {} img / s, ETA: {}'.format(percentage,
+                                                                                        self.current_count,
                                                                                         self.total_count,
-                                                                                        timedelta(seconds=elapsed),
-                                                                                        "%.2f" % avg_speed, eta))
+                                                                                        timedelta(
+                                                                                            seconds=elapsed),
+                                                                                        "%.2f" % avg_speed,
+                                                                                        eta))
         self.reported_progress = percentage
 
 
@@ -200,7 +203,8 @@ class API(BaseAPI):
         status = UploadStatus(len(files))
         with ThreadPoolExecutor(1) as ex:
             res = ex.map(
-                lambda bulk: self.upload_files(dataset_id, bulk, annotation_task, folder_id, status, annotation_set_id,
+                lambda bulk: self.upload_files(dataset_id, bulk, annotation_task, folder_id, status,
+                                               annotation_set_id,
                                                class_encoding),
                 groups)
 
@@ -232,7 +236,8 @@ class API(BaseAPI):
             groups.append(bulk)
         return groups
 
-    def upload_local_files(self, dataset_id, local_files, annotation_task=None, folder_id=None, annotation_set_id=None,
+    def upload_local_files(self, dataset_id, local_files, annotation_task=None, folder_id=None,
+                           annotation_set_id=None,
                            class_encoding=None):
         payload = {"local_files": local_files}
         if annotation_task:
@@ -317,7 +322,7 @@ class API(BaseAPI):
         url = self.url(backend.annotation_info.format(dataset_id, annotation_set_id, image_id))
         return self.get(url).json()
 
-    def list_annotation_classes(self, annotation_set_id:int=None):
+    def list_annotation_classes(self, annotation_set_id: int):
         """
 
         Args:
