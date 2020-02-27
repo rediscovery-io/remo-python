@@ -38,7 +38,8 @@ class AnnotationSet:
 
     def export_annotation_to_csv(self, output_file, dataset):
         """
-        @deprecated: use `export_annotations` instead
+        .. deprecated:: 0.0.13
+            Use `:func:export_annotations` instead
 
         Takes annotations and saves as a .csv file
         Args:
