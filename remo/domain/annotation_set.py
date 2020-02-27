@@ -44,7 +44,7 @@ class AnnotationSet:
         Args:
             output_file: .csv path
         """
-        self.sdk._export_annotation_to_csv(self.id, output_file, dataset)
+        self.sdk.export_annotation_to_csv(self.id, output_file, dataset)
 
     def get_classes(self):
         """

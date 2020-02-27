@@ -2,9 +2,9 @@
 Annotation tasks uses in annotation sets.
 
 Available annotation tasks:
-    - Object detection
-    - Instance segmentation
-    - Image classification
+    - Object detection, supports: Coco, Open Images, Pascal.
+    - Instance segmentation, supports: Coco.
+    - Image classification, supports: ImageNet.
 """
 
 object_detection = 'Object detection'

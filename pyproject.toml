@@ -1,0 +1,15 @@
+[tool.black]
+skip-string-normalization = true
+line-length = 110
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.tox
+  | \.venv
+  | _build
+  | build
+  | dist
+  | doc
+)/
+'''

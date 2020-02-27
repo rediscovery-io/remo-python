@@ -88,7 +88,7 @@ class Dataset:
             - folder_id: if there is a folder in the target remo id, and you want to add images to a specific folder, you can specify it here.
         """
 
-        return self.sdk.add_data_to_dataset(dataset_id=self.id,
+        return self.sdk.add_data_to_dataset(self.id,
                                             local_files=local_files,
                                             paths_to_upload=paths_to_upload,
                                             urls=urls,
