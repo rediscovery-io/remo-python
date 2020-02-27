@@ -11,10 +11,12 @@ class Annotation:
         task: name of annotation task. See also: :class:`remo.task`
         tags: list of tags
     """
+
     __slots__ = ('img_filename', 'status', 'task', 'tags', 'items')
 
-    def __init__(self, img_filename: str = None, status: str = None, task: str = None,
-                 tags: List[str] = None):
+    def __init__(
+        self, img_filename: str = None, status: str = None, task: str = None, tags: List[str] = None
+    ):
         self.img_filename = img_filename
         self.status = status
         self.task = task
@@ -48,6 +50,7 @@ class Annotation:
             bbox: list of bbox coordinates like ['xmin', 'ymin', 'xmax', 'ymax']
             segment: list of segment coordinates [x0, y0, x1, y1, ..., xN, yN]
         """
+
         __slots__ = ('classes', 'segments', 'bbox')
 
         def __init__(self, classes: List[str] = None, bbox: List[int] = None, segment: List[int] = None):
@@ -75,6 +78,7 @@ class Annotation:
             xmax: X max
             ymax: Y max
         """
+
         __slots__ = ('xmin', 'ymin', 'xmax', 'ymax')
 
         def __init__(self, xmin: int, ymin: int, xmax: int, ymax: int):
@@ -90,10 +94,8 @@ class Annotation:
         Args:
             points: list of segment coordinates [x0, y0, x1, y1, ..., xN, yN]
         """
+
         __slots__ = ('points',)
 
         def __init__(self, points: List[int]):
-            self.points = [
-                {'x': x, 'y': y}
-                for x, y in zip(points[::2], points[1::2])
-            ]
+            self.points = [{'x': x, 'y': y} for x, y in zip(points[::2], points[1::2])]
