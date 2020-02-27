@@ -72,7 +72,7 @@ class AnnotationSet:
             self, annotation_format: str = 'json', export_coordinates: str = 'pixel', full_path: str = 'true'
     ):
         """
-        Exports annotations in giving format
+        Exports annotations in a given format
 
         Args:
             annotation_format: choose format from this list ['json', 'coco', 'csv']
@@ -94,7 +94,7 @@ class AnnotationSet:
         .. deprecated:: 0.0.13
             Use `:func:export_annotations` instead
 
-        Exports annotations to .csv file
+        Exports annotations to a .csv file
         Args:
             output_file: .csv path
             dataset: dataset to export annotations from

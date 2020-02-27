@@ -145,7 +145,7 @@ class Dataset:
     ):
         """
         Export annotations
-        
+
         Args:
             annotation_set_id: annotation set id, by default will be used default_annotation_set
             annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
@@ -167,7 +167,7 @@ class Dataset:
 
     def get_annotation(self, dataset_id: int, annotation_set_id: int, image_id: int) -> Annotation:
         """
-        Retrieves annotation for giving image
+        Retrieves annotation for a given image
 
         Args:
             dataset_id: dataset id
@@ -232,7 +232,7 @@ class Dataset:
         """
         Uploads annotations from a custom annotation file to an annotation set.
         For supported annotation files format use :func:`add_data` function
-        
+
         Args:
             file_path: path to annotation file to upload
             parser_function: function which receives file_path and returns a List[:class:`remo.Annotation`]
@@ -403,7 +403,8 @@ class Dataset:
 
     def get_annotations(self, annotation_set_id: int = None) -> List[Annotation]:
         """
-        Returns all annotations for giving or default annotation set
+        Returns all annotations for the default or given annotation set.
+        If no annotation set is specified, the default annotation set will be used
 
         Args:
             annotation_set_id: annotation set id
@@ -441,7 +442,7 @@ class Dataset:
 
     def get_images_by_id(self, image_id: int) -> bytes:
         """
-        Retrieves content for giving image
+        Retrieves content for a given image
 
         Args:
             image_id: image id
@@ -507,7 +508,7 @@ class Dataset:
 
     def view_annotate(self, annotation_set_id: int = None):
         """
-        Opens browser on the annotation tool for giving annotation set
+        Opens browser on the annotation tool for the given annotation set
 
         Args:
               annotation_set_id: annotation set id. If not specified, default one be used.
@@ -529,7 +530,7 @@ class Dataset:
 
     def view_image(self, image_id: int):
         """
-        Opens browser on image view page for giving image
+        Opens browser on image view page for the given image
 
         Args:
             image_id: image id
