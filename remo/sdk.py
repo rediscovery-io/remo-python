@@ -65,12 +65,11 @@ class SDK:
         """
 
         json_data = self.api.create_dataset(name)
-        ds = Dataset(self, id=json_data.get('id'), name=json_data.get('name'))
+        ds = Dataset(self, **json_data)
         ds.add_data(
             local_files, paths_to_upload, urls, annotation_task=annotation_task, class_encoding=class_encoding
         )
         ds.fetch()
-        # TODO: there is a problem in fetching annotation sets
         return ds
 
     def add_data_to_dataset(
@@ -170,10 +169,10 @@ class SDK:
         Returns:
             List[:class:`remo.Dataset`]
         """
-        resp = self.api.list_datasets()
+        json_data = self.api.list_datasets()
         return [
-            Dataset(self, id=dataset['id'], name=dataset['name'], quantity=dataset['quantity'])
-            for dataset in resp.get('results', [])
+            Dataset(self, **ds_item)
+            for ds_item in json_data.get('results', [])
         ]
 
     def get_dataset(self, dataset_id: int) -> Dataset:
@@ -186,12 +185,8 @@ class SDK:
         Returns:
             :class:`remo.Dataset`
         """
-        resp = self.api.get_dataset(dataset_id)
-        dataset = Dataset(self, id=resp['id'], name=resp['name'], quantity=resp['quantity'])
-        dataset._initialize_annotation_set()
-        dataset._initialise_annotations()
-        dataset._initialise_images()
-        return dataset
+        json_data = self.api.get_dataset(dataset_id)
+        return Dataset(self, **json_data)
 
     def list_annotation_sets(self, dataset_id: int) -> List[AnnotationSet]:
         """
@@ -248,7 +243,7 @@ class SDK:
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
         full_path: str = 'true',
-    ):
+    ) -> bytes:
         """
         Exports annotations in given format
 
@@ -270,8 +265,8 @@ class SDK:
 
     def export_annotations_to_file(
         self,
-        annotation_set_id: int,
         output_file: str,
+        annotation_set_id: int,
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
         full_path: str = 'true',
@@ -280,8 +275,8 @@ class SDK:
         Exports annotations in given format
 
         Args:
-            annotation_set_id: annotation set id
             output_file: output file to save
+            annotation_set_id: annotation set id
             annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
             full_path: uses full image path (e.g. local path), can be one of ['true', 'false'], default='false'
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
@@ -351,7 +346,7 @@ class SDK:
                 annotation.add_item(classes=classes, bbox=bbox)
         return annotation
 
-    def get_annotations(self, dataset_id: int, annotation_set_id: int) -> List[Annotation]:
+    def list_annotations(self, dataset_id: int, annotation_set_id: int) -> List[Annotation]:
         """
         Returns all annotations for a given annotation set
 
@@ -486,8 +481,7 @@ class SDK:
         Returns:
             image binary data
         """
-        r = self.api.get_image_content(url)
-        return BytesIO(r.content)
+        return self.api.get_image_content(url)
 
     def get_image(self, image_id: int) -> Image:
         """
@@ -525,6 +519,7 @@ class SDK:
         Returns:
             image_id, dataset_id, name, annotations
         """
+        # TODO: check this function
         return self.api.search_images(classes, task, dataset_id, limit)
 
     def view_search(self):

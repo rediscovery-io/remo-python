@@ -33,6 +33,7 @@ class AnnotationSet:
         total_images: int = None,
         top3_classes=None,
         total_annotation_objects: int = None,
+        **kwargs
     ):
         self.sdk = sdk
         self.id = id
