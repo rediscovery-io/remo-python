@@ -112,12 +112,12 @@ class AnnotationSet:
 
     def view(self):
         """
-        Opens browser on annotation set page
+        Opens browser on the annotation tool page for this annotation set
         """
-        self.sdk.view_annotation_set(self.id)
+        self.sdk.view_annotation_tool(self.id)
 
-    def view_stats(self):
+    def view_insights(self):
         """
-        Opens browser on annotation set statistics page
+        Opens browser on annotation set insights page
         """
-        self.sdk.view_annotation_stats(self.id)
+        self.sdk.view_annotation_insights(self.id)

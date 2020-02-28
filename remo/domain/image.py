@@ -1,3 +1,12 @@
+import os
+import shutil
+from typing import TypeVar, List
+
+
+Annotation = TypeVar('Annotation')
+AnnotationSet = TypeVar('AnnotationSet')
+
+
 class Image:
     __slots__ = ('sdk', 'id', 'name', 'dataset_id', 'url', 'path', 'size', 'width', 'height', 'upload_date')
 
@@ -25,13 +34,6 @@ class Image:
         self.height = height
         self.upload_date = upload_date
 
-    # save_to(path)
-    # get_annotation_sets()
-    # get_annotation(annotation_set_id)
-    # add_annotation(Annotation)
-    # view()
-    # annotate(annotation_set_id)
-
     def __str__(self):
         return 'Image: {} - {}'.format(self.id, self.name)
 
@@ -50,3 +52,79 @@ class Image:
             return
 
         return self.sdk.get_image_content(self.url)
+
+    @staticmethod
+    def _resolve_path(path: str):
+        if path.startswith('~'):
+            path = os.path.expanduser(path)
+        return os.path.realpath(os.path.abspath(path))
+
+    def save_to(self, dir_path: str):
+        """
+        Save image to giving directory
+
+        Args:
+            dir_path: path to the directory
+        """
+        dir_path = self._resolve_path(dir_path)
+        os.makedirs(dir_path, exist_ok=True)
+        file_path = os.path.join(dir_path, self.name)
+        print('file_path:', file_path)
+
+        if self.path:
+            shutil.copy(self.path, file_path)
+            return
+
+        img_content = self.get_content()
+        if not img_content:
+            return
+
+        img_content.seek(0)
+        with open(file_path, 'wb') as img_file:
+            shutil.copyfileobj(img_content, img_file)
+
+    def list_annotation_sets(self) -> List[AnnotationSet]:
+        """
+        Lists annotations sets
+
+        Returns:
+            List[:class:`remo.AnnotationSet`]
+        """
+        return self.sdk.list_annotation_sets(self.dataset_id)
+
+    def get_annotation(self, annotation_set_id: int) -> Annotation:
+        """
+        Retrieves image annotation from giving annotation set
+
+        Args:
+            annotation_set_id: annotation set id
+
+        Returns:
+             :class:`remo.Annotation`
+        """
+        return self.sdk.get_annotation(self.dataset_id, annotation_set_id, self.id)
+
+    def add_annotation(self, annotation: Annotation):
+        """
+        Adds new annotation to the image
+
+        Args:
+            annotation: annotation data
+        """
+        pass
+        # TODO: add implementation
+
+    def view(self):
+        """
+        Opens browser on image view for the image
+        """
+        self.sdk.view_image(self.id, self.dataset_id)
+
+    def view_annotate(self, annotation_set_id: int):
+        """
+        Opens browser on the annotation tool for giving annotation set
+
+        Args:
+            annotation_set_id: annotation set id
+        """
+        self.sdk.view_annotate_image(annotation_set_id, self.id)

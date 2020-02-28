@@ -11,7 +11,6 @@ from .utils import FileResolver
 
 
 class UploadStatus:
-
     def __init__(self, total_count):
         self.total_count = total_count
         self.current_count = 0
@@ -28,13 +27,15 @@ class UploadStatus:
             avg_speed = self.current_count / elapsed
             eta = timedelta(seconds=(self.total_count - self.current_count) / avg_speed)
             print(
-                'Progress {}% - {}/{} - elapsed {} - speed: {} img / s, ETA: {}'.format(percentage,
-                                                                                        self.current_count,
-                                                                                        self.total_count,
-                                                                                        timedelta(
-                                                                                            seconds=elapsed),
-                                                                                        "%.2f" % avg_speed,
-                                                                                        eta))
+                'Progress {}% - {}/{} - elapsed {} - speed: {} img / s, ETA: {}'.format(
+                    percentage,
+                    self.current_count,
+                    self.total_count,
+                    timedelta(seconds=elapsed),
+                    "%.2f" % avg_speed,
+                    eta,
+                )
+            )
         self.reported_progress = percentage
 
 
@@ -46,8 +47,7 @@ class BaseAPI:
 
     def _login(self, email, password):
         try:
-            resp = requests.post(self.url(backend.login),
-                                 data={"password": password, "email": email})
+            resp = requests.post(self.url(backend.login), data={"password": password, "email": email})
         except requests.exceptions.ConnectionError:
             print('ERROR: Failed connect to server')
             return
@@ -114,7 +114,6 @@ class BaseAPI:
 
 
 class API(BaseAPI):
-
     def create_dataset(self, name):
         return self.post(self.url(backend.dataset), json={"name": name}).json()
 
@@ -137,13 +136,14 @@ class API(BaseAPI):
             "annotation_task": annotation_task,
             "classes": classes,
             "dataset_id": dataset_id,
-            "name": name
+            "name": name,
         }
 
         return self.post(self.url(backend.v1_create_annotation_set), json=payload).json()
 
-    def add_annotation(self, dataset_id, annotation_set_id, image_id,
-                       existing_annotations=None, classes=None, objects=None):
+    def add_annotation(
+        self, dataset_id, annotation_set_id, image_id, existing_annotations=None, classes=None, objects=None
+    ):
 
         url = self.url(backend.add_annotation).format(dataset_id, annotation_set_id, image_id)
         existing_annotations = existing_annotations if existing_annotations else []
@@ -170,10 +170,20 @@ class API(BaseAPI):
         return self.post(url, files=files, data=data).json()
 
     # TODO: fix progress to include both local files and uploads
-    def upload_files(self, dataset_id, files_to_upload=[], annotation_task=None, folder_id=None, status=None,
-                     annotation_set_id=None, class_encoding=None):
-        files = [('files', (os.path.basename(path), open(path, 'rb'), filetype.guess_mime(path))) for path in
-                 files_to_upload]
+    def upload_files(
+        self,
+        dataset_id,
+        files_to_upload=[],
+        annotation_task=None,
+        folder_id=None,
+        status=None,
+        annotation_set_id=None,
+        class_encoding=None,
+    ):
+        files = [
+            ('files', (os.path.basename(path), open(path, 'rb'), filetype.guess_mime(path)))
+            for path in files_to_upload
+        ]
         data = {}
         if annotation_task:
             data['annotation_task'] = annotation_task
@@ -182,8 +192,11 @@ class API(BaseAPI):
             for key, val in class_encoding.items():
                 data['class_encoding_{}'.format(key)] = val
 
-        url = self.url(backend.dataset_upload.format(dataset_id), folder_id=folder_id,
-                       annotation_set_id=annotation_set_id)
+        url = self.url(
+            backend.dataset_upload.format(dataset_id),
+            folder_id=folder_id,
+            annotation_set_id=annotation_set_id,
+        )
         r = self.post(url, files=files, data=data)
 
         if r.status_code != http.HTTPStatus.OK:
@@ -194,8 +207,15 @@ class API(BaseAPI):
         return r.json()
 
     # TODO: fix progress to include both local files and uploads
-    def bulk_upload_files(self, dataset_id, files_to_upload, annotation_task=None, folder_id=None,
-                          annotation_set_id=None, class_encoding=None):
+    def bulk_upload_files(
+        self,
+        dataset_id,
+        files_to_upload,
+        annotation_task=None,
+        folder_id=None,
+        annotation_set_id=None,
+        class_encoding=None,
+    ):
 
         # files to upload
         files = FileResolver(files_to_upload, annotation_task is not None).resolve()
@@ -203,10 +223,11 @@ class API(BaseAPI):
         status = UploadStatus(len(files))
         with ThreadPoolExecutor(1) as ex:
             res = ex.map(
-                lambda bulk: self.upload_files(dataset_id, bulk, annotation_task, folder_id, status,
-                                               annotation_set_id,
-                                               class_encoding),
-                groups)
+                lambda bulk: self.upload_files(
+                    dataset_id, bulk, annotation_task, folder_id, status, annotation_set_id, class_encoding
+                ),
+                groups,
+            )
 
         results = res
         return results
@@ -215,7 +236,7 @@ class API(BaseAPI):
         groups = []
         """Yield successive n-sized chunks from l."""
         for i in range(0, len(my_list), chunk_size):
-            groups.append(my_list[i:i + chunk_size])
+            groups.append(my_list[i : i + chunk_size])
 
         return groups
 
@@ -236,9 +257,15 @@ class API(BaseAPI):
             groups.append(bulk)
         return groups
 
-    def upload_local_files(self, dataset_id, local_files, annotation_task=None, folder_id=None,
-                           annotation_set_id=None,
-                           class_encoding=None):
+    def upload_local_files(
+        self,
+        dataset_id,
+        local_files,
+        annotation_task=None,
+        folder_id=None,
+        annotation_set_id=None,
+        class_encoding=None,
+    ):
         payload = {"local_files": local_files}
         if annotation_task:
             payload['annotation_task'] = annotation_task
@@ -250,8 +277,15 @@ class API(BaseAPI):
         url = self.url(backend.dataset_upload.format(dataset_id), annotation_set_id=annotation_set_id)
         return self.post(url, json=payload).json()
 
-    def upload_urls(self, dataset_id, urls, annotation_task=None, folder_id=None, annotation_set_id=None,
-                    class_encoding=None):
+    def upload_urls(
+        self,
+        dataset_id,
+        urls,
+        annotation_task=None,
+        folder_id=None,
+        annotation_set_id=None,
+        class_encoding=None,
+    ):
         payload = {"urls": urls}
         if annotation_task:
             payload['annotation_task'] = annotation_task
@@ -267,8 +301,8 @@ class API(BaseAPI):
         url = self.url(backend.v1_datasets)
         return self.get(url).json()
 
-    def get_all_dataset_images(self, dataset_id):
-        url = self.url(backend.v1_sdk_dataset_images.format(dataset_id))
+    def list_dataset_images(self, dataset_id, limit=None, offset=None):
+        url = self.url(backend.v1_sdk_dataset_images.format(dataset_id), limit=limit, offset=offset)
         return self.get(url).json()
 
     def list_dataset_contents(self, dataset_id, limit=None):
@@ -292,8 +326,9 @@ class API(BaseAPI):
         url = self.url(backend.v1_annotation_set.format(id))
         return self.get(url).json()
 
-    def export_annotations(self, annotation_set_id, annotation_format='json', export_coordinates='pixel',
-                           full_path='true'):
+    def export_annotations(
+        self, annotation_set_id, annotation_format='json', export_coordinates='pixel', full_path='true'
+    ):
         """
         Exports annotations in given format
 
@@ -304,10 +339,12 @@ class API(BaseAPI):
 
         Returns: annotations
         """
-        url = self.url(backend.v1_export_annotations.format(annotation_set_id),
-                       annotation_format=annotation_format,
-                       export_coordinates=export_coordinates,
-                       full_path=full_path)
+        url = self.url(
+            backend.v1_export_annotations.format(annotation_set_id),
+            annotation_format=annotation_format,
+            export_coordinates=export_coordinates,
+            full_path=full_path,
+        )
         return self.get(url).json()
 
     def get_annotation_info(self, dataset_id, annotation_set_id, image_id):
@@ -333,17 +370,10 @@ class API(BaseAPI):
         url = self.url(backend.v1_annotation_classes.format(annotation_set_id))
         return self.get(url).json()
 
-    def get_images_by_id(self, dataset_id, image_id):
-        # @deprecated
-        url = self.url(backend.v1_dataset_image_annotations.format(dataset_id, image_id))
-        content = self.get(url).json()
-        image_url = self.url(content['image'])
-        return self.get(image_url)
-
     def get_image_content(self, url):
         return self.get(self.url(url))
 
-    def get_image_by_id(self, image_id):
+    def get_image(self, image_id):
         url = self.url(backend.v1_sdk_images, image_id, tail_slash=True)
         return self.get(url).json()
 

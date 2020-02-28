@@ -296,7 +296,7 @@ class SDK:
              :class:`remo.Annotation`
         """
         annotation_items = self.get_annotation_info(dataset_id, annotation_set_id, image_id)
-        img = self.get_image_by_id(image_id)
+        img = self.get_image(image_id)
         if not img:
             return None
 
@@ -323,7 +323,7 @@ class SDK:
         Returns:
              List[:class:`remo.Annotation`]
         """
-        images = self.get_all_dataset_images(dataset_id)
+        images = self.list_dataset_images(dataset_id)
         return [self.get_annotation(dataset_id, annotation_set_id, img.id) for img in images]
 
     def create_annotation_set(
@@ -442,38 +442,18 @@ class SDK:
             csv_writer = csv.writer(output)
             exporter(annotation_results, csv_writer)
 
-    def list_dataset_images(self, dataset_id: int, folder_id: int = None, limit: int = None) -> list:
-        """
-        Given a dataset id returns list of the dataset images
-        
-        Args:
-            dataset_id: dataset id
-            folder_id: folder id
-            limit: the number of images to be listed.
-
-        Returns:
-            list of images with their names and ids
-        """
-
-        if folder_id:
-            result = self.api.list_dataset_contents_by_folder(dataset_id, folder_id, limit=limit)
-        else:
-            result = self.api.list_dataset_contents(dataset_id, limit=limit)
-
-        images = [{'id': entry.get('id'), 'name': entry.get('name'),} for entry in result.get('results', [])]
-        return images
-
-    def get_all_dataset_images(self, dataset_id: int) -> List[Image]:
+    def list_dataset_images(self, dataset_id: int, limit: int = None, offset: int = None) -> List[Image]:
         """
         Returns all images for giving dataset.
 
         Args:
             dataset_id: dataset id
-
+            limit: limits result images
+            offset: specifies offset
         Returns:
              List[:class:`remo.Image`]
         """
-        json_data = self.api.get_all_dataset_images(dataset_id)
+        json_data = self.api.list_dataset_images(dataset_id, limit=limit, offset=offset)
         if 'error' in json_data:
             print(
                 'ERROR: failed to get all images for dataset id:{}, error: {}'.format(
@@ -482,20 +462,7 @@ class SDK:
             )
             return None
 
-        return [Image(self, id=img.get('id'), name=img.get('name')) for img in json_data.get('results', [])]
-
-    def get_images_by_id(self, dataset_id: int, image_id: int) -> bytes:
-        """
-        Get image file content by dataset_id and image_id
-
-        Args:
-            dataset_id: int
-            image_id: int
-
-        Returns:
-            image binary data
-        """
-        return self.api.get_images_by_id(dataset_id, image_id)
+        return [Image(self, **img) for img in json_data.get('results', [])]
 
     def get_image_content(self, url: str) -> bytes:
         """
@@ -510,7 +477,7 @@ class SDK:
         r = self.api.get_image_content(url)
         return BytesIO(r.content)
 
-    def get_image_by_id(self, image_id: int) -> Image:
+    def get_image(self, image_id: int) -> Image:
         """
         Retrieves image by giving id.
 
@@ -520,12 +487,12 @@ class SDK:
         Returns:
             :class:`remo.Image`
         """
-        json_data = self.api.get_image_by_id(image_id)
+        json_data = self.api.get_image(image_id)
         if 'error' in json_data:
             print('ERROR: failed to get image by id:{}, err: {}'.format(image_id, json_data.get('error')))
             return None
 
-        return Image(self, id=json_data.get('id'), name=json_data.get('name'))
+        return Image(self, **json_data)
 
     def search_images(
         self,
@@ -548,7 +515,7 @@ class SDK:
         """
         return self.api.search_images(classes, task, dataset_id, limit)
 
-    def view_search(self, cls=None, task=None):
+    def view_search(self):
         """
         Opens browser in search page
         """
@@ -562,19 +529,15 @@ class SDK:
             image_id: image id
             dataset_id: dataset id
         """
-        # TODO: find easier way to check if image belongs to dataset
-        img_list = self.list_dataset_images(dataset_id)
-        contain = False
+        img = self.get_image(image_id)
+        if not img:
+            return
 
-        for img_dict in img_list:
-            if image_id == img_dict['id']:
-                contain = True
-                break
-
-        if contain:
-            self._view(frontend.image_view.format(image_id, dataset_id))
-        else:
+        if img.dataset_id != dataset_id:
             print('Image ID: {} not in dataset {}'.format(image_id, dataset_id))
+            return
+
+        self._view(frontend.image_view.format(image_id, dataset_id))
 
     def open_ui(self):
         """
@@ -591,23 +554,33 @@ class SDK:
         """
         self._view(frontend.datasets, id)
 
-    def view_annotation_set(self, id: int):
+    def view_annotation_tool(self, id: int):
         """
         Opens browser in annotation view for the given annotation set
 
         Args:
             id: annotation set id
         """
-        self._view(frontend.annotation, id)
+        self._view(frontend.annotation.format(id))
 
-    def view_annotation_stats(self, annotation_set_id: int):
+    def view_annotate_image(self, annotation_set_id: int, image_id: int):
         """
-        Opens browser in annotation statistics view for the given annotation set
+        Opens browser on the annotation tool for giving image
+
+        Args:
+            annotation_set_id: annotation set id
+            image_id: image id
+        """
+        self._view(frontend.annotate_image.format(annotation_set_id, image_id))
+
+    def view_annotation_insights(self, annotation_set_id: int):
+        """
+        Opens browser in annotation set insights page
 
         Args:
             annotation_set_id: annotation set id
         """
-        self._view(frontend.annotation_detail.format(annotation_set_id))
+        self._view(frontend.annotation_set_insights.format(annotation_set_id))
 
     def _view(self, url, *args, **kwargs):
         self.browse(self.api.url(url, *args, **kwargs))

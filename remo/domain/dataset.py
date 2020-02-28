@@ -416,28 +416,18 @@ class Dataset:
             return self.sdk.get_annotations(self.id, annotation_set.id)
         print('ERROR: annotation set was not defined.')
 
-    def list_images(self, folder_id: int = None, limit: int = None) -> List[Image]:
+    def list_images(self, limit: int = None, offset: int = None) -> List[Image]:
         """
         Given a dataset id returns list of the dataset images
 
         Args:
-            dataset_id: dataset id
-            folder_id: folder id
-            limit: the number of images to be listed.
+            limit: the number of images to be listed
+            offset: specifies offset
 
         Returns:
             List[:class:`remo.Image`]
         """
-        if not limit:
-            limit = self.quantity
-
-        images = self.sdk.list_dataset_images(self.id, folder_id, limit=limit)
-
-        # TODO: check the issue with Image.path
-        return [
-            Image(self.sdk, id=img.get('id'), path=img, dataset=self.name, name=img.get('name'))
-            for img in images
-        ]
+        return self.sdk.list_dataset_images(self.id, limit=limit, offset=offset)
 
     def get_images_by_id(self, image_id: int) -> bytes:
         """
@@ -471,9 +461,7 @@ class Dataset:
         img_list = []
         for i in range(len(result)):
             content = self.sdk.get_image_content(result.images[i]['preview'])
-            img_list.append(
-                {'classes': result.annotations[i]['classes'], 'task': task, 'img': content}
-            )
+            img_list.append({'classes': result.annotations[i]['classes'], 'task': task, 'img': content})
         return img_list
 
     def search(self, class_list: List[str], task: str):
