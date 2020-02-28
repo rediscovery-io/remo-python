@@ -226,6 +226,10 @@ class Dataset:
             import csv
             from remo import Annotation
 
+            ds = remo.create_dataset(...)
+            ds.add_annotations_from_file('annotations.csv', parser_function)
+            
+
             def parser_function(file_path):
             '''
             File example:
