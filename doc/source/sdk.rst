@@ -8,10 +8,11 @@ Use the SDK class to:
 
 Most of the functions documented below can be called from Python by doing
 
-``` python
-import remo
-remo.function_name()
-```
+.. code-block:: python
+
+    import remo
+
+    remo.function_name()
 
 .. module:: remo
 
