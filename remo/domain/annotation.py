@@ -7,7 +7,7 @@ class Annotation:
 
     Args:
         img_filename: image file name
-        status: can be "not_annotated", "done" and "skipped"
+        status: can be ``not_annotated``, ``done`` or ``skipped``
         task: name of annotation task. See also: :class:`remo.task`
         tags: list of tags
     """
@@ -33,8 +33,8 @@ class Annotation:
 
         Args:
             classes: list of classes
-            bbox: list of bbox coordinates like ['xmin', 'ymin', 'xmax', 'ymax']
-            segment: list of segment coordinates [x0, y0, x1, y1, ..., xN, yN]
+            bbox: list of bbox coordinates like ``['xmin', 'ymin', 'xmax', 'ymax']``
+            segment: list of segment coordinates ``[x0, y0, x1, y1, ..., xN, yN]``
         """
         if classes or bbox or segment:
             self.items.append(Annotation.Item(classes, bbox, segment))
@@ -45,8 +45,8 @@ class Annotation:
 
         Args:
             classes: list of classes
-            bbox: list of bbox coordinates like ['xmin', 'ymin', 'xmax', 'ymax']
-            segment: list of segment coordinates [x0, y0, x1, y1, ..., xN, yN]
+            bbox: list of bbox coordinates like ``['xmin', 'ymin', 'xmax', 'ymax']``
+            segment: list of segment coordinates ``[x0, y0, x1, y1, ..., xN, yN]``
         """
 
         def __init__(self, classes: List[str] = None, bbox: List[int] = None, segment: List[int] = None):
@@ -60,9 +60,15 @@ class Annotation:
             if segment:
                 self.segments.append(Annotation.Segment(segment))
 
-        def add_segment(self, segment):
-            if segment:
-                self.segments.append(Annotation.Segment(segment))
+        def add_segment(self, points: List[int]):
+            """
+            Adds new segment. Uses in instance segmentation.
+
+            Args:
+                points: list of segment coordinates ``[x0, y0, x1, y1, ..., xN, yN]``
+            """
+            if points:
+                self.segments.append(Annotation.Segment(points))
 
     class Bbox:
         """
@@ -86,7 +92,7 @@ class Annotation:
         Represents coordinates of segment. Uses in instance segmentation.
 
         Args:
-            points: list of segment coordinates [x0, y0, x1, y1, ..., xN, yN]
+            points: list of segment coordinates ``[x0, y0, x1, y1, ..., xN, yN]``
         """
 
         def __init__(self, points: List[int]):
