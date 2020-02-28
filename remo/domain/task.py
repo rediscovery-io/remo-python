@@ -1,5 +1,5 @@
 """
-Annotation tasks uses in annotation sets.
+Annotation tasks used in annotation sets.
 
 Available annotation tasks:
 

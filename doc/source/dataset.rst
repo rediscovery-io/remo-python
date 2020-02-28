@@ -1,5 +1,11 @@
-Dataset class allows to manipulate with Remo datasets, add new data, etc.
+A Dataset combines together images and annotations to facilitate processing.
+Use a Dataset to:
 
-.. autoclass:: remo.Dataset
+- query images and annotations in remo
+- annotate
+- export annotations
+- feed data to a training model
+
+W.. autoclass:: remo.Dataset
     :members:
     :undoc-members:

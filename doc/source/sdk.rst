@@ -1,4 +1,17 @@
-SDK allows to work with Remo datasets, annotation set, images, etc.
+The SDK class contains some core functionalities of Remo. It mainly acts as a wrapper around our API endpoints.
+
+Use the SDK class to:
+
+- create a dataset and annotation set
+- list and retrieve datasets
+- export annotations without a need to intialize a dataset
+
+Most of the functions documented below can be called from Python by doing
+
+``` python
+import remo
+remo.function_name()
+```
 
 .. module:: remo
 

@@ -34,9 +34,9 @@ class SDK:
         annotation_task: str = None,
         class_encoding=None,
     ) -> Dataset:
-        """ 
+        """
         Creates a new dataset in Remo and optionally populate it with images and annotations.
-        To be able add annotations, you need to provide annotation task.
+        To add annotations, you need to specify an annotation task.
 
         Args:
             name: name of the dataset.
@@ -178,7 +178,7 @@ class SDK:
 
     def get_dataset(self, dataset_id: int) -> Dataset:
         """
-        Retrieve dataset for giving dataset id.
+        Retrieve dataset for given dataset id.
 
         Args:
             dataset_id: dataset id
@@ -195,7 +195,7 @@ class SDK:
 
     def list_annotation_sets(self, dataset_id: int) -> List[AnnotationSet]:
         """
-        List annotation sets for giving dataset.
+        Returns a list of AnnotationSet containing all the AnnotationSets of a given dataset
 
         Args:
             dataset_id: dataset id
@@ -285,7 +285,7 @@ class SDK:
 
     def get_annotation(self, dataset_id: int, annotation_set_id: int, image_id: int) -> Annotation:
         """
-        Returns annotation for giving image
+        Returns annotation for a given image
 
         Args:
             dataset_id: dataset id
@@ -314,7 +314,7 @@ class SDK:
 
     def get_annotations(self, dataset_id: int, annotation_set_id: int) -> List[Annotation]:
         """
-        Returns all annotations for giving annotation set
+        Returns all annotations for a given annotation set
 
         Args:
             dataset_id: dataset id
@@ -357,7 +357,7 @@ class SDK:
 
     def add_annotation(self, annotation_set_id: int, image_id: int, annotation: Annotation):
         """
-        Adds annotation to the giving image
+        Adds annotation to a given image
 
         Args:
             annotation_set_id: annotation set id
@@ -430,9 +430,7 @@ class SDK:
         exporter = get_json_to_csv_exporter(annotation_set.task)
         if not exporter:
             print(
-                "ERROR: for giving annotation task '{}' export function not implemented".format(
-                    annotation_set.task
-                )
+                "ERROR: Export function for annotation task '{}' not implemented".format(annotation_set.task)
             )
             return
 
@@ -444,7 +442,7 @@ class SDK:
 
     def list_dataset_images(self, dataset_id: int, limit: int = None, offset: int = None) -> List[Image]:
         """
-        Returns all images for giving dataset.
+        Returns a list of images within a dataset with given dataset_id
 
         Args:
             dataset_id: dataset id
@@ -479,7 +477,7 @@ class SDK:
 
     def get_image(self, image_id: int) -> Image:
         """
-        Retrieves image by giving id.
+        Retrieves image by a given image id
 
         Args:
             image_id: image id
@@ -507,7 +505,7 @@ class SDK:
         Args:
             classes: name of the classes to filter dataset.
             task: name of the annotation task to filter dataset
-            dataset_id: narrows search result to giving dataset
+            dataset_id: narrows search result to given dataset
             limit: limits number of search results
 
         Returns:
@@ -523,7 +521,7 @@ class SDK:
 
     def view_image(self, image_id: int, dataset_id: int):
         """
-        Opens browser on the image view for giving image
+        Opens browser on the image view for given image
 
         Args:
             image_id: image id
