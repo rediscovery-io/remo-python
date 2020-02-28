@@ -6,6 +6,6 @@ Use a Dataset to:
 - export annotations
 - feed data to a training model
 
-W.. autoclass:: remo.Dataset
+.. autoclass:: remo.Dataset
     :members:
     :undoc-members:
