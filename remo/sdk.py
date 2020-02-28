@@ -1,4 +1,5 @@
 import csv
+import os
 from io import BytesIO
 from operator import itemgetter
 from typing import List, Callable, Union
@@ -7,7 +8,6 @@ from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
 from .api import API
 from .browser import browse
 from .endpoints import frontend
-from .exporter import get_json_to_csv_exporter
 
 
 class SDK:
@@ -268,6 +268,45 @@ class SDK:
             full_path=full_path,
         )
 
+    def export_annotations_to_file(
+        self,
+        annotation_set_id: int,
+        output_file: str,
+        annotation_format: str = 'json',
+        export_coordinates: str = 'pixel',
+        full_path: str = 'true',
+    ):
+        """
+        Exports annotations in given format
+
+        Args:
+            annotation_set_id: annotation set id
+            output_file: output file to save
+            annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
+            full_path: uses full image path (e.g. local path), can be one of ['true', 'false'], default='false'
+            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
+        """
+        content = self.export_annotations(
+            annotation_set_id,
+            annotation_format=annotation_format,
+            export_coordinates=export_coordinates,
+            full_path=full_path,
+        )
+        self._save_to_file(content, output_file)
+
+    def _save_to_file(self, content: bytes, output_file: str):
+        output_file = self._resolve_path(output_file)
+        dir_path = os.path.dirname(output_file)
+        os.makedirs(dir_path, exist_ok=True)
+        with open(output_file, 'wb') as out_file:
+            out_file.write(content)
+
+    @staticmethod
+    def _resolve_path(path: str):
+        if path.startswith('~'):
+            path = os.path.expanduser(path)
+        return os.path.realpath(os.path.abspath(path))
+
     def get_annotation_info(self, dataset_id: int, annotation_set_id: int, image_id: int) -> list:
         """
         Returns current annotations for the image
@@ -414,31 +453,6 @@ class SDK:
         json_data = self.api.list_annotation_classes(annotation_set_id)
         results = json_data.get('results', [])
         return list(map(itemgetter('class'), results))
-
-    def export_annotation_to_csv(self, annotation_set_id: int, output_file: str, dataset: Dataset):
-        """
-        .. deprecated:: 0.0.13
-            Use :func:`export_annotations` instead.
-
-        Takes annotations and saves as a .csv file
-
-        Args:
-            annotation_set_id: annotation set id
-            output_file: output .csv file path
-        """
-        annotation_set = self.get_annotation_set(annotation_set_id)
-        exporter = get_json_to_csv_exporter(annotation_set.task)
-        if not exporter:
-            print(
-                "ERROR: Export function for annotation task '{}' not implemented".format(annotation_set.task)
-            )
-            return
-
-        annotation_results = dataset.annotations
-
-        with open(output_file, 'w', newline='') as output:
-            csv_writer = csv.writer(output)
-            exporter(annotation_results, csv_writer)
 
     def list_dataset_images(self, dataset_id: int, limit: int = None, offset: int = None) -> List[Image]:
         """

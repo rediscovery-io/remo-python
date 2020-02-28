@@ -327,17 +327,19 @@ class API(BaseAPI):
         return self.get(url).json()
 
     def export_annotations(
-        self, annotation_set_id, annotation_format='json', export_coordinates='pixel', full_path='true'
-    ):
+        self, annotation_set_id: int, annotation_format='json', export_coordinates='pixel', full_path='true'
+    ) -> bytes:
         """
         Exports annotations in given format
 
         Args:
+            annotation_set_id: annotation set id
             annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
             full_path: uses full image path (e.g. local path), can be one of ['true', 'false'], default='false'
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
 
-        Returns: annotations
+        Returns:
+            annotation file content
         """
         url = self.url(
             backend.v1_export_annotations.format(annotation_set_id),
@@ -345,7 +347,7 @@ class API(BaseAPI):
             export_coordinates=export_coordinates,
             full_path=full_path,
         )
-        return self.get(url).json()
+        return self.get(url).content
 
     def get_annotation_info(self, dataset_id, annotation_set_id, image_id):
         """

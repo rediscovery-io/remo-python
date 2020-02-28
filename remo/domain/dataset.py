@@ -165,6 +165,32 @@ class Dataset:
 
         print('ERROR: annotation set not defined')
 
+    def export_annotations_to_file(
+        self,
+        annotation_set_id: int,
+        output_file: str,
+        annotation_format: str = 'json',
+        export_coordinates: str = 'pixel',
+        full_path: str = 'true',
+    ):
+        """
+        Exports annotations in given format
+
+        Args:
+            annotation_set_id: annotation set id
+            output_file: output file to save
+            annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
+            full_path: uses full image path (e.g. local path), can be one of ['true', 'false'], default='false'
+            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
+        """
+        self.sdk.export_annotations_to_file(
+            annotation_set_id,
+            output_file,
+            annotation_format=annotation_format,
+            full_path=full_path,
+            export_coordinates=export_coordinates,
+        )
+
     def get_annotation(self, dataset_id: int, annotation_set_id: int, image_id: int) -> Annotation:
         """
         Retrieves annotation for a given image
@@ -355,18 +381,6 @@ class Dataset:
         annotation_set = self._get_annotation_set_or_default(annotation_set_id)
         if annotation_set:
             return annotation_set.get_classes()
-
-        print('ERROR: annotation set not defined')
-
-    def export_annotation_to_csv(self, output_file: str, annotation_set_id: int = None):
-        """
-        .. deprecated:: 0.0.13
-            Use :func:`export_annotations` instead.
-
-        """
-        annotation_set = self._get_annotation_set_or_default(annotation_set_id)
-        if annotation_set:
-            return annotation_set.export_annotation_to_csv(output_file, self)
 
         print('ERROR: annotation set not defined')
 

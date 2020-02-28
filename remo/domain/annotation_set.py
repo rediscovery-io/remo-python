@@ -75,18 +75,6 @@ class AnnotationSet:
             full_path=full_path,
         )
 
-    def export_annotation_to_csv(self, output_file: str, dataset: Dataset):
-        """
-        .. deprecated:: 0.0.13
-            Use `:func:export_annotations` instead
-
-        Exports annotations to a .csv file
-        Args:
-            output_file: .csv path
-            dataset: dataset to export annotations from
-        """
-        self.sdk.export_annotation_to_csv(self.id, output_file, dataset)
-
     def get_classes(self) -> List[str]:
         """
         List classes within the annotation set
