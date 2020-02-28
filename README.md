@@ -41,7 +41,7 @@ Visualising predictions | visualise_predictions - Coming soon
 If you have any issues around the SDK, feel free to open an issue in the repo.
 For general questions around Remo, you can get in touch at hello AT remo.ai
 
-------
+<br/>
 
 ## For contributors
 
