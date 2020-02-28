@@ -468,8 +468,8 @@ class SDK:
                 )
             )
             return None
-
-        return [Image(self, **img) for img in json_data.get('results', [])]
+        images = json_data.get('results', [])
+        return [Image(self, **img) for img in images]
 
     def get_image_content(self, url: str) -> bytes:
         """
