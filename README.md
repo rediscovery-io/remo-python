@@ -18,6 +18,8 @@ Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and
 
 <img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
 
+<br/>
+
 To read more about Remo and download it, visit [remo.ai](http://remo.ai) (the website is still under construction :) )
 
 <br/>
