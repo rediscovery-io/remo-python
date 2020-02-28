@@ -114,7 +114,7 @@ class Dataset:
         full_path: str = 'true',
     ) -> bytes:
         """
-        Export annotations
+        Export annotations for a given annotation set in bytes
 
         Args:
             annotation_set_id: annotation set id, by default will be used default_annotation_set
@@ -275,7 +275,7 @@ class Dataset:
         if annotation_set.dataset_id == self.id:
             return annotation_set
 
-        print('ERROR: annotation set with id={} was not found withing this dataset'.format(id))
+        print('ERROR: annotation set with id={} not found within this dataset'.format(id))
 
     @property
     def default_annotation_set(self) -> AnnotationSet:
@@ -359,7 +359,7 @@ class Dataset:
 
     def annotations(self, annotation_set_id: int = None) -> List[Annotation]:
         """
-        Returns all annotations for the default or given annotation set.
+        Returns all annotations for a given annotation set.
         If no annotation set is specified, the default annotation set will be used
 
         Args:
