@@ -153,13 +153,17 @@ class Dataset:
             full_path: uses full image path (e.g. local path), can be one of ['true', 'false'], default='false'
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
         """
-        self.sdk.export_annotations_to_file(
-            output_file,
-            annotation_set_id,
-            annotation_format=annotation_format,
-            full_path=full_path,
-            export_coordinates=export_coordinates,
-        )
+        annotation_set = self.get_annotation_set_or_default(annotation_set_id)
+        if annotation_set:
+            self.sdk.export_annotations_to_file(
+                output_file,
+                annotation_set_id,
+                annotation_format=annotation_format,
+                full_path=full_path,
+                export_coordinates=export_coordinates,
+            )
+        else:
+            print('ERROR: annotation set not defined')
 
     def get_annotation(self, annotation_set_id: int, image_id: int) -> Annotation:
         """
