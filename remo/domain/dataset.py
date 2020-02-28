@@ -1,4 +1,4 @@
-from typing import List, TypeVar, Callable
+from typing import List, TypeVar, Callable, Union
 
 from .annotation import Annotation
 from .image import Image
@@ -386,19 +386,19 @@ class Dataset:
         """
         return self.sdk.list_dataset_images(self.id, limit=limit, offset=offset)
 
-    def search(self, class_list: List[str], task: str):
+    def search(self, classes: Union[str, List[str]] = None, task: str = None):
         """
         Given a list of classes and annotation task, it returns a list of all the images with mathcing annotations
         
         Args:
-            class_list: list of classes with the same images
+            classes: string or list of strings - search for images which match all given classes
             task: annotation task. See also: :class:`remo.task`
 
         Returns:
             subset of the dataset
         """
         # TODO: add implementation
-        return self.sdk.search_images(class_list, task, self.id)
+        return self.sdk.search_images(classes, task, self.id)
 
     def view(self):
         """
@@ -419,16 +419,16 @@ class Dataset:
         else:
             print('ERROR: annotation set was not defined.')
 
-    def view_annotation_statistics(self, annotation_set_id: int = None):
+    def view_annotation_insights(self, annotation_set_id: int = None):
         """
-        Opens browser on annotation set statistics page
+        Opens browser on annotation set insights page
 
         Args:
             annotation_set_id: annotation set id. If not specified, default one be used.
         """
         annotation_set = self.get_annotation_set_or_default(annotation_set_id)
         if annotation_set:
-            annotation_set.view_stats()
+            annotation_set.view_insights()
         else:
             print('ERROR: annotation set was not defined.')
 

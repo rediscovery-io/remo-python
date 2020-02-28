@@ -511,7 +511,7 @@ class SDK:
         Search images by class and annotation task
 
         Args:
-            classes: name of the classes to filter dataset.
+            classes: string or list of strings - search for images which match all given classes
             task: name of the annotation task to filter dataset
             dataset_id: narrows search result to given dataset
             limit: limits number of search results
