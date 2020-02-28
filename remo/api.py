@@ -315,8 +315,7 @@ class API(BaseAPI):
 
     def get_dataset(self, id):
         url = self.url(backend.v1_datasets, id, tail_slash=True)
-        r = self.get(url)
-        return r.json()
+        return self.get(url).json()
 
     def list_annotation_sets(self, dataset_id):
         url = self.url(backend.v1_dataset_annotation_sets.format(dataset_id))
@@ -372,8 +371,8 @@ class API(BaseAPI):
         url = self.url(backend.v1_annotation_classes.format(annotation_set_id))
         return self.get(url).json()
 
-    def get_image_content(self, url):
-        return self.get(self.url(url))
+    def get_image_content(self, url) -> bytes:
+        return self.get(self.url(url)).content
 
     def get_image(self, image_id):
         url = self.url(backend.v1_sdk_images, image_id, tail_slash=True)

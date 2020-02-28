@@ -41,11 +41,12 @@ def __init__(skip_sdk_init=os.getenv('REMO_SKIP_SDK_INIT', False)):
 
             version_endpoint = '{}/version'.format(server_url)
             try:
-                resp = requests.get(version_endpoint)
+                r = requests.get(version_endpoint).json()
+                version = 'v{}'.format(r.get('version'))
                 print("""
     (\(\ 
     (>':') Remo server is running: {}
-                """.format(resp.json()))
+                """.format(version))
                 if open_browser:
                     browse('{}:{}'.format(config.server, config.port))
 

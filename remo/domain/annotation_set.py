@@ -33,6 +33,7 @@ class AnnotationSet:
         total_images: int = None,
         top3_classes=None,
         total_annotation_objects: int = None,
+        **kwargs
     ):
         self.sdk = sdk
         self.id = id
@@ -90,8 +91,8 @@ class AnnotationSet:
         """
         self.sdk.view_annotation_tool(self.id)
 
-    def view_insights(self):
+    def view_stats(self):
         """
         Opens browser on annotation set insights page
         """
-        self.sdk.view_annotation_insights(self.id)
+        self.sdk.view_annotation_stats(self.id)
