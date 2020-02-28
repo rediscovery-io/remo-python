@@ -580,7 +580,7 @@ class SDK:
         """
         self._view(frontend.annotate_image.format(annotation_set_id, image_id))
 
-    def view_annotation_insights(self, annotation_set_id: int):
+    def view_annotation_stats(self, annotation_set_id: int):
         """
         Opens browser in annotation set insights page
 

@@ -228,7 +228,7 @@ class Dataset:
 
             ds = remo.create_dataset(...)
             ds.add_annotations_from_file('annotations.csv', parser_function)
-            
+
 
             def parser_function(file_path):
             '''
@@ -408,7 +408,7 @@ class Dataset:
         else:
             print('ERROR: annotation set was not defined.')
 
-    def view_annotation_insights(self, annotation_set_id: int = None):
+    def view_annotation_stats(self, annotation_set_id: int = None):
         """
         Opens browser on annotation set insights page
 
@@ -417,7 +417,7 @@ class Dataset:
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
-            annotation_set.view_insights()
+            annotation_set.view_stats()
         else:
             print('ERROR: annotation set was not defined.')
 
