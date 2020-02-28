@@ -1,4 +1,4 @@
-from typing import List, TypeVar, Callable, Union
+from typing import List, TypeVar, Callable
 
 from .annotation import Annotation
 from .image import Image
@@ -96,7 +96,6 @@ class Dataset:
         dataset = self.sdk.get_dataset(self.id)
         self.__dict__.update(dataset.__dict__)
 
-    @property
     def annotation_sets(self) -> List[AnnotationSet]:
         """
         Lists the annotation sets within the dataset
@@ -114,7 +113,7 @@ class Dataset:
         full_path: str = 'true',
     ) -> bytes:
         """
-        Export annotations for a given annotation set in bytes
+        Export annotations for a given annotation set
 
         Args:
             annotation_set_id: annotation set id, by default will be used default_annotation_set
@@ -125,7 +124,7 @@ class Dataset:
         Returns:
             annotation file content
         """
-        annotation_set = self.get_annotation_set_or_default(annotation_set_id)
+        annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
             return annotation_set.export_annotations(
                 annotation_format=annotation_format,
@@ -144,7 +143,7 @@ class Dataset:
         full_path: str = 'true',
     ):
         """
-        Exports annotations in given format
+        Exports annotations in given format and save to output file
 
         Args:
             output_file: output file to save
@@ -153,7 +152,7 @@ class Dataset:
             full_path: uses full image path (e.g. local path), can be one of ['true', 'false'], default='false'
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
         """
-        annotation_set = self.get_annotation_set_or_default(annotation_set_id)
+        annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
             self.sdk.export_annotations_to_file(
                 output_file,
@@ -245,7 +244,7 @@ class Dataset:
                 return annotations
 
         """
-        annotation_set = self.get_annotation_set_or_default(annotation_set_id)
+        annotation_set = self.get_annotation_set(annotation_set_id)
         if not annotation_set:
             print('ERROR: Annotation set was not found')
             return
@@ -261,46 +260,9 @@ class Dataset:
 
             self.sdk.add_annotation(annotation_set_id, image_id, annotation)
 
-    def get_annotation_set(self, id: int) -> AnnotationSet:
+    def get_annotation_set(self, annotation_set_id: int = None) -> AnnotationSet:
         """
         Retrieves annotation set with given id
-
-        Args:
-            id: annotation set id
-
-        Returns:
-             :class:`remo.AnnotationSet`
-        """
-        annotation_set = self.sdk.get_annotation_set(id)
-        if annotation_set.dataset_id == self.id:
-            return annotation_set
-
-        print('ERROR: annotation set with id={} not found within this dataset'.format(id))
-
-    @property
-    def default_annotation_set(self) -> AnnotationSet:
-        if self._default_annotation_set_id:
-            return self.get_annotation_set(self._default_annotation_set_id)
-
-        annotation_sets = self.annotation_sets
-        if annotation_sets:
-            annotation_set = annotation_sets[0]
-            self._default_annotation_set_id = annotation_set.id
-            return annotation_set
-
-    @default_annotation_set.setter
-    def default_annotation_set(self, annotation_set_id: int):
-        """
-        Sets default annotation set
-
-        Args:
-            annotation_set_id: annotation set id
-        """
-        self._default_annotation_set_id = annotation_set_id
-
-    def get_annotation_set_or_default(self, annotation_set_id: int = None) -> AnnotationSet:
-        """
-        Retrieves default annotation set, or the annotation set with the given id
 
         Args:
             annotation_set_id: annotation set id
@@ -309,9 +271,32 @@ class Dataset:
              :class:`remo.AnnotationSet`
         """
         if not annotation_set_id:
-            return self.default_annotation_set
+            return self.default_annotation_set()
 
-        return self.get_annotation_set(annotation_set_id)
+        annotation_set = self.sdk.get_annotation_set(id)
+        if annotation_set.dataset_id == self.id:
+            return annotation_set
+
+        print('ERROR: annotation set with id={} not found within this dataset'.format(id))
+
+    def default_annotation_set(self) -> AnnotationSet:
+        if self._default_annotation_set_id:
+            return self.get_annotation_set(self._default_annotation_set_id)
+
+        annotation_sets = self.annotation_sets()
+        if annotation_sets:
+            annotation_set = annotation_sets[0]
+            self._default_annotation_set_id = annotation_set.id
+            return annotation_set
+
+    def set_default_annotation_set(self, annotation_set_id: int):
+        """
+        Sets default annotation set
+
+        Args:
+            annotation_set_id: annotation set id
+        """
+        self._default_annotation_set_id = annotation_set_id
 
     def get_annotation_statistics(self, annotation_set_id: int = None):
         """
@@ -324,7 +309,7 @@ class Dataset:
         # TODO: ALR - Improve output formatting
         # TODO: ALR - Optional annotation set id as input
         statistics = []
-        for ann_set in self.annotation_sets:
+        for ann_set in self.annotation_sets():
 
             if (annotation_set_id is None) or (annotation_set_id == ann_set.id):
                 stat = {
@@ -351,7 +336,7 @@ class Dataset:
         Returns:
             List of classes
         """
-        annotation_set = self.get_annotation_set_or_default(annotation_set_id)
+        annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
             return annotation_set.get_classes()
 
@@ -368,7 +353,7 @@ class Dataset:
         Returns:
              List[:class:`remo.Annotation`]
         """
-        annotation_set = self.get_annotation_set_or_default(annotation_set_id)
+        annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
             return self.sdk.list_annotations(self.id, annotation_set.id)
         print('ERROR: annotation set was not defined.')
@@ -386,7 +371,7 @@ class Dataset:
         """
         return self.sdk.list_dataset_images(self.id, limit=limit, offset=offset)
 
-    def search(self, classes: Union[str, List[str]] = None, task: str = None):
+    def search(self, classes=None, task: str = None):
         """
         Given a list of classes and annotation task, it returns a list of all the images with mathcing annotations
         
@@ -413,7 +398,7 @@ class Dataset:
         Args:
               annotation_set_id: annotation set id. If not specified, default one be used.
         """
-        annotation_set = self.get_annotation_set_or_default(annotation_set_id)
+        annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
             annotation_set.view()
         else:
@@ -426,7 +411,7 @@ class Dataset:
         Args:
             annotation_set_id: annotation set id. If not specified, default one be used.
         """
-        annotation_set = self.get_annotation_set_or_default(annotation_set_id)
+        annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
             annotation_set.view_insights()
         else:

@@ -502,7 +502,7 @@ class SDK:
 
     def search_images(
         self,
-        classes: Union[str, List[str]] = None,
+        classes=None,
         task: str = None,
         dataset_id: int = None,
         limit: int = None,
