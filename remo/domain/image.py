@@ -8,7 +8,20 @@ AnnotationSet = TypeVar('AnnotationSet')
 
 
 class Image:
-    __slots__ = ('sdk', 'id', 'name', 'dataset_id', 'url', 'path', 'size', 'width', 'height', 'upload_date')
+    """
+    Remo image
+
+    Args:
+        id: image id
+        name: image file name
+        dataset_id: dataset id
+        path: local path, if available
+        url: image remo internal URL
+        size: file size in bytes
+        width: image width in pixels
+        height: image height in pixels
+        upload_date: upload date
+    """
 
     def __init__(
         self,
@@ -69,7 +82,6 @@ class Image:
         dir_path = self._resolve_path(dir_path)
         os.makedirs(dir_path, exist_ok=True)
         file_path = os.path.join(dir_path, self.name)
-        print('file_path:', file_path)
 
         if self.path:
             shutil.copy(self.path, file_path)

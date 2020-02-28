@@ -11,6 +11,7 @@ Welcome to Remo SDK documentation!
 
    sdk
    dataset
+   image
    annotation_set
    annotation
    task

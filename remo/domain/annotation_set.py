@@ -20,33 +20,19 @@ class AnnotationSet:
         total_annotation_objects: total number of annotation objects in annotation set
     """
 
-    __slots__ = (
-        'sdk',
-        'id',
-        'name',
-        'task',
-        'dataset_id',
-        'total_classes',
-        'updated_at',
-        'released_at',
-        'total_images',
-        'top3_classes',
-        'total_annotation_objects',
-    )
-
     def __init__(
-            self,
-            sdk,
-            id: int = None,
-            name: str = None,
-            task: str = None,
-            dataset_id: int = None,
-            total_classes=None,
-            updated_at=None,
-            released_at=None,
-            total_images: int = None,
-            top3_classes=None,
-            total_annotation_objects: int = None,
+        self,
+        sdk,
+        id: int = None,
+        name: str = None,
+        task: str = None,
+        dataset_id: int = None,
+        total_classes=None,
+        updated_at=None,
+        released_at=None,
+        total_images: int = None,
+        top3_classes=None,
+        total_annotation_objects: int = None,
     ):
         self.sdk = sdk
         self.id = id
@@ -69,7 +55,7 @@ class AnnotationSet:
         return self.__str__()
 
     def export_annotations(
-            self, annotation_format: str = 'json', export_coordinates: str = 'pixel', full_path: str = 'true'
+        self, annotation_format: str = 'json', export_coordinates: str = 'pixel', full_path: str = 'true'
     ):
         """
         Exports annotations in a given format

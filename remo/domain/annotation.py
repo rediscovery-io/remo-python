@@ -12,8 +12,6 @@ class Annotation:
         tags: list of tags
     """
 
-    __slots__ = ('img_filename', 'status', 'task', 'tags', 'items')
-
     def __init__(
         self, img_filename: str = None, status: str = None, task: str = None, tags: List[str] = None
     ):
@@ -51,8 +49,6 @@ class Annotation:
             segment: list of segment coordinates [x0, y0, x1, y1, ..., xN, yN]
         """
 
-        __slots__ = ('classes', 'segments', 'bbox')
-
         def __init__(self, classes: List[str] = None, bbox: List[int] = None, segment: List[int] = None):
             self.classes = classes if classes else []
             self.segments = []
@@ -79,8 +75,6 @@ class Annotation:
             ymax: Y max
         """
 
-        __slots__ = ('xmin', 'ymin', 'xmax', 'ymax')
-
         def __init__(self, xmin: int, ymin: int, xmax: int, ymax: int):
             self.xmin = xmin
             self.ymin = ymin
@@ -94,8 +88,6 @@ class Annotation:
         Args:
             points: list of segment coordinates [x0, y0, x1, y1, ..., xN, yN]
         """
-
-        __slots__ = ('points',)
 
         def __init__(self, points: List[int]):
             self.points = [{'x': x, 'y': y} for x, y in zip(points[::2], points[1::2])]
