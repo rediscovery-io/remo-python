@@ -1,8 +1,6 @@
-import csv
 import os
-from io import BytesIO
 from operator import itemgetter
-from typing import List, Callable, Union
+from typing import List, Callable
 
 from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
 from .api import API

@@ -4,7 +4,7 @@ import os
 
 class Config:
     __slots__ = ['port', 'server', 'user_name', 'user_email', 'user_password', 'conda_env', 'viewer']
-    _default_port = 8000
+    _default_port = 8123
     _default_server = 'http://localhost'
     _default_user_name = 'Admin User'
     _default_user_email = 'admin@remo.ai'

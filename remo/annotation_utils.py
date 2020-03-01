@@ -1,9 +1,10 @@
 import csv
+from typing import List
 
 from remo.domain import Annotation
 
 
-def parse_csv_obj_det(file_path):
+def parse_csv_obj_det(file_path) -> List[Annotation]:
     """
     Args
         file_path: path to annotations
@@ -15,7 +16,8 @@ def parse_csv_obj_det(file_path):
     # ILSVRC2012_val_00000003.JPEG,N01751748, 10 20 30 40
 
 
-    :return: annotations
+    Returns:
+        List[:class:`remo.Annotation`]
     """
 
     annotations = []
