@@ -1,3 +1,6 @@
+The Image class allows operations at a single image level.
+
+Use Image to retrieve and handle information about an individual image (e.g. size, resolution, etc)
 
 .. autoclass:: remo.Image
     :members:

@@ -1,7 +1,9 @@
 """
-Class encodings allows to do converting between labels and class names on importing and exporting annotations.
+Class encodings allow conversion between label IDs and label names when importing and exporting annotations.
 
-Class encoding can be:
+Remo supports some default class encodings and upload of custom ones.
+
+`class_encoding` can be expressed as:
 
 - one of predefined value: ``WordNet``, ``GoogleKnowledgeGraph``
 
@@ -9,13 +11,13 @@ Class encoding can be:
 
     '/Users/admin/Downloads/class_encoding.csv'
 
-- raw content of csv file, like::
+- raw content of a csv file, like::
 
     id,name
     DR3,person
     SP2,rock
 
-- dictionary with labels and classes, like::
+- dictionary with label IDs and label names, like::
 
     {
         'DR3': 'person',

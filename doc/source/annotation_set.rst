@@ -1,4 +1,5 @@
-Annotation sets are how we group together annotations for a dataset to easily manipulate them.
+Annotation set is a collection of annotations for a dataset.
+Use the Annotation set class to easily manipulate annotations across the whole dataset.
 
 An annotation set is defined by:
 
