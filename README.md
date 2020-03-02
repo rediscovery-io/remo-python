@@ -31,7 +31,7 @@ You can see example of usage of the SDK in our documentiation or in the examples
 What | Where
 ---|---
 Documentation | [Official Docs](https://remo.ai/docs/sdk/)
-Intro Notebook | [Intro to Remo-SDK.ipynb](examples/intro_to_remo-SDK.ipynb)
+Intro Notebook | [Intro to Remo-Python.ipynb](examples/intro_to_remo-python.ipynb.ipynb)
 Parsing annotations | parsing_annotations - Coming soon
 Visualising predictions | visualise_predictions - Coming soon
 
