@@ -433,7 +433,7 @@ class SDK:
             dataset_id, annotation_set_id, image_id, annotation_info, classes=classes, objects=objects
         )
 
-    def list_annotation_classes(self, annotation_set_id: int) -> List[str]:
+    def list_annotation_set_classes(self, annotation_set_id: int) -> List[str]:
         """
         List classes within the annotation set
 
@@ -443,9 +443,8 @@ class SDK:
         Returns:
             list of classes
         """
-        json_data = self.api.list_annotation_classes(annotation_set_id)
-        results = json_data.get('results', [])
-        return list(map(itemgetter('class'), results))
+        classes_with_ids = self.api.list_annotation_set_classes(annotation_set_id)
+        return [item.get('name') for item in classes_with_ids]
 
     def list_dataset_images(self, dataset_id: int, limit: int = None, offset: int = None) -> List[Image]:
         """

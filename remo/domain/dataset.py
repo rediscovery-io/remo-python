@@ -105,6 +105,21 @@ class Dataset:
         """
         return self.sdk.list_annotation_sets(self.id)
 
+    def add_annotation(self, annotation: Annotation, image_id: int, annotation_set_id: int = None):
+        """
+        Adds new annotation to the image
+
+        Args:
+            annotation: annotation data
+            image_id: image id
+            annotation_set_id: annotation set id
+        """
+        annotation_set = self.get_annotation_set(annotation_set_id)
+        if annotation_set:
+            self.sdk.add_annotation(annotation_set.id, image_id, annotation)
+        else:
+            print('ERROR: annotation set not defined')
+
     def export_annotations(
         self,
         annotation_set_id: int = None,
@@ -342,7 +357,7 @@ class Dataset:
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
-            return annotation_set.get_classes()
+            return annotation_set.classes()
 
         print('ERROR: annotation set not defined')
 

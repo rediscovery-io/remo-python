@@ -360,16 +360,18 @@ class API(BaseAPI):
         url = self.url(backend.annotation_info.format(dataset_id, annotation_set_id, image_id))
         return self.get(url).json()
 
-    def list_annotation_classes(self, annotation_set_id: int):
+    def list_annotation_set_classes(self, annotation_set_id: int):
         """
+        Lists annotation set classes
 
         Args:
             annotation_set_id: int.
 
         Returns: list of classes
         """
-        url = self.url(backend.v1_annotation_classes.format(annotation_set_id))
-        return self.get(url).json()
+        url = self.url(backend.annotation_set.format(annotation_set_id))
+        json_data = self.get(url).json()
+        return json_data.get('classes', [])
 
     def get_image_content(self, url) -> bytes:
         return self.get(self.url(url)).content

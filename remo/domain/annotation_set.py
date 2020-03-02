@@ -1,5 +1,7 @@
 from typing import List, TypeVar
 
+from .annotation import Annotation
+
 Dataset = TypeVar('Dataset')
 
 
@@ -55,6 +57,16 @@ class AnnotationSet:
     def __repr__(self):
         return self.__str__()
 
+    def add_annotation(self, image_id: int, annotation: Annotation):
+        """
+        Adds new annotation to the image
+
+        Args:
+            image_id: image id
+            annotation: annotation data
+        """
+        self.sdk.add_annotation(self.id, image_id, annotation)
+
     def export_annotations(
         self, annotation_format: str = 'json', export_coordinates: str = 'pixel', full_path: str = 'true'
     ):
@@ -76,14 +88,38 @@ class AnnotationSet:
             full_path=full_path,
         )
 
-    def get_classes(self) -> List[str]:
+    def export_annotations_to_file(
+        self,
+        output_file: str,
+        annotation_format: str = 'json',
+        export_coordinates: str = 'pixel',
+        full_path: str = 'true',
+    ):
+        """
+        Exports annotations in given format and save to output file
+
+        Args:
+            output_file: output file to save
+            annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
+            full_path: uses full image path (e.g. local path), can be one of ['true', 'false'], default='false'
+            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
+        """
+        self.sdk.export_annotations_to_file(
+            output_file,
+            self.id,
+            annotation_format=annotation_format,
+            full_path=full_path,
+            export_coordinates=export_coordinates,
+        )
+
+    def classes(self) -> List[str]:
         """
         List classes within the annotation set
 
         Returns:
             List of classes
         """
-        return self.sdk.list_annotation_classes(self.id)
+        return self.sdk.list_annotation_set_classes(self.id)
 
     def view(self):
         """

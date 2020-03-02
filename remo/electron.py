@@ -8,7 +8,7 @@ linux_path = 'app/remo'
 darwin_path = 'app/remo.app/Contents/MacOS/remo'
 windows_path = 'app/remo.exe'
 REMO_HOME = os.getenv('REMO_HOME', str(Path.home().joinpath('.remo')))
-url_rxp = re.compile(r'(http[s]?://[.\w-]+)(:([0-9]+))?/?([\/\w-]+)?')
+url_rxp = re.compile(r'(http[s]?://[.\w-]+)(:([0-9]+))?/?(.+)?')
 
 
 def browse(url):
@@ -25,8 +25,7 @@ def split_ulr(url):
 
 
 def build_cmd(executable, **kwargs):
-    cmd = '{} {}'.format(executable, ' '.join('--{}={}'.format(k, v) for k, v in kwargs.items() if v))
-    return cmd
+    return '{} {}'.format(executable, ' '.join('--{}={}'.format(k, v) for k, v in kwargs.items() if v))
 
 
 def get_remo_path():
