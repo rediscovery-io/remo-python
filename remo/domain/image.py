@@ -96,7 +96,7 @@ class Image:
             List[:class:`remo.AnnotationSet`]
         """
         return self.sdk.list_annotation_sets(self.dataset_id)
-
+    
     def get_annotation(self, annotation_set_id: int) -> Annotation:
         """
         Retrieves image annotation from giving annotation set
@@ -109,7 +109,17 @@ class Image:
         """
         return self.sdk.get_annotation(self.dataset_id, annotation_set_id, self.id)
 
-    def add_annotation(self, annotation_set_id: int, annotation: Annotation):
+    def get_annotation_set_id(self) -> int:
+        ds = self.sdk.get_dataset(self.dataset_id)
+        annotation_set = ds.get_annotation_set()
+        if annotation_set:
+            return annotation_set.id
+       # TODO: add information after checking when default ann sets are initiliased
+       # else:
+       #     print('ERROR: no default annotation set in dataset ' + ds.__repr__())
+    
+    
+    def add_annotation(self, annotation: Annotation, annotation_set_id: int = None):
         """
         Adds new annotation to the image
 
@@ -117,7 +127,14 @@ class Image:
             annotation_set_id: annotation set id
             annotation: annotation data
         """
-        self.sdk.add_annotation(annotation_set_id, self.id, annotation)
+        
+        if not annotation_set_id:
+            annotation_set_id = self.get_annotation_set_id()
+            
+        if annotation_set_id:
+            self.sdk.add_annotation(annotation_set_id, self.id, annotation)
+        else:
+            print('ERROR: annotation set not defined')
 
     def view(self):
         """

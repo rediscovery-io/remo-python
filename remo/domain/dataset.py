@@ -114,7 +114,11 @@ class Dataset:
             image_id: image id
             annotation_set_id: annotation set id
         """
-        annotation_set = self.get_annotation_set(annotation_set_id)
+        
+        if not annotation_set_id:
+            annotation_set = self.get_annotation_set()
+            annotation_set_id = annotation_set.id
+            
         if annotation_set:
             self.sdk.add_annotation(annotation_set.id, image_id, annotation)
         else:
@@ -281,7 +285,8 @@ class Dataset:
 
     def get_annotation_set(self, annotation_set_id: int = None) -> AnnotationSet:
         """
-        Retrieves annotation set with given id
+        Retrieves annotation set with given id.
+        If no annotation set id is passed, it returns the default annotation set.
 
         Args:
             annotation_set_id: annotation set id
@@ -299,6 +304,10 @@ class Dataset:
         print('ERROR: annotation set with id={} not found within this dataset'.format(id))
 
     def default_annotation_set(self) -> AnnotationSet:
+        """
+        If a default annotation set exists, it returns that annotation set.
+        If a default annotation set doesn't exist, it sets the first annotation set to be default and returns that annotation set.
+        """
         if self._default_annotation_set_id:
             return self.get_annotation_set(self._default_annotation_set_id)
 
@@ -310,7 +319,8 @@ class Dataset:
 
     def set_default_annotation_set(self, annotation_set_id: int):
         """
-        Sets default annotation set
+        Sets the default annotation set for a dataset. 
+        Important: default annotation sets are not stored in Remo, so every time a script runs the default annotation set will be assigned to the first annotation set that was created.
 
         Args:
             annotation_set_id: annotation set id
