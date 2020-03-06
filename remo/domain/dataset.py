@@ -40,13 +40,13 @@ class Dataset:
         class_encoding=None,
     ) -> dict:
         """
-        Adds images and/or annotations into dataset.
-        To add annotations you need to specify an annotation task.
+        Adds images and/or annotations to the dataset.
+        To be able to add annotations you need to specify an annotation task. Annotations 
 
         Args:
-            local_files: list of files or directories.
+            local_files: list of files or directories containing annotationos and image files
                 These files will be linked.
-                Folders will be recursively scanned for image files: ``jpg``, ``png``, ``tif``.
+                Folders will be recursively scanned for image files: ``jpg``,``jpeg``, ``png``, ``tif``.
 
             paths_to_upload: list of files or directories.
                 These files will be copied. Supported files: images, annotations and archives.

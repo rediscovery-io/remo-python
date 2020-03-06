@@ -82,18 +82,22 @@ class SDK:
         class_encoding=None,
     ) -> dict:
         """
-        Adds images and/or annotations into existing dataset.
-        To be able add annotations, you need to provide annotation task.
+        Adds images and/or annotations to an existing dataset.
+        Use ``local files``to link (rather than copy) images. Use ``paths_to_upload`` if you want to copy image files or archive files. Use ``urls`` to download from the web images, annotations or archives.
+        Images: remo support formats ``jpg``,``jpeg``, ``png``, ``tif``
+        Annotations: to add annotations, make sure the specific formatting is supported. See documentation here: https://remo.ai/docs/annotation-formats/
 
         Args:
             dataset_id: id of the desired dataset to extend
 
-            local_files: list of files or directories.
-                These files will be linked.
-                Folders will be recursively scanned for image files: ``jpg``, ``png``, ``tif``.
+            local_files: list of files or directories containing annotations and image files
+                Remo will create smaller copies of your images for quick previews but it will point at the original files to show original resolutions images.
+                Folders will be recursively scanned for image files.
+                
 
-            paths_to_upload: list of files or directories.
-                These files will be copied. Supported files: images, annotations and archives.
+            paths_to_upload: list of files or directories containing images, annotations and archives.
+                These files will be copied inside .remo folder. 
+                Folders will be recursively scanned for image files.
 
                 - image files: ``jpg``, ``png``, ``tif``.
                 - annotation files: ``json``, ``xml``, ``csv``.
@@ -104,9 +108,9 @@ class SDK:
 
             annotation_task: specifies annotation task. See also: :class:`remo.task`.
 
-            folder_id: specifies target folder in the dataset.
+            folder_id: specifies target virtual folder in the remo dataset. If None, it adds to the root level.
 
-            annotation_set_id: specifies target annotation set in the dataset.
+            annotation_set_id: specifies target annotation set in the dataset. If None, it adds to the default annotation set.
 
             class_encoding: specifies how to convert class labels in annotation files to classes.
                 See also: :class:`remo.class_encodings`.
