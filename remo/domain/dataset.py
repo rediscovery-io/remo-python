@@ -320,7 +320,8 @@ class Dataset:
     def set_default_annotation_set(self, annotation_set_id: int):
         """
         Sets the default annotation set for a dataset. 
-        Important: default annotation sets are not stored in Remo, so every time a script runs the default annotation set will be assigned to the first annotation set that was created.
+        Important: default annotation sets are not stored in Remo, so every time a script runs 
+        the default annotation set will be assigned to the first annotation set that was created.
 
         Args:
             annotation_set_id: annotation set id
