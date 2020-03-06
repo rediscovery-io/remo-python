@@ -117,7 +117,7 @@ class Dataset:
         annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
             self.sdk.add_annotation(annotation_set.id, image_id, annotation)
-        else:	
+        else:
             print('ERROR: annotation set not defined')
         
         #TODO: don't retrieve all annotation set, only do it if ID not passed.
