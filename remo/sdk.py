@@ -83,12 +83,12 @@ class SDK:
     ) -> dict:
         """
         Adds images and/or annotations to an existing dataset.
-        Use ``local files``to link (rather than copy) images. Use ``paths_to_upload`` if you want to copy image files or archive files. Use ``urls`` to download from the web images, annotations or archives.
+        Use ``local files`` to link (rather than copy) images. Use ``paths_to_upload`` if you want to copy image files or archive files. Use ``urls`` to download from the web images, annotations or archives.
         Images: remo support formats ``jpg``,``jpeg``, ``png``, ``tif``
         Annotations: to add annotations, make sure the specific formatting is supported. See documentation here: https://remo.ai/docs/annotation-formats/
 
         Args:
-            dataset_id: id of the desired dataset to extend
+            dataset_id: id of the dataset to add data to
 
             local_files: list of files or directories containing annotations and image files
                 Remo will create smaller copies of your images for quick previews but it will point at the original files to show original resolutions images.
@@ -106,13 +106,13 @@ class SDK:
 
             urls: list of urls pointing to downloadable target, which can be image, annotation file or archive.
 
-            annotation_task: specifies annotation task. See also: :class:`remo.task`.
+            annotation_task: annotation tasks tell remo how to parse annotations. See also: :class:`remo.task`.
 
             folder_id: specifies target virtual folder in the remo dataset. If None, it adds to the root level.
 
             annotation_set_id: specifies target annotation set in the dataset. If None, it adds to the default annotation set.
 
-            class_encoding: specifies how to convert class labels in annotation files to classes.
+            class_encoding: specifies how to convert labels in annotation files to readable labels. If None,  Remo will try to interpret the encoding automatically - which for standard words, means they will be read as they are. 
                 See also: :class:`remo.class_encodings`.
 
         Returns:
