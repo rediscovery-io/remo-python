@@ -32,7 +32,7 @@ What | Where
 ---|---
 Documentation | [Official Docs](https://remo.ai/docs/sdk/)
 Intro Notebook | [Intro to Remo-Python.ipynb](examples/intro_to_remo-python.ipynb)
-Parsing annotations | parsing_annotations - Coming soon
+Uploading annotations | [tutorial_upload_annotations.ipynb](examples/tutorial_upload_annotations.ipynb)
 Visualising predictions | visualise_predictions - Coming soon
 
 <br/>
