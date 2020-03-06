@@ -298,7 +298,7 @@ class Dataset:
             return self.default_annotation_set()
 
         annotation_set = self.sdk.get_annotation_set(annotation_set_id)
-        if (annotation_set) & (annotation_set.dataset_id == self.id):
+        if annotation_set and annotation_set.dataset_id == self.id:
             return annotation_set
 
         print('ERROR: annotation set with id={} not found within this dataset'.format(annotation_set_id))
