@@ -114,15 +114,13 @@ class Dataset:
             image_id: image id
             annotation_set_id: annotation set id
         """
+        annotation_set = self.get_annotation_set(annotation_set_id)
+        if annotation_set:
+            self.sdk.add_annotation(annotation_set.id, image_id, annotation)
         
-        if not annotation_set_id:
-            annotation_set = self.get_annotation_set()
-            annotation_set_id = annotation_set.id
-            
-        if annotation_set_id:
-            self.sdk.add_annotation(annotation_set_id, image_id, annotation)
-        else:
-            print('ERROR: annotation set not defined')
+        #TODO: don't retrieve all annotation set, only do it if ID not passed.
+        #But: need to add check in add_annotation, that annotation_set.dataset_id == image.dataset_id
+
 
     def export_annotations(
         self,
@@ -297,11 +295,11 @@ class Dataset:
         if not annotation_set_id:
             return self.default_annotation_set()
 
-        annotation_set = self.sdk.get_annotation_set(id)
+        annotation_set = self.sdk.get_annotation_set(annotation_set_id)
         if annotation_set.dataset_id == self.id:
             return annotation_set
 
-        print('ERROR: annotation set with id={} not found within this dataset'.format(id))
+        print('ERROR: annotation set with id={} not found within this dataset'.format(annotation_set_id))
 
     def default_annotation_set(self) -> AnnotationSet:
         """

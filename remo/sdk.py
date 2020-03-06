@@ -398,7 +398,7 @@ class SDK:
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         dataset_id = annotation_set.dataset_id
-
+        
         annotation_info = self.get_annotation_info(dataset_id, annotation_set_id, image_id)
         object_id = len(annotation_info)
 
