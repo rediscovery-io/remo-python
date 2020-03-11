@@ -16,8 +16,10 @@ class Dataset:
         quantity: number of images
     """
 
-    def __init__(self, sdk, id: int = None, name: str = None, quantity: int = 0, **kwargs):
-        self.sdk = sdk
+    def __init__(self, id: int = None, name: str = None, quantity: int = 0, **kwargs):
+        from remo import _sdk
+        self.sdk = _sdk
+        
         self.id = id
         self.name = name
         self.n_images = quantity
@@ -408,7 +410,8 @@ class Dataset:
         """
         Opens browser on dataset page
         """
-        self.sdk.view_dataset(self.id)
+        # print('self.sdk', self.sdk, type(self.sdk))
+        return self.sdk.view_dataset(self.id)
 
     def view_annotate(self, annotation_set_id: int = None):
         """
@@ -419,7 +422,7 @@ class Dataset:
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
-            annotation_set.view()
+            return annotation_set.view()
         else:
             print('ERROR: annotation set was not defined.')
 
@@ -432,7 +435,7 @@ class Dataset:
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
-            annotation_set.view_stats()
+            return annotation_set.view_stats()
         else:
             print('ERROR: annotation set was not defined.')
 
@@ -443,4 +446,4 @@ class Dataset:
         Args:
             image_id: image id
         """
-        self.sdk.view_image(image_id, self.id)
+        return self.sdk.view_image(image_id, self.id)

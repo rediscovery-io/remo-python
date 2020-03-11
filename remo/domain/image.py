@@ -25,7 +25,6 @@ class Image:
 
     def __init__(
         self,
-        sdk,
         id: int = None,
         name: str = None,
         dataset_id: int = None,
@@ -37,7 +36,9 @@ class Image:
         upload_date: str = None,
         **kwargs
     ):
-        self.sdk = sdk
+        from remo import _sdk
+        self.sdk = _sdk
+        
         self.id = id
         self.name = name
         self.dataset_id = dataset_id
@@ -117,13 +118,13 @@ class Image:
             annotation_set_id: annotation set id
             annotation: annotation data
         """
-        self.sdk.add_annotation(annotation_set_id, self.id, annotation)
+        return self.sdk.add_annotation(annotation_set_id, self.id, annotation)
 
     def view(self):
         """
         Opens browser on image view for the image
         """
-        self.sdk.view_image(self.id, self.dataset_id)
+        return self.sdk.view_image(self.id, self.dataset_id)
 
     def view_annotate(self, annotation_set_id: int):
         """
@@ -132,4 +133,4 @@ class Image:
         Args:
             annotation_set_id: annotation set id
         """
-        self.sdk.view_annotate_image(annotation_set_id, self.id)
+        return self.sdk.view_annotate_image(annotation_set_id, self.id)
