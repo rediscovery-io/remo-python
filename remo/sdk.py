@@ -1,11 +1,11 @@
 import os
-from operator import itemgetter
 from typing import List, Callable
 
 from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
 from .api import API
-from .browser import browse
+
 from .endpoints import frontend
+from .viewer import factory
 
 
 class SDK:
@@ -16,12 +16,31 @@ class SDK:
         server: server host name, e.g. ``http://localhost:8123/``
         email: user credentials
         password: user credentials
-        browse: allows to choose between browser and electron viewer
+        viewer: allows to choose between browser, electron and jupyter viewer.
+            To be able change viewer, you can use :func:`set_viewer` function. See example.
+
+    Example::
+
+        import remo
+
+        remo.set_viewer('browser')
+
     """
 
-    def __init__(self, server: str, email: str, password: str, browse: Callable[[str], None] = browse):
+    def __init__(self, server: str, email: str, password: str, viewer: str = 'browser'):
         self.api = API(server, email, password)
-        self.browse = browse
+
+        self.viewer = None
+        self.set_viewer(viewer)
+
+    def set_viewer(self, viewer: str):
+        """
+        Allows to choose one of available viewers
+
+        Args:
+            viewer: allows to choose between browser, electron and jupyter viewer
+        """
+        self.viewer = factory(viewer)
 
     def create_dataset(
         self,
@@ -63,7 +82,7 @@ class SDK:
         """
 
         json_data = self.api.create_dataset(name)
-        ds = Dataset(self, **json_data)
+        ds = Dataset(**json_data)
         ds.add_data(
             local_files, paths_to_upload, urls, annotation_task=annotation_task, class_encoding=class_encoding
         )
@@ -173,7 +192,7 @@ class SDK:
         """
         json_data = self.api.list_datasets()
         return [
-            Dataset(self, **ds_item)
+            Dataset(**ds_item)
             for ds_item in json_data.get('results', [])
         ]
 
@@ -188,7 +207,7 @@ class SDK:
             :class:`remo.Dataset`
         """
         json_data = self.api.get_dataset(dataset_id)
-        return Dataset(self, **json_data)
+        return Dataset(**json_data)
 
     def list_annotation_sets(self, dataset_id: int) -> List[AnnotationSet]:
         """
@@ -204,7 +223,6 @@ class SDK:
         result = self.api.list_annotation_sets(dataset_id)
         return [
             AnnotationSet(
-                self,
                 id=annotation_set['id'],
                 name=annotation_set['name'],
                 updated_at=annotation_set['updated_at'],
@@ -230,7 +248,6 @@ class SDK:
         """
         annotation_set = self.api.get_annotation_set(id)
         return AnnotationSet(
-            self,
             id=annotation_set['id'],
             name=annotation_set['name'],
             updated_at=annotation_set['updated_at'],
@@ -383,7 +400,6 @@ class SDK:
             return None
 
         return AnnotationSet(
-            self,
             id=annotation_set['id'],
             name=annotation_set['name'],
             task=annotation_set['task'],
@@ -470,7 +486,7 @@ class SDK:
             )
             return None
         images = json_data.get('results', [])
-        return [Image(self, **img) for img in images]
+        return [Image(**img) for img in images]
 
     def get_image_content(self, url: str) -> bytes:
         """
@@ -499,7 +515,7 @@ class SDK:
             print('ERROR: failed to get image by id:{}, err: {}'.format(image_id, json_data.get('error')))
             return None
 
-        return Image(self, **json_data)
+        return Image(**json_data)
 
     def search_images(
         self,
@@ -527,7 +543,7 @@ class SDK:
         """
         Opens browser in search page
         """
-        self._view(frontend.search)
+        return self._view(frontend.search)
 
     def view_image(self, image_id: int, dataset_id: int):
         """
@@ -545,13 +561,13 @@ class SDK:
             print('Image ID: {} not in dataset {}'.format(image_id, dataset_id))
             return
 
-        self._view(frontend.image_view.format(image_id, dataset_id))
+        return self._view(frontend.image_view.format(image_id, dataset_id))
 
     def open_ui(self):
         """
         Opens the main page of Remo
         """
-        self._view(frontend.datasets)
+        return self._view(frontend.datasets)
 
     def view_dataset(self, id: int):
         """
@@ -560,7 +576,7 @@ class SDK:
         Args:
             id: dataset id
         """
-        self._view(frontend.datasets, id)
+        return self._view(frontend.datasets, id)
 
     def view_annotation_tool(self, id: int):
         """
@@ -569,7 +585,7 @@ class SDK:
         Args:
             id: annotation set id
         """
-        self._view(frontend.annotation.format(id))
+        return self._view(frontend.annotation.format(id))
 
     def view_annotate_image(self, annotation_set_id: int, image_id: int):
         """
@@ -579,7 +595,7 @@ class SDK:
             annotation_set_id: annotation set id
             image_id: image id
         """
-        self._view(frontend.annotate_image.format(annotation_set_id, image_id))
+        return self._view(frontend.annotate_image.format(annotation_set_id, image_id))
 
     def view_annotation_stats(self, annotation_set_id: int):
         """
@@ -588,7 +604,7 @@ class SDK:
         Args:
             annotation_set_id: annotation set id
         """
-        self._view(frontend.annotation_set_insights.format(annotation_set_id))
+        return self._view(frontend.annotation_set_insights.format(annotation_set_id))
 
     def _view(self, url, *args, **kwargs):
-        self.browse(self.api.url(url, *args, **kwargs))
+        return self.viewer.browse(self.api.url(url, *args, **kwargs))

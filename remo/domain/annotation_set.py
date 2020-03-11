@@ -24,7 +24,6 @@ class AnnotationSet:
 
     def __init__(
         self,
-        sdk,
         id: int = None,
         name: str = None,
         task: str = None,
@@ -37,7 +36,9 @@ class AnnotationSet:
         total_annotation_objects: int = None,
         **kwargs
     ):
-        self.sdk = sdk
+        from remo import _sdk
+        self.sdk = _sdk
+        
         self.id = id
         self.name = name
         self.task = task
@@ -125,10 +126,10 @@ class AnnotationSet:
         """
         Opens browser on the annotation tool page for this annotation set
         """
-        self.sdk.view_annotation_tool(self.id)
+        return self.sdk.view_annotation_tool(self.id)
 
     def view_stats(self):
         """
         Opens browser on annotation set insights page
         """
-        self.sdk.view_annotation_stats(self.id)
+        return self.sdk.view_annotation_stats(self.id)
