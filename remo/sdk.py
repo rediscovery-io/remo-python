@@ -16,7 +16,15 @@ class SDK:
         server: server host name, e.g. ``http://localhost:8123/``
         email: user credentials
         password: user credentials
-        viewer: allows to choose between browser, electron and jupyter viewer
+        viewer: allows to choose between browser, electron and jupyter viewer.
+            To be able change viewer, you can use :func:`set_viewer` function. See example.
+
+    Example::
+
+        import remo
+
+        remo.set_viewer('browser')
+
     """
 
     def __init__(self, server: str, email: str, password: str, viewer: str = 'browser'):
