@@ -19,13 +19,13 @@ class JupyterViewer(AbstractViewer):
     def browse(self, url: str):
         print('Open', url)
         id = 'remo_frame_{}'.format(uuid.uuid4())
-        # url = self._headless(url)
+        url = self._headless(url)
         return self._html(id, url)
 
     @staticmethod
     def _headless(url: str) -> str:
         separator = '&' if '?' in url else '?'
-        return '{}{}headless'.format(url, separator)
+        return '{}{}allheadless'.format(url, separator)
 
     @staticmethod
     def _html(id: str, url: str):
