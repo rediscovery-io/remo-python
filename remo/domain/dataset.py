@@ -2,6 +2,10 @@ from typing import List, TypeVar, Callable
 
 from .annotation import Annotation
 from .image import Image
+from remo.annotation_utils import prepare_annotations_for_upload
+import tempfile
+import os
+import csv
 
 AnnotationSet = TypeVar('AnnotationSet')
 
@@ -112,7 +116,7 @@ class Dataset:
         """
         Faster upload of annotations to the Dataset via file conversion.
         If annotation_set_id is not specified, annotations are added to the default Annotation Set.
-        
+        # TODO: add support for other annotation formats
         Args:
             annotations: list of annotations objects
             annotation_set_id: annotation set id
@@ -120,11 +124,18 @@ class Dataset:
         annotation_set = self.get_annotation_set(annotation_set_id)
         
         if annotation_set:
-            image_lookup = {img.name: img.id for img in self.images()}
-            my_csv = xx #import function from annotation.utils
-                
+            prepared_annotations = prepare_annotations_for_upload(annotations)          
 
-            self.sdk.add_data(my_csv)
+            fd, temp_path = tempfile.mkstemp(suffix='.csv')
+            try:
+                with os.fdopen(fd, 'w') as temp:
+                    writer = csv.writer(temp)
+                    writer.writerow(["file_name","class_name","xmin","ymin","xmax","ymax"])
+                    writer.writerows(prepared_annotations)
+                    self.add_data(annotation_task = annotation_set.task, annotation_set_id =annotation_set.id, paths_to_upload = [temp_path])
+                    
+            finally:
+                os.remove(temp_path)     
         else:
             print('ERROR: annotation set not defined')
             

@@ -33,7 +33,8 @@ class Annotation:
         self.img_filename = img_filename
         self.classes = classes if isinstance(classes, list) else [classes]
         self.object = object
-
+        self.coordinates = None
+        
     @property
     def task(self):
         if not self.object:
@@ -53,6 +54,7 @@ class Annotation:
 
         xmin, ymin, xmax, ymax = values
         self.object = Annotation.Bbox(xmin, ymin, xmax, ymax)
+        self.coordinates = [xmin, ymin, xmax, ymax]
 
     @property
     def segment(self):
@@ -69,7 +71,9 @@ class Annotation:
                 'Segment coordinates need to be an even number of elements indicating (x, y) coordinates of each point.'
             )
         self.object = Annotation.Segment(points)
+        self.coordinates = points
 
+    
     class Bbox:
         """
         Represents coordinates of a bounding box annotation. Used in object detection.
@@ -88,6 +92,7 @@ class Annotation:
             self.ymin = ymin
             self.xmax = xmax
             self.ymax = ymax
+            
 
     class Segment:
         """
