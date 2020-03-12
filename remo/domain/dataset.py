@@ -46,7 +46,7 @@ class Dataset:
         To be able to add annotations you need to specify an annotation task. Annotations 
 
         Args:
-            local_files: list of files or directories containing annotationos and image files
+            local_files: list of files or directories containing annotations and image files
                 These files will be linked.
                 Folders will be recursively scanned for image files: ``jpg``,``jpeg``, ``png``, ``tif``.
 

@@ -339,7 +339,8 @@ class SDK:
     def get_annotation(self, dataset_id: int, annotation_set_id: int, image_id: int) -> Annotation:
         """
         Returns annotation for a given image
-
+        #TODO: add ImageAnnotation class and fix this
+        
         Args:
             dataset_id: dataset id
             annotation_set_id: annotation set id
@@ -368,7 +369,8 @@ class SDK:
     def list_annotations(self, dataset_id: int, annotation_set_id: int) -> List[Annotation]:
         """
         Returns all annotations for a given annotation set
-
+        #TODO: fix this after fixing get_annotation
+        
         Args:
             dataset_id: dataset id
             annotation_set_id: annotation set id
