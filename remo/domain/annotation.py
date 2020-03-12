@@ -11,10 +11,9 @@ class Annotation:
         - segment and list of classes: to create a polygon annotation object and assign it a list of classes
 
         Args:
-            xmin: X min
-            ymin: Y min
-            xmax: X max
-            ymax: Y max
+            img_filename: file name of the image the annotation refers to
+            classes: class or list of classes to add to the whole image or the object
+            object: the specific annotation object to add
             
         Examples:
             to create a bounding box:
