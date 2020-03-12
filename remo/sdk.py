@@ -1,5 +1,5 @@
 import os
-from typing import List, Callable
+from typing import List
 
 from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
 from .api import API
@@ -336,46 +336,53 @@ class SDK:
         resp = self.api.get_annotation_info(dataset_id, annotation_set_id, image_id)
         return resp.get('annotation_info', [])
 
-    def get_image_annotations(self, dataset_id: int, annotation_set_id: int, image_id: int) -> Annotation:
+    def list_image_annotations(self, dataset_id: int, annotation_set_id: int, image_id: int) -> List[Annotation]:
         """
         Returns annotations for a given image
-        #TODO: add ImageAnnotation class
-        
+
         Args:
             dataset_id: dataset id
             annotation_set_id: annotation set id
             image_id: image id
 
         Returns:
-             :class:`remo.Annotation`
+             List[:class:`remo.Annotation`]
         """
         annotation_items = self.get_annotation_info(dataset_id, annotation_set_id, image_id)
         img = self.get_image(image_id)
         if not img:
             return None
 
-        annotations_list = []
+        annotations = []
         for item in annotation_items:
             annotation = Annotation(img_filename=img.name)
             
             if 'lower' in item:
                 annotation.classes = item.get('name')
             else:
-                bbox = item.get('coordinates')
-                bbox = [bbox[0]['x'], bbox[0]['y'], bbox[1]['x'], bbox[1]['y']]
                 classes = [cls.get('name') for cls in item.get('classes', [])]
                 annotation.classes = classes
-                annotation.bbox = bbox
+
+                points = item.get('coordinates')
+                if len(points) == 2:
+                    bbox = [points[0]['x'], points[0]['y'], points[1]['x'], points[1]['y']]
+                    annotation.bbox = bbox
+
+                elif len(points) > 2:
+                    segment = []
+                    for p in points:
+                        segment.append(p['x'])
+                        segment.append(p['y'])
+                    annotation.segment = segment
+
+            annotations.append(annotation)
             
-            annotations_list.append(annotation)
-            
-        return annotations_list
+        return annotations
 
     def list_annotations(self, dataset_id: int, annotation_set_id: int) -> List[Annotation]:
         """
         Returns all annotations for a given annotation set
-        #TODO: fix this after fixing get_annotation
-        
+
         Args:
             dataset_id: dataset id
             annotation_set_id: annotation set id
@@ -384,7 +391,10 @@ class SDK:
              List[:class:`remo.Annotation`]
         """
         images = self.list_dataset_images(dataset_id)
-        return [self.get_image_annotations(dataset_id, annotation_set_id, img.id) for img in images]
+        annotations = []
+        for img in images:
+            annotations += self.list_image_annotations(dataset_id, annotation_set_id, img.id)
+        return annotations
 
     def create_annotation_set(
         self, annotation_task: str, dataset_id: int, name: str, classes: List[str]
@@ -414,7 +424,7 @@ class SDK:
             total_classes=len(annotation_set['classes']),
         )
 
-    def add_annotations_to_image(self, annotation_set_id: int, image_id: int, annotations: list[Annotation]):
+    def add_annotations_to_image(self, annotation_set_id: int, image_id: int, annotations: List[Annotation]):
         """
         Adds annotation to a given image
         #TODO: check instance segmentation
@@ -422,7 +432,7 @@ class SDK:
         Args:
             annotation_set_id: annotation set id
             image_id: image id
-            annotation: Annotation object
+            annotations: Annotation object
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         dataset_id = annotation_set.dataset_id

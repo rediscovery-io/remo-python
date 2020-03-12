@@ -18,8 +18,9 @@ class Dataset:
 
     def __init__(self, id: int = None, name: str = None, quantity: int = 0, **kwargs):
         from remo import _sdk
+
         self.sdk = _sdk
-        
+
         self.id = id
         self.name = name
         self.n_images = quantity
@@ -119,7 +120,7 @@ class Dataset:
             annotation_set_id: annotation set id
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
-        
+
         if annotation_set:
             image_lookup = {img.name: img.id for img in self.images()}
             for annotation in annotations:
@@ -131,10 +132,9 @@ class Dataset:
                 self.sdk.add_annotation(annotation_set.id, image_id, annotation)
         else:
             print('ERROR: annotation set not defined')
-            
-        #TODO: don't retrieve all annotation set, only do it if ID not passed.
-        #But: need to add check in add_annotation, that annotation_set.dataset_id == image.dataset_id
 
+        # TODO: don't retrieve all annotation set, only do it if ID not passed.
+        # But: need to add check in add_annotation, that annotation_set.dataset_id == image.dataset_id
 
     def export_annotations(
         self,
@@ -195,18 +195,18 @@ class Dataset:
         else:
             print('ERROR: annotation set not defined')
 
-    def get_annotation(self, annotation_set_id: int, image_id: int) -> Annotation:
+    def list_image_annotations(self, annotation_set_id: int, image_id: int) -> List[Annotation]:
         """
-        Retrieves annotation for a given image
+        Retrieves annotations for a given image
 
         Args:
             annotation_set_id: annotation set id
             image_id: image id
 
         Returns:
-            :class:`remo.Annotation`
+            List[:class:`remo.Annotation`]
         """
-        return self.sdk.get_annotation(self.id, annotation_set_id, image_id)
+        return self.sdk.list_image_annotations(self.id, annotation_set_id, image_id)
 
     def create_annotation_set(
         self, annotation_task: str, name: str, classes: List[str], path_to_annotation_file: str = None

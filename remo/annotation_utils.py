@@ -29,8 +29,8 @@ def parse_csv_obj_det(file_path) -> List[Annotation]:
             # convert coordinates to list of integers
             bbox = [int(val) for val in coordinates.split(' ')]
 
-            annotation = Annotation(img_filename=file_name)
-            annotation.add_item(classes=[class_name], bbox=bbox)
-            annotations.append(annotation)
+            annotation = Annotation(img_filename=file_name, classes=class_name)
+            annotation.bbox = bbox
 
+            annotations.append(annotation)
     return annotations
