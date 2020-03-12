@@ -2,7 +2,7 @@
 from typing import List
 
 
-class AnnotationObject:
+class Annotation:
         """
         Represents a single annotation object. This can be:
         
@@ -18,19 +18,19 @@ class AnnotationObject:
             
         Examples:
             to create a bounding box:
-                annotation_obj = AnnotationObject('image.png', 'Dog')
-                annotation_obj.bbox = [1, 23, 3, 2]
+                annotation = Annotation('image.png', 'Dog')
+                annotation.bbox = [1, 23, 3, 2]
                 
             to create a polygon:
-                annotation_obj = AnnotationObject('image.png', 'Dog')
-                annotation_obj.segment = [1, 23, 3, 2, 1, 2, 1, 2]
+                annotation = Annotation('image.png', 'Dog')
+                annotation.segment = [1, 23, 3, 2, 1, 2, 1, 2]
         """
 
     
-    def __init__(self, img_filename: str, classes, object=None):
+    def __init__(self, img_filename: str=None, classes=None, object=None):
         if object and (not
-                       isinstance(object, AnnotationObject.Bbox) and not isinstance(object, AnnotationObject.Segment)):
-            raise Exception('Expected object type AnnotationObject.Bbox or AnnotationObject.Segment')
+                       isinstance(object, Annotation.Bbox) and not isinstance(object, Annotation.Segment)):
+            raise Exception('Expected object type Annotation.Bbox or Annotation.Segment')
 
         self.filename = img_filename
         self.classes = classes if isinstance(classes, list) else [classes]
@@ -44,22 +44,22 @@ class AnnotationObject:
 
     @property
     def bbox(self):
-        if isinstance(self.object, AnnotationObject.Bbox):
+        if isinstance(self.object, Annotation.Bbox):
             return self.object
         return None
 
     @bbox.setter
     def bbox(self, values: List[int]):
         if len(values) != 4:
-            raise Exception('Boundind box expected 4 values: xmin, ymin, xmax, ymax')
+            raise Exception('Bounding box expects 4 values: xmin, ymin, xmax, ymax')
 
         xmin, ymin, xmax, ymax = values
-        self.object = AnnotationObject.Bbox(xmin, ymin, xmax, ymax)
+        self.object = Annotation.Bbox(xmin, ymin, xmax, ymax)
 
 
     @property
     def segment(self):
-        if isinstance(self.object, AnnotationObject.Segment):
+        if isinstance(self.object, Annotation.Segment):
             return self.object
         return None
 
@@ -69,7 +69,7 @@ class AnnotationObject:
             raise Exception('Segment coordinates cannot be an empty list.')
         if len(points) % 2 == 1:
             raise Exception('Segment coordinates need to be an even number of elements indicating (x,y) coordinates of each point.')
-        self.object = AnnotationObject.Segment(points)
+        self.object = Annotation.Segment(points)
 
 
     class Bbox:
@@ -101,26 +101,6 @@ class AnnotationObject:
 
         def __init__(self, points: List[int]):
             self.points = [{'x': x, 'y': y} for x, y in zip(points[::2], points[1::2])]
-
-
-
-if __name__ == '__main__':
-    annotation_obj = AnnotationObject('image.png', 'Dog')
-    annotation_obj.bbox = [1, 23, 3, 2]
-    
-    annotation_obj.segment = [1, 23, 3, 2, 1, 2, 1, 2]
-    print('Task:', annotation_obj.task)
-    print('-' * 50)
-
-    annotation_obj.bbox = [1, 23, 3, 2]
-    print('Task:', annotation_obj.task)
-    print('bbox:', annotation_obj.bbox)
-    print('-' * 50)
-
-    annotation_obj.segment = [1, 23, 3, 2, 1, 2, 1, 2]
-    print('Task:', annotation_obj.task)
-    print('bbox:', annotation_obj.bbox)
-    print('segment:', annotation_obj.segment)
 
 
 
