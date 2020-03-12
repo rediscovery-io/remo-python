@@ -1,6 +1,4 @@
 import csv
-import os
-import tempfile
 from typing import List
 
 from remo.domain import Annotation                                
