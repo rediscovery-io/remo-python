@@ -5,6 +5,7 @@ import subprocess
 from abc import abstractmethod, ABCMeta
 from pathlib import Path
 import webbrowser
+import uuid
 
 
 class AbstractViewer(metaclass=ABCMeta):
@@ -14,11 +15,57 @@ class AbstractViewer(metaclass=ABCMeta):
 
 
 class JupyterViewer(AbstractViewer):
+
     def browse(self, url: str):
         print('Open', url)
-        from IPython.display import IFrame
+        id = 'remo_frame_{}'.format(uuid.uuid4())
+        # url = self._headless(url)
+        return self._html(id, url)
 
-        return IFrame(src=url, width=1000, height=600)
+    @staticmethod
+    def _headless(url: str) -> str:
+        separator = '&' if '?' in url else '?'
+        return '{}{}headless'.format(url, separator)
+
+    @staticmethod
+    def _html(id: str, url: str):
+        from IPython.display import HTML
+        return HTML("""
+        <iframe
+            id="{id}"
+            width="100%"
+            height="100px"
+            src="{url}"
+            frameborder="0"
+            allowfullscreen
+        ></iframe>""".format(id=id, url=url) + """
+        <script type="text/javascript">
+            (function () {""" + """
+                const iframe = document.getElementById("{id}");
+                let timeout, delay = 100;
+            """.format(id=id) + """
+                const setHeight = () => {
+                  const width = iframe.clientWidth;
+                  iframe.style.height = (width * screen.height / screen.width) * 0.8 + 'px';
+                }
+                window.addEventListener("resize", () => {
+                    clearTimeout(timeout);
+                  // start timing for event "completion"
+                  timeout = setTimeout(setHeight, delay);
+                });
+                setHeight();
+            })()
+        </script>
+        """)
+
+
+
+
+
+
+
+
+
 
 
 class BrowserViewer(AbstractViewer):
