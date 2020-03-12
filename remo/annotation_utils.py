@@ -1,9 +1,9 @@
 import csv
 from typing import List
 
-from remo.domain import Annotation
-
-
+from remo.domain import Annotation                                
+                                               
+                                               
 def parse_csv_obj_det(file_path) -> List[Annotation]:
     """
     Args

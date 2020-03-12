@@ -108,13 +108,37 @@ class Dataset:
         """
         return self.sdk.list_annotation_sets(self.id)
 
+    def add_annotations_WIP(self, annotations: List[Annotation], annotation_set_id: int = None):
+        """
+        Faster upload of annotations to the Dataset via file conversion.
+        If annotation_set_id is not specified, annotations are added to the default Annotation Set.
+        
+        Args:
+            annotations: list of annotations objects
+            annotation_set_id: annotation set id
+        """
+        annotation_set = self.get_annotation_set(annotation_set_id)
+        
+        if annotation_set:
+            image_lookup = {img.name: img.id for img in self.images()}
+            my_csv = xx #import function from annotation.utils
+                
+
+            self.sdk.add_data(my_csv)
+        else:
+            print('ERROR: annotation set not defined')
+            
+        #TODO: don't retrieve all annotation set, only do it if ID not passed.
+        #But: need to add check in add_annotation, that annotation_set.dataset_id == image.dataset_id
+        # also check that tasks align
+        
     def add_annotations(self, annotations: List[Annotation], annotation_set_id: int = None):
         """
         Adds annotations to the Dataset.
         If annotation_set_id is not specified, annotations are added to the default Annotation Set.
-        Note: this method is particularly slow for now and will be improved in the future. 
+        Note: this method is particularly slow for now and will be improved in the future.
         Use .add_data() for faster upload (you'd need to convert your annotation files to a file supported by Remo)
-        
+
         Args:
             annotations: list of annotations objects
             annotation_set_id: annotation set id
@@ -129,7 +153,7 @@ class Dataset:
                     print('WARNING: Image {} was not found in {}'.format(annotation.img_filename, self))
                     continue
 
-                self.sdk.add_annotation(annotation_set.id, image_id, annotation)
+                self.sdk.add_annotations_to_image(annotation_set.id, image_id, annotation)
         else:
             print('ERROR: annotation set not defined')
 
@@ -244,6 +268,8 @@ class Dataset:
         annotation_set_id: int = None,
     ):
         """
+        #TODO: ALR - delete function? I don't think it's needed
+        
         Uploads annotations from a custom annotation file to an annotation set.
         If using a supported annotation format, you can directly use :func:`add_data` function
 
