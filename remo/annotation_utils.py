@@ -1,9 +1,9 @@
 import csv
 from typing import List
 
-from remo.domain import Annotation
-
-
+from remo.domain import Annotation                                
+                                               
+                                               
 def parse_csv_obj_det(file_path) -> List[Annotation]:
     """
     Args
@@ -20,7 +20,7 @@ def parse_csv_obj_det(file_path) -> List[Annotation]:
         List[:class:`remo.Annotation`]
     """
 
-    annotations = []
+    annotations_list = []
 
     with open(file_path, 'r') as f:
         csv_file = csv.reader(f, delimiter=',')
@@ -29,8 +29,8 @@ def parse_csv_obj_det(file_path) -> List[Annotation]:
             # convert coordinates to list of integers
             bbox = [int(val) for val in coordinates.split(' ')]
 
-            annotation = Annotation(img_filename=file_name)
-            annotation.add_item(classes=[class_name], bbox=bbox)
-            annotations.append(annotation)
+            annotation = Annotation(filename=file_name, classes=[class_name])
+            annotation.bbox=bbox
+            annotations_list.append(annotation)
 
-    return annotations
+    return annotations_list
