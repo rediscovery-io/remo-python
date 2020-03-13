@@ -1,7 +1,7 @@
 import os
 from .domain import task, class_encodings, Dataset, Image, Annotation, AnnotationSet
 
-__version__ = '0.0.15'
+__version__ = '0.0.16'
 _sdk = None
 _logs = None
 _server = None
