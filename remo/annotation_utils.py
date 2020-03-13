@@ -5,47 +5,58 @@ from typing import List
 
 from remo.domain import Annotation                                
 
-
+def check_annotation_task(expected_task, actual_task):
+    if expected_task is not actual_task:
+        raise Exception("Expected annotation task '{}', but received annotation for '{}'".format(expected_task,actual_task))
+            
 def prepare_annotations_for_upload(annotations: List[Annotation], annotation_task):
     
     my_objects_list = []
     
     
     if annotation_task is 'object_detection':
+        
         my_objects_list.append(["file_name","class_name","xmin","ymin","xmax","ymax"])
+
+        for i_annotation in annotations:
+            check_annotation_task(annotation_task, i_annotation.task)
+
+            my_inner_list = []
+            my_inner_list.append(i_annotation.img_filename)
+            my_inner_list.append(i_annotation.classes)
+            my_inner_list.extend(i_annotation.coordinates)
+            my_objects_list.append(my_inner_list)
         
     elif annotation_task is 'instance_segmentation':
+        
         my_objects_list.append(["file_name","class_name","coordinates"])
+        
+        for i_annotation in annotations:
+            
+            check_annotation_task(annotation_task, i_annotation.task)
+
+            my_inner_list = []
+            my_inner_list.append(i_annotation.img_filename)
+            my_inner_list.append(i_annotation.classes)
+            my_inner_list.append['; '.join(map(str, i_annotation.coordinates))]          
+            my_objects_list.append(my_inner_list)
+        
         
     elif annotation_task is 'image_classification':
         my_objects_list.append(["file_name","class_name"])
         
-    else:
-        raise Exception("Annotation task {} not recognised. Supported annotation tasks are 'instance_segmentation', 'object_detection' and 'image_classification'".format(annotation_task))
-    
-    for i_annotation in annotations:
-        
-        if i_annotation.task is not annotation_task:
-            raise Exception("Expected annotation task {}, but received some annotation for {}".format(annotation_task,i_annotation.task))
+        for i_annotation in annotations:
             
-        my_inner_list = []
-        # file name
-        my_inner_list.append(i_annotation.img_filename)
-        
-        # classes
-        my_inner_list.append(i_annotation.classes)
-        
-        # coordinates
-        if annotation_task is 'object_detection':
-            my_inner_list.extend(i_annotation.coordinates)
-            
-        elif annotation_task is 'instance_segmentation':
-            my_inner_list.append['; '.join(map(str, i_annotation.coordinates))]
-            
-        my_objects_list.append(my_inner_list)
+            check_annotation_task(annotation_task, i_annotation.task)
 
+            my_inner_list = []
+            my_inner_list.append(i_annotation.img_filename)
+            my_inner_list.append(i_annotation.classes)
+
+    else:
+        raise Exception("Annotation task '{}' not recognised. Supported annotation tasks are 'instance_segmentation', 'object_detection' and 'image_classification'".format(annotation_task))
+        
     return my_objects_list
-    
     
 def create_tempfile(annotations: List[Annotation]) -> str:
     fd, temp_path = tempfile.mkstemp(suffix='.csv')
