@@ -122,7 +122,7 @@ class Dataset:
         annotation_set = self.get_annotation_set(annotation_set_id)
         if not annotation_set:
             raise Exception('Annotation set not defined')
-
+        
         temp_path = create_tempfile(annotations)
         self.add_data(annotation_task = annotation_set.task, annotation_set_id =annotation_set.id, paths_to_upload = [temp_path])
         os.remove(temp_path)
