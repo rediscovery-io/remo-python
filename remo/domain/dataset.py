@@ -137,7 +137,7 @@ class Dataset:
             finally:
                 os.remove(temp_path)     
         else:
-            print('ERROR: annotation set not defined')
+            raise Exception('Annotation set not defined')
             
         #TODO: don't retrieve all annotation set, only do it if ID not passed.
         #But: need to add check in add_annotation, that annotation_set.dataset_id == image.dataset_id
@@ -349,8 +349,8 @@ class Dataset:
         annotation_set = self.sdk.get_annotation_set(annotation_set_id)
         if annotation_set and annotation_set.dataset_id == self.id:
             return annotation_set
-
-        print('ERROR: annotation set with id={} not found within this dataset'.format(annotation_set_id))
+        else:
+            raise Exception('Annotation set with ID = {} is not part of dataset {}. You can check the list of annotation sets in your dataset using dataset.annotation_sets()'.format(annotation_set_id, self.name))
 
     def default_annotation_set(self) -> AnnotationSet:
         """

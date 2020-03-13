@@ -236,17 +236,21 @@ class SDK:
             for annotation_set in result.get('results', [])
         ]
 
-    def get_annotation_set(self, id: int) -> AnnotationSet:
+    def get_annotation_set(self, annotation_set_id: int) -> AnnotationSet:
         """
         Retrieves annotation set
 
         Args:
-            id: annotation set id
+            annotation_set_id: annotation set id
 
         Returns:
              :class:`remo.AnnotationSet`
         """
-        annotation_set = self.api.get_annotation_set(id)
+        annotation_set = self.api.get_annotation_set(annotation_set_id)
+
+        if 'detail' in annotation_set:
+            raise Exception('Annotation set with ID = {} not found. You can check the list of annotation sets in your dataset using dataset.annotation_sets()'.format(annotation_set_id))
+            
         return AnnotationSet(
             id=annotation_set['id'],
             name=annotation_set['name'],
@@ -413,8 +417,7 @@ class SDK:
         """
         annotation_set = self.api.create_annotation_set(annotation_task, dataset_id, name, classes)
         if 'error' in annotation_set:
-            print('ERROR:', annotation_set['error'])
-            return None
+            raise Exception('Error while creating an annotation set. Message:\n{}'.format(annotation_set['error']))
 
         return AnnotationSet(
             id=annotation_set['id'],
@@ -513,12 +516,9 @@ class SDK:
         """
         json_data = self.api.list_dataset_images(dataset_id, limit=limit, offset=offset)
         if 'error' in json_data:
-            print(
-                'ERROR: failed to get all images for dataset id:{}, error: {}'.format(
-                    dataset_id, json_data.get('error')
-                )
-            )
-            return None
+            raise Exception('Failed to get all images for dataset ID = {}. Error message:\n: {}'.format(
+                    dataset_id, json_data.get('error'))
+
         images = json_data.get('results', [])
         return [Image(**img) for img in images]
 
@@ -546,8 +546,7 @@ class SDK:
         """
         json_data = self.api.get_image(image_id)
         if 'error' in json_data:
-            print('ERROR: failed to get image by id:{}, err: {}'.format(image_id, json_data.get('error')))
-            return None
+            raise Exception('Failed to get image by ID = {}. Error message:\n: {}'.format(image_id, json_data.get('error')))
 
         return Image(**json_data)
 
@@ -592,8 +591,7 @@ class SDK:
             return
 
         if img.dataset_id != dataset_id:
-            print('Image ID: {} not in dataset {}'.format(image_id, dataset_id))
-            return
+            raise Exception('Image ID = {} not found in dataset ID: {}'.format(image_id, dataset_id))
 
         return self._view(frontend.image_view.format(image_id, dataset_id))
 
