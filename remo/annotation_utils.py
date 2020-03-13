@@ -1,9 +1,9 @@
 import csv
 import os
 import tempfile
-from typing import List
+from typing import List, TypeVar
 
-from .domain import Annotation                                
+Annotation = TypeVar('Annotation')
 
 def check_annotation_task(expected_task, actual_task):
     if expected_task is not actual_task:
@@ -52,10 +52,11 @@ def prepare_annotations_for_upload(annotations: List[Annotation], annotation_tas
             my_inner_list = []
             my_inner_list.append(i_annotation.img_filename)
             my_inner_list.append(i_annotation.classes)
+            my_objects_list.append(my_inner_list)
 
     else:
         raise Exception("Annotation task '{}' not recognised. Supported annotation tasks are 'instance_segmentation', 'object_detection' and 'image_classification'".format(annotation_task))
-        
+
     return my_objects_list
     
 def create_tempfile(annotations: List[Annotation]) -> str:
