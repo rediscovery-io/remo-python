@@ -516,8 +516,10 @@ class SDK:
         """
         json_data = self.api.list_dataset_images(dataset_id, limit=limit, offset=offset)
         if 'error' in json_data:
-            raise Exception('Failed to get all images for dataset ID = {}. Error message:\n: {}'.format(
-                    dataset_id, json_data.get('error'))
+            raise Exception(
+                'Failed to get all images for dataset ID = {}. Error message:\n: {}'
+                .format(dataset_id, json_data.get('error'))
+            )
 
         images = json_data.get('results', [])
         return [Image(**img) for img in images]

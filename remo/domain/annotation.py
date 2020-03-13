@@ -33,8 +33,12 @@ class Annotation:
         self.img_filename = img_filename
         self.classes = classes if isinstance(classes, list) else [classes]
         self.object = object
-        self.coordinates = None
-        
+
+    @property
+    def coordinates(self):
+        if self.object:
+            return self.object.coordinates
+
     @property
     def task(self):
         if not self.object:
@@ -52,9 +56,7 @@ class Annotation:
         if len(values) != 4:
             raise Exception('Bounding box expects 4 values: xmin, ymin, xmax, ymax')
 
-        xmin, ymin, xmax, ymax = values
-        self.object = Annotation.Bbox(xmin, ymin, xmax, ymax)
-        self.coordinates = [xmin, ymin, xmax, ymax]
+        self.object = Annotation.Bbox(*values)
 
     @property
     def segment(self):
@@ -71,8 +73,21 @@ class Annotation:
                 'Segment coordinates need to be an even number of elements indicating (x, y) coordinates of each point.'
             )
         self.object = Annotation.Segment(points)
-        self.coordinates = points
 
+    def csv_columns(self):
+        columns = ['file_name', 'class_name']
+        if self.object:
+            columns.extend(self.object.csv_columns)
+        return columns
+
+    def csv_rows(self) -> list:
+        rows = []
+        for class_name in self.classes:
+            row = [self.img_filename, class_name]
+            if self.object:
+                row.extend(self.object.csv_values())
+            rows.append(row)
+        return rows
     
     class Bbox:
         """
@@ -84,15 +99,18 @@ class Annotation:
             xmax: X max
             ymax: Y max
         """
-
         task = 'object_detection'
+        csv_columns = ["xmin","ymin","xmax","ymax"]
 
         def __init__(self, xmin: int, ymin: int, xmax: int, ymax: int):
             self.xmin = xmin
             self.ymin = ymin
             self.xmax = xmax
             self.ymax = ymax
-            
+            self.coordinates = [self.xmin, self.ymin, self.xmax, self.ymax]
+
+        def csv_values(self):
+            return self.coordinates
 
     class Segment:
         """
@@ -103,6 +121,11 @@ class Annotation:
         """
 
         task = 'instance_segmentation'
+        csv_columns = ["coordinates"]
 
         def __init__(self, points: List[int]):
             self.points = [{'x': x, 'y': y} for x, y in zip(points[::2], points[1::2])]
+            self.coordinates = points
+
+        def csv_values(self):
+            return ['; '.join(map(str, self.coordinates))]

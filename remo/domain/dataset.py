@@ -1,11 +1,9 @@
+import os
 from typing import List, TypeVar, Callable
 
 from .annotation import Annotation
 from .image import Image
-from remo.annotation_utils import prepare_annotations_for_upload
-import tempfile
-import os
-import csv
+from remo.annotation_utils import create_tempfile
 
 AnnotationSet = TypeVar('AnnotationSet')
 
@@ -122,22 +120,13 @@ class Dataset:
             annotation_set_id: annotation set id
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
-        
-        if annotation_set:
-            prepared_annotations = prepare_annotations_for_upload(annotations)          
-
-            fd, temp_path = tempfile.mkstemp(suffix='.csv')
-            try:
-                with os.fdopen(fd, 'w') as temp:
-                    writer = csv.writer(temp)
-                    writer.writerow(["file_name","class_name","xmin","ymin","xmax","ymax"])
-                    writer.writerows(prepared_annotations)
-                    self.add_data(annotation_task = annotation_set.task, annotation_set_id =annotation_set.id, paths_to_upload = [temp_path])
-                    
-            finally:
-                os.remove(temp_path)     
-        else:
+        if not annotation_set:
             raise Exception('Annotation set not defined')
+
+        temp_path = create_tempfile(annotations)
+        self.add_data(annotation_task = annotation_set.task, annotation_set_id =annotation_set.id, paths_to_upload = [temp_path])
+        os.remove(temp_path)
+
             
         #TODO: don't retrieve all annotation set, only do it if ID not passed.
         #But: need to add check in add_annotation, that annotation_set.dataset_id == image.dataset_id

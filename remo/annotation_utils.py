@@ -1,22 +1,21 @@
 import csv
+import os
+import tempfile
 from typing import List
 
 from remo.domain import Annotation                                
-                                               
 
-def prepare_annotations_for_upload(annotations: List[Annotation]) -> List:
-   
-    my_objects_list = []
-    for i_annotation in annotations:
 
-        my_inner_list = []
-        my_inner_list.append(i_annotation.img_filename)
-        my_inner_list.append(i_annotation.classes)
-        my_inner_list.extend(i_annotation.coordinates)
-        my_objects_list.append(my_inner_list)
-    
-    return my_objects_list
-    
+def create_tempfile(annotations: List[Annotation]) -> str:
+    fd, temp_path = tempfile.mkstemp(suffix='.csv')
+    with os.fdopen(fd, 'w') as temp:
+        writer = csv.writer(temp)
+        writer.writerow(annotations[0].csv_columns())
+        for annotation in annotations:
+            writer.writerows(annotation.csv_rows())
+    return temp_path
+
+
 def parse_csv_obj_det(file_path) -> List[Annotation]:
     """
     Args
