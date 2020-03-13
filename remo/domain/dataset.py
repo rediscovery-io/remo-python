@@ -1,7 +1,9 @@
+import os
 from typing import List, TypeVar, Callable
 
 from .annotation import Annotation
 from .image import Image
+from remo.annotation_utils import create_tempfile
 
 AnnotationSet = TypeVar('AnnotationSet')
 
@@ -18,8 +20,9 @@ class Dataset:
 
     def __init__(self, id: int = None, name: str = None, quantity: int = 0, **kwargs):
         from remo import _sdk
+
         self.sdk = _sdk
-        
+
         self.id = id
         self.name = name
         self.n_images = quantity
@@ -46,7 +49,7 @@ class Dataset:
         To be able to add annotations you need to specify an annotation task. Annotations 
 
         Args:
-            local_files: list of files or directories containing annotationos and image files
+            local_files: list of files or directories containing annotations and image files
                 These files will be linked.
                 Folders will be recursively scanned for image files: ``jpg``,``jpeg``, ``png``, ``tif``.
 
@@ -109,17 +112,38 @@ class Dataset:
 
     def add_annotations(self, annotations: List[Annotation], annotation_set_id: int = None):
         """
-        Adds annotations to the Dataset.
+        Faster upload of annotations to the Dataset via file conversion.
         If annotation_set_id is not specified, annotations are added to the default Annotation Set.
-        Note: this method is particularly slow for now and will be improved in the future. 
-        Use .add_data() for faster upload (you'd need to convert your annotation files to a file supported by Remo)
-        
         Args:
             annotations: list of annotations objects
             annotation_set_id: annotation set id
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
+        if not annotation_set:
+            raise Exception('Annotation set not defined')
+
+        temp_path = create_tempfile(annotations)
+        self.add_data(annotation_task = annotation_set.task, annotation_set_id =annotation_set.id, paths_to_upload = [temp_path])
+        os.remove(temp_path)
+
+            
+        #TODO: don't retrieve all annotation set, only do it if ID not passed.
+        #But: need to add check in add_annotation, that annotation_set.dataset_id == image.dataset_id
+        # also check that tasks align
         
+    def add_annotations_old(self, annotations: List[Annotation], annotation_set_id: int = None):
+        """
+        Adds annotations to the Dataset.
+        If annotation_set_id is not specified, annotations are added to the default Annotation Set.
+        Note: this method is particularly slow for now and will be improved in the future.
+        Use .add_data() for faster upload (you'd need to convert your annotation files to a file supported by Remo)
+
+        Args:
+            annotations: list of annotations objects
+            annotation_set_id: annotation set id
+        """
+        annotation_set = self.get_annotation_set(annotation_set_id)
+
         if annotation_set:
             image_lookup = {img.name: img.id for img in self.images()}
             for annotation in annotations:
@@ -128,13 +152,12 @@ class Dataset:
                     print('WARNING: Image {} was not found in {}'.format(annotation.img_filename, self))
                     continue
 
-                self.sdk.add_annotation(annotation_set.id, image_id, annotation)
+                self.sdk.add_annotations_to_image(annotation_set.id, image_id, annotation)
         else:
             print('ERROR: annotation set not defined')
-            
-        #TODO: don't retrieve all annotation set, only do it if ID not passed.
-        #But: need to add check in add_annotation, that annotation_set.dataset_id == image.dataset_id
 
+        # TODO: don't retrieve all annotation set, only do it if ID not passed.
+        # But: need to add check in add_annotation, that annotation_set.dataset_id == image.dataset_id
 
     def export_annotations(
         self,
@@ -195,18 +218,18 @@ class Dataset:
         else:
             print('ERROR: annotation set not defined')
 
-    def get_annotation(self, annotation_set_id: int, image_id: int) -> Annotation:
+    def list_image_annotations(self, annotation_set_id: int, image_id: int) -> List[Annotation]:
         """
-        Retrieves annotation for a given image
+        Retrieves annotations for a given image
 
         Args:
             annotation_set_id: annotation set id
             image_id: image id
 
         Returns:
-            :class:`remo.Annotation`
+            List[:class:`remo.Annotation`]
         """
-        return self.sdk.get_annotation(self.id, annotation_set_id, image_id)
+        return self.sdk.list_image_annotations(self.id, annotation_set_id, image_id)
 
     def create_annotation_set(
         self, annotation_task: str, name: str, classes: List[str], path_to_annotation_file: str = None
@@ -244,6 +267,8 @@ class Dataset:
         annotation_set_id: int = None,
     ):
         """
+        #TODO: ALR - delete function? I don't think it's needed
+        
         Uploads annotations from a custom annotation file to an annotation set.
         If using a supported annotation format, you can directly use :func:`add_data` function
 
@@ -312,8 +337,8 @@ class Dataset:
         annotation_set = self.sdk.get_annotation_set(annotation_set_id)
         if annotation_set and annotation_set.dataset_id == self.id:
             return annotation_set
-
-        print('ERROR: annotation set with id={} not found within this dataset'.format(annotation_set_id))
+        else:
+            raise Exception('Annotation set with ID = {} is not part of dataset {}. You can check the list of annotation sets in your dataset using dataset.annotation_sets()'.format(annotation_set_id, self.name))
 
     def default_annotation_set(self) -> AnnotationSet:
         """

@@ -1,5 +1,5 @@
 import os
-from typing import List, Callable
+from typing import List
 
 from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
 from .api import API
@@ -236,17 +236,21 @@ class SDK:
             for annotation_set in result.get('results', [])
         ]
 
-    def get_annotation_set(self, id: int) -> AnnotationSet:
+    def get_annotation_set(self, annotation_set_id: int) -> AnnotationSet:
         """
         Retrieves annotation set
 
         Args:
-            id: annotation set id
+            annotation_set_id: annotation set id
 
         Returns:
              :class:`remo.AnnotationSet`
         """
-        annotation_set = self.api.get_annotation_set(id)
+        annotation_set = self.api.get_annotation_set(annotation_set_id)
+
+        if 'detail' in annotation_set:
+            raise Exception('Annotation set with ID = {} not found. You can check the list of annotation sets in your dataset using dataset.annotation_sets()'.format(annotation_set_id))
+            
         return AnnotationSet(
             id=annotation_set['id'],
             name=annotation_set['name'],
@@ -336,9 +340,9 @@ class SDK:
         resp = self.api.get_annotation_info(dataset_id, annotation_set_id, image_id)
         return resp.get('annotation_info', [])
 
-    def get_annotation(self, dataset_id: int, annotation_set_id: int, image_id: int) -> Annotation:
+    def list_image_annotations(self, dataset_id: int, annotation_set_id: int, image_id: int) -> List[Annotation]:
         """
-        Returns annotation for a given image
+        Returns annotations for a given image
 
         Args:
             dataset_id: dataset id
@@ -346,24 +350,38 @@ class SDK:
             image_id: image id
 
         Returns:
-             :class:`remo.Annotation`
+             List[:class:`remo.Annotation`]
         """
         annotation_items = self.get_annotation_info(dataset_id, annotation_set_id, image_id)
         img = self.get_image(image_id)
         if not img:
             return None
 
-        annotation = Annotation(img_filename=img.name)
+        annotations = []
         for item in annotation_items:
+            annotation = Annotation(img_filename=img.name)
+            
             if 'lower' in item:
-                class_name = item.get('name')
-                annotation.add_item(classes=[class_name])
+                annotation.classes = item.get('name')
             else:
-                bbox = item.get('coordinates')
-                bbox = [bbox[0]['x'], bbox[0]['y'], bbox[1]['x'], bbox[1]['y']]
                 classes = [cls.get('name') for cls in item.get('classes', [])]
-                annotation.add_item(classes=classes, bbox=bbox)
-        return annotation
+                annotation.classes = classes
+
+                points = item.get('coordinates')
+                if len(points) == 2:
+                    bbox = [points[0]['x'], points[0]['y'], points[1]['x'], points[1]['y']]
+                    annotation.bbox = bbox
+
+                elif len(points) > 2:
+                    segment = []
+                    for p in points:
+                        segment.append(p['x'])
+                        segment.append(p['y'])
+                    annotation.segment = segment
+
+            annotations.append(annotation)
+            
+        return annotations
 
     def list_annotations(self, dataset_id: int, annotation_set_id: int) -> List[Annotation]:
         """
@@ -377,7 +395,10 @@ class SDK:
              List[:class:`remo.Annotation`]
         """
         images = self.list_dataset_images(dataset_id)
-        return [self.get_annotation(dataset_id, annotation_set_id, img.id) for img in images]
+        annotations = []
+        for img in images:
+            annotations += self.list_image_annotations(dataset_id, annotation_set_id, img.id)
+        return annotations
 
     def create_annotation_set(
         self, annotation_task: str, dataset_id: int, name: str, classes: List[str]
@@ -396,8 +417,7 @@ class SDK:
         """
         annotation_set = self.api.create_annotation_set(annotation_task, dataset_id, name, classes)
         if 'error' in annotation_set:
-            print('ERROR:', annotation_set['error'])
-            return None
+            raise Exception('Error while creating an annotation set. Message:\n{}'.format(annotation_set['error']))
 
         return AnnotationSet(
             id=annotation_set['id'],
@@ -407,14 +427,15 @@ class SDK:
             total_classes=len(annotation_set['classes']),
         )
 
-    def add_annotation(self, annotation_set_id: int, image_id: int, annotation: Annotation):
+    def add_annotations_to_image(self, annotation_set_id: int, image_id: int, annotations: List[Annotation]):
         """
         Adds annotation to a given image
-
+        #TODO: check instance segmentation
+        
         Args:
             annotation_set_id: annotation set id
             image_id: image id
-            annotation: Annotation object
+            annotations: Annotation object
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         dataset_id = annotation_set.dataset_id
@@ -425,7 +446,7 @@ class SDK:
         objects = []
         classes = []
 
-        for item in annotation.items:
+        for item in annotations:
             if item.bbox:
                 objects.append(
                     {
@@ -434,6 +455,22 @@ class SDK:
                             {"x": item.bbox.xmin, "y": item.bbox.ymin},
                             {"x": item.bbox.xmax, "y": item.bbox.ymax},
                         ],
+                        "auto_created": False,
+                        "position_number": object_id,
+                        "classes": [
+                            {"name": cls, "lower": cls.lower(), "questionable": False} for cls in item.classes
+                        ],
+                        "objectId": object_id,
+                        "isHidden": False,
+                    }
+                )
+                object_id += 1
+                
+            elif item.segment:
+                objects.append(
+                    {
+                        "name": "OBJ " + str(object_id),
+                        "coordinates": item.segment.points,
                         "auto_created": False,
                         "position_number": object_id,
                         "classes": [
@@ -479,12 +516,11 @@ class SDK:
         """
         json_data = self.api.list_dataset_images(dataset_id, limit=limit, offset=offset)
         if 'error' in json_data:
-            print(
-                'ERROR: failed to get all images for dataset id:{}, error: {}'.format(
-                    dataset_id, json_data.get('error')
-                )
+            raise Exception(
+                'Failed to get all images for dataset ID = {}. Error message:\n: {}'
+                .format(dataset_id, json_data.get('error'))
             )
-            return None
+
         images = json_data.get('results', [])
         return [Image(**img) for img in images]
 
@@ -512,8 +548,7 @@ class SDK:
         """
         json_data = self.api.get_image(image_id)
         if 'error' in json_data:
-            print('ERROR: failed to get image by id:{}, err: {}'.format(image_id, json_data.get('error')))
-            return None
+            raise Exception('Failed to get image by ID = {}. Error message:\n: {}'.format(image_id, json_data.get('error')))
 
         return Image(**json_data)
 
@@ -558,8 +593,7 @@ class SDK:
             return
 
         if img.dataset_id != dataset_id:
-            print('Image ID: {} not in dataset {}'.format(image_id, dataset_id))
-            return
+            raise Exception('Image ID = {} not found in dataset ID: {}'.format(image_id, dataset_id))
 
         return self._view(frontend.image_view.format(image_id, dataset_id))
 

@@ -3,76 +3,80 @@ from typing import List
 
 class Annotation:
     """
-    Represents image annotations
+    Represents a single annotation object. This can be:
+
+    - list of classes only: to assign classes to an image for image classification tasks
+    - bounding box and list of classes: to create a bounding box annotation object and assign it a list of classes
+    - segment and list of classes: to create a polygon annotation object and assign it a list of classes
 
     Args:
-        img_filename: image file name
-        status: can be ``not_annotated``, ``done`` or ``skipped``
-        task: name of annotation task. See also: :class:`remo.task`
-        tags: list of tags
+        img_filename: file name of the image the annotation refers to
+        classes: class or list of classes to add to the whole image or the object
+        object: the specific annotation object to add
+
+    Examples:
+        to create a bounding box:
+            annotation = Annotation('image.png', 'Dog')
+            annotation.bbox = [1, 23, 3, 2]
+
+        to create a polygon:
+            annotation = Annotation('image.png', 'Dog')
+            annotation.segment = [1, 23, 3, 2, 1, 2, 1, 2]
     """
 
-    def __init__(
-        self, img_filename: str = None, status: str = None, task: str = None, tags: List[str] = None
-    ):
+    def __init__(self, img_filename: str = None, classes=None, object=None):
+        if object and (
+            not isinstance(object, Annotation.Bbox) and not isinstance(object, Annotation.Segment)
+        ):
+            raise Exception('Expected object type Annotation.Bbox or Annotation.Segment')
+
         self.img_filename = img_filename
-        self.status = status
-        self.task = task
-        self.tags = tags if tags else []
-        self.items = []
+        self.classes = classes if isinstance(classes, list) else [classes]
+        self.object = object
+        self.coordinates = None
 
-    def __str__(self):
-        return 'Annotation for image: {}, n_items: {}'.format(self.img_filename, len(self.items))
 
-    def __repr__(self):
-        return self.__str__()
+    @property
+    def task(self):
+        if not self.object:
+            return 'image_classification'
+        return self.object.task
 
-    def add_item(self, classes: List[str] = None, bbox: List[int] = None, segment: List[int] = None):
-        """
-        Adds new annotation item
+    @property
+    def bbox(self):
+        if isinstance(self.object, Annotation.Bbox):
+            return self.object
+        return None
 
-        Args:
-            classes: list of classes
-            bbox: list of bbox coordinates like ``['xmin', 'ymin', 'xmax', 'ymax']``
-            segment: list of segment coordinates ``[x0, y0, x1, y1, ..., xN, yN]``
-        """
-        if classes or bbox or segment:
-            self.items.append(Annotation.Item(classes, bbox, segment))
+    @bbox.setter
+    def bbox(self, values: List[int]):
+        if len(values) != 4:
+            raise Exception('Bounding box expects 4 values: xmin, ymin, xmax, ymax')
 
-    class Item:
-        """
-        Represents annotation item
+        self.object = Annotation.Bbox(*values)
+        self.coordinates = values
+        
+    @property
+    def segment(self):
+        if isinstance(self.object, Annotation.Segment):
+            return self.object
+        return None
 
-        Args:
-            classes: list of classes
-            bbox: list of bbox coordinates like ``['xmin', 'ymin', 'xmax', 'ymax']``
-            segment: list of segment coordinates ``[x0, y0, x1, y1, ..., xN, yN]``
-        """
-
-        def __init__(self, classes: List[str] = None, bbox: List[int] = None, segment: List[int] = None):
-            self.classes = classes if classes else []
-            self.segments = []
-            self.bbox = None
-
-            if bbox:
-                self.bbox = Annotation.Bbox(*bbox)
-
-            if segment:
-                self.segments.append(Annotation.Segment(segment))
-
-        def add_segment(self, points: List[int]):
-            """
-            Adds new segment. Uses in instance segmentation.
-
-            Args:
-                points: list of segment coordinates ``[x0, y0, x1, y1, ..., xN, yN]``
-            """
-            if points:
-                self.segments.append(Annotation.Segment(points))
-
+    @segment.setter
+    def segment(self, points: List[int]):
+        if not points:
+            raise Exception('Segment coordinates cannot be an empty list.')
+        if len(points) % 2 == 1:
+            raise Exception(
+                'Segment coordinates need to be an even number of elements indicating (x, y) coordinates of each point.'
+            )
+        self.object = Annotation.Segment(points)
+        self.coordinates = points
+        
+    
     class Bbox:
         """
-        Represent coordinates of bounding box. Uses in object detection.
+        Represents coordinates of a bounding box annotation. Used in object detection.
 
         Args:
             xmin: X min
@@ -80,6 +84,7 @@ class Annotation:
             xmax: X max
             ymax: Y max
         """
+        task = 'object_detection'
 
         def __init__(self, xmin: int, ymin: int, xmax: int, ymax: int):
             self.xmin = xmin
@@ -89,11 +94,13 @@ class Annotation:
 
     class Segment:
         """
-        Represents coordinates of segment. Uses in instance segmentation.
+        Represents coordinates of a segment annotation. Used in instance segmentation.
 
         Args:
             points: list of segment coordinates ``[x0, y0, x1, y1, ..., xN, yN]``
         """
+
+        task = 'instance_segmentation'
 
         def __init__(self, points: List[int]):
             self.points = [{'x': x, 'y': y} for x, y in zip(points[::2], points[1::2])]
