@@ -3,7 +3,7 @@ import os
 import tempfile
 from typing import List
 
-from remo.domain import Annotation                                
+from .domain import Annotation                                
 
 def check_annotation_task(expected_task, actual_task):
     if expected_task is not actual_task:

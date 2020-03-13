@@ -129,7 +129,7 @@ class Image:
             annotation_set_id = annotation_set.id
 
         if annotation_set_id:
-            self.sdk.add_annotation(annotation_set_id, self.id, annotation)
+            self.sdk.add_annotations_to_image(annotation_set_id, self.id, annotation)
         else:
             print('ERROR: annotation set not defined')
 

@@ -110,11 +110,10 @@ class Dataset:
         """
         return self.sdk.list_annotation_sets(self.id)
 
-    def add_annotations_WIP(self, annotations: List[Annotation], annotation_set_id: int = None):
+    def add_annotations(self, annotations: List[Annotation], annotation_set_id: int = None):
         """
         Faster upload of annotations to the Dataset via file conversion.
         If annotation_set_id is not specified, annotations are added to the default Annotation Set.
-        # TODO: add support for other annotation formats
         Args:
             annotations: list of annotations objects
             annotation_set_id: annotation set id
@@ -132,7 +131,7 @@ class Dataset:
         #But: need to add check in add_annotation, that annotation_set.dataset_id == image.dataset_id
         # also check that tasks align
         
-    def add_annotations(self, annotations: List[Annotation], annotation_set_id: int = None):
+    def add_annotations_old(self, annotations: List[Annotation], annotation_set_id: int = None):
         """
         Adds annotations to the Dataset.
         If annotation_set_id is not specified, annotations are added to the default Annotation Set.
