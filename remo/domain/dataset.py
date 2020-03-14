@@ -82,7 +82,12 @@ class Dataset:
                 }
 
         """
-
+        
+        if annotation_set_id:
+            annotation_set = self.get_annotation_set(annotation_set_id)
+            if not annotation_set:
+                raise Exception('Annotation set ID = {} not found'.format(annotation_set_id))
+            
         return self.sdk.add_data_to_dataset(
             self.id,
             local_files=local_files,
