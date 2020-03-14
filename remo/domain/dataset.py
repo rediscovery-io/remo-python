@@ -113,17 +113,34 @@ class Dataset:
     def add_annotations(self, annotations: List[Annotation], annotation_set_id: int = None):
         """
         Faster upload of annotations to the Dataset via file conversion.
+        
+        If there are no Annotation Sets, an Annotation Set is automatically created.
         If annotation_set_id is not specified, annotations are added to the default Annotation Set.
+        If the default Annotation Set's task doesn't match the annotations task, a new Annotation Set is also created.
+        
         Args:
-            annotations: list of annotations objects
-            annotation_set_id: annotation set id
+            annotations: list of Annotation objects
+            (optional) annotation_set_id: annotation set id
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
+        temp_path, list_of_classes = create_tempfile(annotations)
+        
         if not annotation_set:
-            raise Exception('Annotation set not defined')
 
-        temp_path = create_tempfile(annotations)
-        self.add_data(annotation_task = annotation_set.task, annotation_set_id =annotation_set.id, paths_to_upload = [temp_path])
+            self.create_annotation_set(annotation_task=annotations[0].task, name='my_ann_set',
+                                       classes = list_of_classes, path_to_annotation_file = temp_path)
+        
+        elif annotation_set.task is not annotations[0].task:
+        
+            n_annotation_sets = len(self.annotation_sets())
+            
+            self.create_annotation_set(annotation_task=annotations[0].task, name='my_ann_set_' + str(n_annotation_sets+1),
+                                       classes = list_of_classes, path_to_annotation_file = temp_path)
+            
+        else:
+            self.add_data(annotation_task = annotation_set.task, annotation_set_id =annotation_set.id, 
+                          paths_to_upload = [temp_path])
+            
         os.remove(temp_path)
 
             

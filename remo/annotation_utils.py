@@ -64,12 +64,14 @@ def create_tempfile(annotations: List[Annotation]) -> str:
     
     annotation_task = annotations[0].task
     prepared_data = prepare_annotations_for_upload(annotations, annotation_task)
+    list_of_classes = [i_ele[1] for i_ele in prepared_data]
+    list_of_classes = list(set(list_of_classes))
     
     with os.fdopen(fd, 'w') as temp:
         writer = csv.writer(temp)
         writer.writerows(prepared_data)
             
-    return temp_path
+    return temp_path, list_of_classes
 
 
 def parse_csv_obj_det(file_path) -> List[Annotation]:
