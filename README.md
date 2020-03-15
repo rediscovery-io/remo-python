@@ -20,7 +20,7 @@ Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and
 
 <br/>
 
-To read more about Remo and download it, visit [remo.ai](http://remo.ai) (the website is still under construction :) )
+To read more about Remo and install it, visit [remo.ai](http://remo.ai) (the website is still under construction)
 
 <br/>
 
