@@ -1,5 +1,5 @@
 from typing import List
-
+from .task import *
 
 class Annotation:
     """
@@ -39,7 +39,7 @@ class Annotation:
     @property
     def task(self):
         if not self.object:
-            return 'image_classification'
+            return image_classification
         return self.object.task
 
     @property
@@ -84,7 +84,7 @@ class Annotation:
             xmax: X max
             ymax: Y max
         """
-        task = 'object_detection'
+        task = object_detection
 
         def __init__(self, xmin: int, ymin: int, xmax: int, ymax: int):
             self.xmin = xmin
@@ -100,7 +100,7 @@ class Annotation:
             points: list of segment coordinates ``[x0, y0, x1, y1, ..., xN, yN]``
         """
 
-        task = 'instance_segmentation'
+        task = instance_segmentation
 
         def __init__(self, points: List[int]):
             self.points = [{'x': x, 'y': y} for x, y in zip(points[::2], points[1::2])]

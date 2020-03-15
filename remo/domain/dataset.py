@@ -138,7 +138,7 @@ class Dataset:
             self.create_annotation_set(annotation_task=annotations[0].task, name='my_ann_set',
                                        classes = list_of_classes, path_to_annotation_file = temp_path)
         
-        elif annotation_set.task is not annotations[0].task:
+        elif annotation_set.task != annotations[0].task:
         
             n_annotation_sets = len(self.annotation_sets())
             
