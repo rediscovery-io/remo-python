@@ -103,9 +103,10 @@ class SDK:
         """
         Adds images and/or annotations to an existing dataset.
         Use ``local files`` to link (rather than copy) images. Use ``paths_to_upload`` if you want to copy image files or archive files. Use ``urls`` to download from the web images, annotations or archives.
-        Images: remo support formats ``jpg``,``jpeg``, ``png``, ``tif``
-        Annotations: to add annotations, make sure the specific formatting is supported. See documentation here: https://remo.ai/docs/annotation-formats/
-
+        Adding images: support for ``jpg``,``jpeg``, ``png``, ``tif``
+        Adding annotations: to add annotations, you need to specify the annotation task and make sure the specific file format is one of those supported. See documentation here: https://remo.ai/docs/annotation-formats/
+        Adding archive files: support for ``zip``, ``tar``, ``gzip``
+        
         Args:
             dataset_id: id of the dataset to add data to
 
@@ -117,12 +118,8 @@ class SDK:
             paths_to_upload: list of files or directories containing images, annotations and archives.
                 These files will be copied inside .remo folder. 
                 Folders will be recursively scanned for image files.
-
-                - image files: ``jpg``, ``png``, ``tif``.
-                - annotation files: ``json``, ``xml``, ``csv``.
-                - archive files: ``zip``, ``tar``, ``gzip``.
-                    Unpacked archive will be scanned for images, annotations and nested archives.
-
+                Unpacked archive will be scanned for images, annotations and nested archives.
+                
             urls: list of urls pointing to downloadable target, which can be image, annotation file or archive.
 
             annotation_task: annotation tasks tell remo how to parse annotations. See also: :class:`remo.task`.

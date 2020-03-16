@@ -2,6 +2,7 @@ import csv
 import os
 import tempfile
 from typing import List, TypeVar
+from .domain.task import *
 
 Annotation = TypeVar('Annotation')
 
@@ -14,7 +15,7 @@ def prepare_annotations_for_upload(annotations: List[Annotation], annotation_tas
     my_objects_list = []
     
     
-    if annotation_task is 'object_detection':
+    if annotation_task is object_detection:
         
         my_objects_list.append(["file_name","class_name","xmin","ymin","xmax","ymax"])
 
@@ -27,7 +28,7 @@ def prepare_annotations_for_upload(annotations: List[Annotation], annotation_tas
             my_inner_list.extend(i_annotation.coordinates)
             my_objects_list.append(my_inner_list)
         
-    elif annotation_task is 'instance_segmentation':
+    elif annotation_task is instance_segmentation:
         
         my_objects_list.append(["file_name","class_name","coordinates"])
         
@@ -42,7 +43,7 @@ def prepare_annotations_for_upload(annotations: List[Annotation], annotation_tas
             my_objects_list.append(my_inner_list)
         
         
-    elif annotation_task is 'image_classification':
+    elif annotation_task is image_classification:
         my_objects_list.append(["file_name","class_name"])
         
         for i_annotation in annotations:

@@ -46,30 +46,33 @@ class Dataset:
     ) -> dict:
         """
         Adds images and/or annotations to the dataset.
-        To be able to add annotations you need to specify an annotation task. Annotations 
-
+        Use ``local files`` to link (rather than copy) images. Use ``paths_to_upload`` if you want to copy image files or archive files. Use ``urls`` to download from the web images, annotations or archives.
+        Adding images: support for ``jpg``,``jpeg``, ``png``, ``tif``
+        Adding annotations: to add annotations, you need to specify the annotation task and make sure the specific file format is one of those supported. See documentation here: https://remo.ai/docs/annotation-formats/
+        Adding archive files: support for ``zip``, ``tar``, ``gzip``
+        
         Args:
+            dataset_id: id of the dataset to add data to
+
             local_files: list of files or directories containing annotations and image files
-                These files will be linked.
-                Folders will be recursively scanned for image files: ``jpg``,``jpeg``, ``png``, ``tif``.
+                Remo will create smaller copies of your images for quick previews but it will point at the original files to show original resolutions images.
+                Folders will be recursively scanned for image files.
+                
 
-            paths_to_upload: list of files or directories.
-                These files will be copied. Supported files: images, annotations and archives.
-
-                - image files: ``jpg``, ``png``, ``tif``.
-                - annotation files: ``json``, ``xml``, ``csv``.
-                - archive files: ``zip``, ``tar``, ``gzip``.
-                    Unpacked archive will be scanned for images, annotations and nested archives.
-
+            paths_to_upload: list of files or directories containing images, annotations and archives.
+                These files will be copied inside .remo folder. 
+                Folders will be recursively scanned for image files.
+                Unpacked archive will be scanned for images, annotations and nested archives.
+                
             urls: list of urls pointing to downloadable target, which can be image, annotation file or archive.
 
-            annotation_task: specifies annotation task. See also: :class:`remo.task`.
+            annotation_task: annotation tasks tell remo how to parse annotations. See also: :class:`remo.task`.
 
-            folder_id: specifies target folder in the dataset.
+            folder_id: specifies target virtual folder in the remo dataset. If None, it adds to the root level.
 
-            annotation_set_id: specifies target annotation set in the dataset.
+            annotation_set_id: specifies target annotation set in the dataset. If None, it adds to the default annotation set.
 
-            class_encoding: specifies how to convert class labels in annotation files to classes.
+            class_encoding: specifies how to convert labels in annotation files to readable labels. If None,  Remo will try to interpret the encoding automatically - which for standard words, means they will be read as they are. 
                 See also: :class:`remo.class_encodings`.
 
         Returns:
@@ -82,7 +85,12 @@ class Dataset:
                 }
 
         """
-
+        
+        if annotation_set_id:
+            annotation_set = self.get_annotation_set(annotation_set_id)
+            if not annotation_set:
+                raise Exception('Annotation set ID = {} not found'.format(annotation_set_id))
+            
         return self.sdk.add_data_to_dataset(
             self.id,
             local_files=local_files,
@@ -130,7 +138,7 @@ class Dataset:
             self.create_annotation_set(annotation_task=annotations[0].task, name='my_ann_set',
                                        classes = list_of_classes, path_to_annotation_file = temp_path)
         
-        elif annotation_set.task is not annotations[0].task:
+        elif annotation_set.task != annotations[0].task:
         
             n_annotation_sets = len(self.annotation_sets())
             
@@ -148,34 +156,6 @@ class Dataset:
         #But: need to add check in add_annotation, that annotation_set.dataset_id == image.dataset_id
         # also check that tasks align
         
-    def add_annotations_old(self, annotations: List[Annotation], annotation_set_id: int = None):
-        """
-        Adds annotations to the Dataset.
-        If annotation_set_id is not specified, annotations are added to the default Annotation Set.
-        Note: this method is particularly slow for now and will be improved in the future.
-        Use .add_data() for faster upload (you'd need to convert your annotation files to a file supported by Remo)
-
-        Args:
-            annotations: list of annotations objects
-            annotation_set_id: annotation set id
-        """
-        annotation_set = self.get_annotation_set(annotation_set_id)
-
-        if annotation_set:
-            image_lookup = {img.name: img.id for img in self.images()}
-            for annotation in annotations:
-                image_id = image_lookup.get(annotation.img_filename)
-                if not image_id:
-                    print('WARNING: Image {} was not found in {}'.format(annotation.img_filename, self))
-                    continue
-
-                self.sdk.add_annotations_to_image(annotation_set.id, image_id, annotation)
-        else:
-            print('ERROR: annotation set not defined')
-
-        # TODO: don't retrieve all annotation set, only do it if ID not passed.
-        # But: need to add check in add_annotation, that annotation_set.dataset_id == image.dataset_id
-
     def export_annotations(
         self,
         annotation_set_id: int = None,
@@ -277,65 +257,6 @@ class Dataset:
 
         return annotation_set
 
-    def add_annotations_from_file(
-        self,
-        file_path: str,
-        parser_function: Callable[[str], List[Annotation]],
-        annotation_set_id: int = None,
-    ):
-        """
-        #TODO: ALR - delete function? I don't think it's needed
-        
-        Uploads annotations from a custom annotation file to an annotation set.
-        If using a supported annotation format, you can directly use :func:`add_data` function
-
-        Args:
-            file_path: path to annotation file to upload
-            parser_function: function which receives file_path and returns a List[:class:`remo.Annotation`]
-            annotation_set_id: id of the annotation set to use
-
-        Example::
-
-            import csv
-            from remo import Annotation
-
-            ds = remo.create_dataset(...)
-            ds.add_annotations_from_file('annotations.csv', parser_function)
-
-
-            def parser_function(file_path):
-            '''
-            File example:
-            file_name,class_name
-            000012dasd21e.jpg,Dog
-            000012dasd221.jpg,Cat
-            '''
-                annotations = []
-                with open(file_path, 'r') as f:
-                    csv_file = csv.reader(f, delimiter=',')
-                    for row in csv_file:
-                        file_name, class_name = row
-                        annotation = Annotation(img_filename=file_name)
-                        annotation.add_item(classes=[class_name])
-                        annotations.append(annotation)
-                return annotations
-
-        """
-        annotation_set = self.get_annotation_set(annotation_set_id)
-        if not annotation_set:
-            print('ERROR: Annotation set was not found')
-            return
-
-        annotations = parser_function(file_path)
-
-        image_lookup = {img.name: img.id for img in self.images()}
-        for annotation in annotations:
-            image_id = image_lookup.get(annotation.img_filename)
-            if not image_id:
-                print('WARNING: Image {} was not found in {}'.format(annotation.img_filename, self))
-                continue
-
-            self.sdk.add_annotation(annotation_set_id, image_id, annotation)
 
     def get_annotation_set(self, annotation_set_id: int = None) -> AnnotationSet:
         """
