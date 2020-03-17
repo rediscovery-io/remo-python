@@ -120,25 +120,45 @@ class Dataset:
 
     def add_annotations(self, annotations: List[Annotation], annotation_set_id: int = None):
         """
-        Faster upload of annotations to the Dataset via file conversion.
+        Fast upload of annotations to the Dataset.
         
-        If there are no Annotation Sets, an Annotation Set is automatically created.
-        If annotation_set_id is not specified, annotations are added to the default Annotation Set.
-        If the default Annotation Set's task doesn't match the annotations task, a new Annotation Set is also created.
+        An Annotation Set will be automatically created and populated in these cases:
+            - there are no Annotation Sets
+            - annotation_set_id = -1
+            - the default Annotation Set's task doesn't match the annotation task of the annotations
+
+        Otherwise, annotations will be added to the relevant Annotation Set (default or as specified by annotation_set_id)
         
         Args:
             annotations: list of Annotation objects
-            (optional) annotation_set_id: annotation set id
+            (optional) annotation_set_id: annotation set id. If annotation_set_id = -1, a new annotation set will be created
+            
+        Example::
+            urls = ['https://remo-scripts.s3-eu-west-1.amazonaws.com/open_images_sample_dataset.zip']
+            my_dataset = remo.create_dataset(name = 'D1', urls = urls)
+            images = my_dataset.images()
+            my_image = images[1]
+            annotations = []
+
+            annotation = remo.Annotation()
+            annotation.img_filename = my_image.name
+            annotation.classes='Human hand'
+            annotation.bbox=[227, 284, 678, 674]
+            annotations.append(annotation)
+
+            annotation = remo.Annotation()
+            annotation.img_filename = my_image.name
+            annotation.classes='Fashion accessory'
+            annotation.bbox=[496, 322, 544,370]
+            annotations.append(annotation)
+
+            my_dataset.add_annotations(annotations)
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         temp_path, list_of_classes = create_tempfile(annotations)
         
-        if not annotation_set:
-
-            self.create_annotation_set(annotation_task=annotations[0].task, name='my_ann_set',
-                                       classes = list_of_classes, path_to_annotation_file = temp_path)
         
-        elif annotation_set.task != annotations[0].task:
+        if (not annotation_set) or (annotation_set.task != annotations[0].task) or (annotation_set_id==-1):
         
             n_annotation_sets = len(self.annotation_sets())
             
@@ -271,12 +291,13 @@ class Dataset:
         """
         if not annotation_set_id:
             return self.default_annotation_set()
-
-        annotation_set = self.sdk.get_annotation_set(annotation_set_id)
-        if annotation_set and annotation_set.dataset_id == self.id:
-            return annotation_set
-        else:
-            raise Exception('Annotation set with ID = {} is not part of dataset {}. You can check the list of annotation sets in your dataset using dataset.annotation_sets()'.format(annotation_set_id, self.name))
+        
+        if annotation_set_id != -1:
+            annotation_set = self.sdk.get_annotation_set(annotation_set_id)
+            if annotation_set and annotation_set.dataset_id == self.id:
+                return annotation_set
+            else:
+                raise Exception('Annotation set with ID = {} is not part of dataset {}. You can check the list of annotation sets in your dataset using dataset.annotation_sets()'.format(annotation_set_id, self.name))
 
     def default_annotation_set(self) -> AnnotationSet:
         """
