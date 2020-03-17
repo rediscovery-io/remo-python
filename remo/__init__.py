@@ -31,7 +31,8 @@ def __init__(skip_sdk_init=os.getenv('REMO_SKIP_SDK_INIT', False)):
             return False  # Probably standard Python interpreter
 
     if config:
-        viewer = 'jupyter' if is_jupyter_notebook() else config.viewer
+       # viewer = 'jupyter' if is_jupyter_notebook() else config.viewer
+        viewer = config.viewer
         server_url = '{}:{}'.format(config.server, config.port)
 
         def terminate_server():
