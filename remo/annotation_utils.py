@@ -67,7 +67,7 @@ def create_tempfile(annotations: List[Annotation]) -> str:
     prepared_data = prepare_annotations_for_upload(annotations, annotation_task)
     
     # getting a list of classes. Skipping the first row as it contains the csv header
-    classes = [row[1] for row in data[1:]]
+    classes = [row[1] for row in prepared_data[1:]]
     list_of_classes = list(set(list_of_classes))
     
     with os.fdopen(fd, 'w') as temp:
