@@ -37,12 +37,7 @@ class Annotation:
         self.type = None
         
     def __str__(self):
-        
-        my_representation = "Annotation: {classes} ".format(classes=self.classes)
-        
-        my_representation = my_representation + "(type:{ann_type}, file:{filename})".format(ann_type=self.type, filename= self.img_filename) 
-            
-        return my_representation
+        return "Annotation: {classes} (type:{ann_type}, file:{filename})".format(classes=self.classes, ann_type=self.type, filename=self.img_filename) 
 
     def __repr__(self):
         return self.__str__()
