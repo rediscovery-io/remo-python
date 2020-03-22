@@ -15,14 +15,24 @@ Use Remo to:
 
 Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and uses a lightweight database to store metadata.
 
+## Quick installation
+
+1. In a Python 3.6+ environment: `pip install remo` 
+
+This will install both the Python library and the remo app.
+If it is installed in a conda environment, calling ` import remo` will also automatically launch remo. Otherwise, you can call it with `python -m remo_app` from command line.
+
+2- Initialise config: `python -m remo_app init`
+
+
+To read more about Remo, visit [remo.ai](http://remo.ai) (the website is still under construction)
 
 <img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
 
 <br/>
 
-To read more about Remo and install it, visit [remo.ai](http://remo.ai) (the website is still under construction)
 
-<br/>
+
 
 ## Remo python SDK
 
