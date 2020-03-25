@@ -398,9 +398,42 @@ class Dataset:
 
         Returns:
             List[:class:`remo.Image`]
+            
+        Example::
+            my_dataset.images()
+            
         """
         return self.sdk.list_dataset_images(self.id, limit=limit, offset=offset)
 
+    def image(self, img_filename = None, img_id = None) -> Image:
+        """
+        Returns the :class:`remo.Image` with matching img_filename or img_id.
+        Pass either img_filename or img_id.
+
+        Args:
+            img_filename: filename of the Image to retrieve
+            img_id: id of the the Image to retrieve
+
+        Returns:
+            :class:`remo.Image`
+        """
+        
+        if (img_filename) and (img_id):
+            raise Exception("You passed both img_filename and img_id. Pass only one of the two")
+        
+        list_of_images = self.images()
+        
+        if img_filename:
+            for i_image in list_of_images:
+                if i_image.name == img_filename:
+                    return i_image
+        elif img_id:
+            for i_image in list_of_images:
+                if i_image.id == img_id:
+                    return i_image
+       
+        #TODO ALR: do we need to raise an error if no image is found?            
+    
     def search(self, classes=None, task: str = None):
         """
         Given a list of classes and annotation task, it returns a list of all the images with mathcing annotations
