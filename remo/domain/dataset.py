@@ -46,10 +46,18 @@ class Dataset:
     ) -> dict:
         """
         Adds images and/or annotations to the dataset.
-        Use ``local files`` to link (rather than copy) images. Use ``paths_to_upload`` if you want to copy image files or archive files. Use ``urls`` to download from the web images, annotations or archives.
-        Adding images: support for ``jpg``,``jpeg``, ``png``, ``tif``
-        Adding annotations: to add annotations, you need to specify the annotation task and make sure the specific file format is one of those supported. See documentation here: https://remo.ai/docs/annotation-formats/
-        Adding archive files: support for ``zip``, ``tar``, ``gzip``
+        
+        Use the parameters as follows:
+        
+        - Use ``local files`` to link (rather than copy) images. 
+        - Use ``paths_to_upload`` if you want to copy image files or archive files. 
+        - Use ``urls`` to download from the web images, annotations or archives.
+        
+        In terms of supported formats:
+        
+        - Adding images: support for ``jpg``,``jpeg``, ``png``, ``tif``
+        - Adding annotations: to add annotations, you need to specify the annotation task and make sure the specific file format is one of those supported. See documentation here: https://remo.ai/docs/annotation-formats/
+        - Adding archive files: support for ``zip``, ``tar``, ``gzip``
         
         Args:
             dataset_id: id of the dataset to add data to
@@ -84,6 +92,10 @@ class Dataset:
                     'urls_upload_result': ...
                 }
 
+        Example::
+            urls = ['https://remo-scripts.s3-eu-west-1.amazonaws.com/open_images_sample_dataset.zip']
+            my_dataset = remo.create_dataset(name = 'D1', urls = urls)
+            my_dataset.add_data(local_files=annotation_files, annotation_task = 'Object detection')
         """
         
         if annotation_set_id:
@@ -137,18 +149,17 @@ class Dataset:
         Example::
             urls = ['https://remo-scripts.s3-eu-west-1.amazonaws.com/open_images_sample_dataset.zip']
             my_dataset = remo.create_dataset(name = 'D1', urls = urls)
-            images = my_dataset.images()
-            my_image = images[1]
+            image_name = '000a1249af2bc5f0.jpg'
             annotations = []
 
             annotation = remo.Annotation()
-            annotation.img_filename = my_image.name
+            annotation.img_filename = image_name
             annotation.classes='Human hand'
             annotation.bbox=[227, 284, 678, 674]
             annotations.append(annotation)
 
             annotation = remo.Annotation()
-            annotation.img_filename = my_image.name
+            annotation.img_filename = image_name
             annotation.classes='Fashion accessory'
             annotation.bbox=[496, 322, 544,370]
             annotations.append(annotation)
