@@ -111,27 +111,28 @@ class Dataset:
 
     def annotation_sets(self) -> List[AnnotationSet]:
         """
-        Lists the annotation sets within the dataset
+        Lists the annotation sets within the dataset. The first created annotation set, is considered the default one.
 
         Returns:
             List[:class:`remo.AnnotationSet`]
         """
         return self.sdk.list_annotation_sets(self.id)
 
-    def add_annotations(self, annotations: List[Annotation], annotation_set_id: int = None):
+    def add_annotations(self, annotations: List[Annotation], annotation_set_id: int = None, create_new_annotation_set: bool = False):
         """
         Fast upload of annotations to the Dataset.
         
-        An Annotation Set will be automatically created and populated in these cases:
+        An Annotation Set will be created and populated in these cases:
             - there are no Annotation Sets
-            - annotation_set_id = -1
             - the default Annotation Set's task doesn't match the annotation task of the annotations
+            - create_new_annotation_set = True
 
-        Otherwise, annotations will be added to the relevant Annotation Set (default or as specified by annotation_set_id)
+        Otherwise, annotations will be added to the relevant Annotation Set (that is,as specified by annotation_set_id or otherwise the default one)
         
         Args:
             annotations: list of Annotation objects
-            (optional) annotation_set_id: annotation set id. If annotation_set_id = -1, a new annotation set will be created
+            (optional) annotation_set_id: annotation set id
+            (optional) create_new_annotation_set: if True, a new annotation set will be created
             
         Example::
             urls = ['https://remo-scripts.s3-eu-west-1.amazonaws.com/open_images_sample_dataset.zip']
@@ -157,8 +158,10 @@ class Dataset:
         annotation_set = self.get_annotation_set(annotation_set_id)
         temp_path, list_of_classes = create_tempfile(annotations)
         
-        
-        if (not annotation_set) or (annotation_set.task != annotations[0].task) or (annotation_set_id==-1):
+        if annotation_set and create_new_annotation_set:
+            raise Exception("You passed an annotation set but also set create_new_annotation_set = True. You can't have both.")
+            
+        if (not annotation_set) or (annotation_set.task != annotations[0].task) or (create_new_annotation_set==True):
         
             n_annotation_sets = len(self.annotation_sets())
             
@@ -169,7 +172,7 @@ class Dataset:
             self.add_data(annotation_task = annotation_set.task, annotation_set_id =annotation_set.id, 
                           paths_to_upload = [temp_path])
         
-        #TODO ALR: this doesn't work on Windows
+        #TODO ALR: removing the temp_path doesn't work on Windows, hence the try except as a temp fix
         try:
             os.remove(temp_path)
         except:
@@ -258,6 +261,7 @@ class Dataset:
         """
         Creates a new annotation set.
         If path_to_annotation_file is provided, it populates it with the given annotations.
+        The first created annotation set for the given dataset, is considered the default one.
 
         Args:
             annotation_task: annotation task. See also: :class:`remo.task`
