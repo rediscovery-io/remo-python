@@ -168,8 +168,12 @@ class Dataset:
         else:
             self.add_data(annotation_task = annotation_set.task, annotation_set_id =annotation_set.id, 
                           paths_to_upload = [temp_path])
-            
-        os.remove(temp_path)
+        
+        #TODO ALR: this doesn't work on Windows
+        try:
+            os.remove(temp_path)
+        except:
+            pass
 
             
         #TODO: don't retrieve all annotation set, only do it if ID not passed.
