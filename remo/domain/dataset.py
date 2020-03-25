@@ -417,6 +417,8 @@ class Dataset:
         Returns:
             :class:`remo.Image`
         """
+        #TODO ALR: do we need to raise an error if no image is found?  
+        #TODO ALR: we have a sdk.get_image by img_id. Should we implement this function in the server for faster processing?
         
         if (img_filename) and (img_id):
             raise Exception("You passed both img_filename and img_id. Pass only one of the two")
@@ -432,7 +434,7 @@ class Dataset:
                 if i_image.id == img_id:
                     return i_image
        
-        #TODO ALR: do we need to raise an error if no image is found?            
+                  
     
     def search(self, classes=None, task: str = None):
         """
