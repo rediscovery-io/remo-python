@@ -172,7 +172,7 @@ class Dataset:
         if annotation_set and create_new_annotation_set:
             raise Exception("You passed an annotation set but also set create_new_annotation_set = True. You can't have both.")
             
-        if (not annotation_set) or (annotation_set.task != annotations[0].task) or (create_new_annotation_set==True):
+        if create_new_annotation_set or (not annotation_set) or (annotation_set.task != annotations[0].task):
         
             n_annotation_sets = len(self.annotation_sets())
             
