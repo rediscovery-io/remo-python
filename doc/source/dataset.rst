@@ -1,4 +1,4 @@
-A Dataset combines together images and annotations to facilitate processing.
+A Dataset combines together images and annotations to provide quick functionalities to manage the data.
 
 Use a Dataset to:
 
@@ -6,6 +6,7 @@ Use a Dataset to:
 - annotate
 - export annotations
 - feed data to a training model
+- upload model predictions
 
 .. autoclass:: remo.Dataset
     :members:

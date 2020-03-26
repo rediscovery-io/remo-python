@@ -34,7 +34,15 @@ class Annotation:
         self.classes = classes if isinstance(classes, list) else [classes]
         self.object = object
         self.coordinates = None
+        self.type = None
+        
+    def __str__(self):
+        my_representation =  "Annotation: {classes} (type:{ann_type}, file:{filename})".format(classes=self.classes, ann_type=self.type, filename=self.img_filename) 
+        
+        return my_representation
 
+    def __repr__(self):
+        return self.__str__()
 
     @property
     def task(self):
@@ -55,6 +63,7 @@ class Annotation:
 
         self.object = Annotation.Bbox(*values)
         self.coordinates = values
+        self.type = 'Bounding Box'
         
     @property
     def segment(self):
@@ -72,6 +81,7 @@ class Annotation:
             )
         self.object = Annotation.Segment(points)
         self.coordinates = points
+        self.type = 'Polygon'
         
     
     class Bbox:

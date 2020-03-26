@@ -46,10 +46,18 @@ class Dataset:
     ) -> dict:
         """
         Adds images and/or annotations to the dataset.
-        Use ``local files`` to link (rather than copy) images. Use ``paths_to_upload`` if you want to copy image files or archive files. Use ``urls`` to download from the web images, annotations or archives.
-        Adding images: support for ``jpg``,``jpeg``, ``png``, ``tif``
-        Adding annotations: to add annotations, you need to specify the annotation task and make sure the specific file format is one of those supported. See documentation here: https://remo.ai/docs/annotation-formats/
-        Adding archive files: support for ``zip``, ``tar``, ``gzip``
+        
+        Use the parameters as follows:
+        
+        - Use ``local files`` to link (rather than copy) images. 
+        - Use ``paths_to_upload`` if you want to copy image files or archive files. 
+        - Use ``urls`` to download from the web images, annotations or archives.
+        
+        In terms of supported formats:
+        
+        - Adding images: support for ``jpg``,``jpeg``, ``png``, ``tif``
+        - Adding annotations: to add annotations, you need to specify the annotation task and make sure the specific file format is one of those supported. See documentation here: https://remo.ai/docs/annotation-formats/
+        - Adding archive files: support for ``zip``, ``tar``, ``gzip``
         
         Args:
             dataset_id: id of the dataset to add data to
@@ -84,6 +92,10 @@ class Dataset:
                     'urls_upload_result': ...
                 }
 
+        Example::
+            urls = ['https://remo-scripts.s3-eu-west-1.amazonaws.com/open_images_sample_dataset.zip']
+            my_dataset = remo.create_dataset(name = 'D1', urls = urls)
+            my_dataset.add_data(local_files=annotation_files, annotation_task = 'Object detection')
         """
         
         if annotation_set_id:
@@ -111,34 +123,56 @@ class Dataset:
 
     def annotation_sets(self) -> List[AnnotationSet]:
         """
-        Lists the annotation sets within the dataset
+        Lists the annotation sets within the dataset. The first created annotation set, is considered the default one.
 
         Returns:
             List[:class:`remo.AnnotationSet`]
         """
         return self.sdk.list_annotation_sets(self.id)
 
-    def add_annotations(self, annotations: List[Annotation], annotation_set_id: int = None):
+    def add_annotations(self, annotations: List[Annotation], annotation_set_id: int = None, create_new_annotation_set: bool = False):
         """
-        Faster upload of annotations to the Dataset via file conversion.
+        Fast upload of annotations to the Dataset.
         
-        If there are no Annotation Sets, an Annotation Set is automatically created.
-        If annotation_set_id is not specified, annotations are added to the default Annotation Set.
-        If the default Annotation Set's task doesn't match the annotations task, a new Annotation Set is also created.
+        An Annotation Set will be created and populated in these cases:
+            - there are no Annotation Sets
+            - the default Annotation Set's task doesn't match the annotation task of the annotations
+            - create_new_annotation_set = True
+
+        Otherwise, annotations will be added to the relevant Annotation Set (that is,as specified by annotation_set_id or otherwise the default one)
         
         Args:
             annotations: list of Annotation objects
             (optional) annotation_set_id: annotation set id
+            (optional) create_new_annotation_set: if True, a new annotation set will be created
+            
+        Example::
+            urls = ['https://remo-scripts.s3-eu-west-1.amazonaws.com/open_images_sample_dataset.zip']
+            my_dataset = remo.create_dataset(name = 'D1', urls = urls)
+            image_name = '000a1249af2bc5f0.jpg'
+            annotations = []
+
+            annotation = remo.Annotation()
+            annotation.img_filename = image_name
+            annotation.classes='Human hand'
+            annotation.bbox=[227, 284, 678, 674]
+            annotations.append(annotation)
+
+            annotation = remo.Annotation()
+            annotation.img_filename = image_name
+            annotation.classes='Fashion accessory'
+            annotation.bbox=[496, 322, 544,370]
+            annotations.append(annotation)
+
+            my_dataset.add_annotations(annotations)
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         temp_path, list_of_classes = create_tempfile(annotations)
         
-        if not annotation_set:
-
-            self.create_annotation_set(annotation_task=annotations[0].task, name='my_ann_set',
-                                       classes = list_of_classes, path_to_annotation_file = temp_path)
-        
-        elif annotation_set.task != annotations[0].task:
+        if annotation_set and create_new_annotation_set:
+            raise Exception("You passed an annotation set but also set create_new_annotation_set = True. You can't have both.")
+            
+        if create_new_annotation_set or (not annotation_set) or (annotation_set.task != annotations[0].task):
         
             n_annotation_sets = len(self.annotation_sets())
             
@@ -148,8 +182,12 @@ class Dataset:
         else:
             self.add_data(annotation_task = annotation_set.task, annotation_set_id =annotation_set.id, 
                           paths_to_upload = [temp_path])
-            
-        os.remove(temp_path)
+        
+        #TODO ALR: removing the temp_path doesn't work on Windows, hence the try except as a temp fix
+        try:
+            os.remove(temp_path)
+        except:
+            pass
 
             
         #TODO: don't retrieve all annotation set, only do it if ID not passed.
@@ -234,6 +272,7 @@ class Dataset:
         """
         Creates a new annotation set.
         If path_to_annotation_file is provided, it populates it with the given annotations.
+        The first created annotation set for the given dataset, is considered the default one.
 
         Args:
             annotation_task: annotation task. See also: :class:`remo.task`
@@ -271,12 +310,13 @@ class Dataset:
         """
         if not annotation_set_id:
             return self.default_annotation_set()
-
-        annotation_set = self.sdk.get_annotation_set(annotation_set_id)
-        if annotation_set and annotation_set.dataset_id == self.id:
-            return annotation_set
-        else:
-            raise Exception('Annotation set with ID = {} is not part of dataset {}. You can check the list of annotation sets in your dataset using dataset.annotation_sets()'.format(annotation_set_id, self.name))
+        
+        if annotation_set_id != -1:
+            annotation_set = self.sdk.get_annotation_set(annotation_set_id)
+            if annotation_set and annotation_set.dataset_id == self.id:
+                return annotation_set
+            else:
+                raise Exception('Annotation set with ID = {} is not part of dataset {}. You can check the list of annotation sets in your dataset using dataset.annotation_sets()'.format(annotation_set_id, self.name))
 
     def default_annotation_set(self) -> AnnotationSet:
         """
@@ -373,9 +413,42 @@ class Dataset:
 
         Returns:
             List[:class:`remo.Image`]
+            
+        Example::
+            my_dataset.images()
+            
         """
         return self.sdk.list_dataset_images(self.id, limit=limit, offset=offset)
 
+    def image(self, img_filename = None, img_id = None) -> Image:
+        """
+        Returns the :class:`remo.Image` with matching img_filename or img_id.
+        Pass either img_filename or img_id.
+
+        Args:
+            img_filename: filename of the Image to retrieve
+            img_id: id of the the Image to retrieve
+
+        Returns:
+            :class:`remo.Image`
+        """
+        #TODO ALR: do we need to raise an error if no image is found?  
+        #TODO ALR: we have a sdk.get_image by img_id. Should we implement get_image by img_name in the server for faster processing?
+        
+        if (img_filename) and (img_id):
+            raise Exception("You passed both img_filename and img_id. Pass only one of the two")
+        
+        
+        if img_filename:
+            list_of_images = self.images()
+            for i_image in list_of_images:
+                if i_image.name == img_filename:
+                    return i_image
+        elif img_id:
+            return self.sdk.get_image(img_id)
+       
+                  
+    
     def search(self, classes=None, task: str = None):
         """
         Given a list of classes and annotation task, it returns a list of all the images with mathcing annotations
