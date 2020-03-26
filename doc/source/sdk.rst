@@ -18,6 +18,6 @@ Most of the functions documented below can be called from Python by doing
 
 .. module:: remo
 
-.. autoclass:: remo.SDK
+.. autoclass:: remo.sdk.SDK
     :members:
     :undoc-members:
