@@ -198,13 +198,19 @@ class API(BaseAPI):
             annotation_set_id=annotation_set_id,
         )
         r = self.post(url, files=files, data=data)
-
+        json_resp = r.json()
+        
+        #TODO ALR: there can be more elements in list jsoned_resp['errors']?
+        if (r.status > 400)  and ('errors' in json_resp):
+            raise Exception('Error description:' + json_resp['errors'][0])
+        
+        #TODO ALR: what does it mean when r.status_code != http.HTTPStatus.OK?
         if r.status_code != http.HTTPStatus.OK:
             print('Possible Error - Response:', r.text, 'files:', files_to_upload)
 
         status.update(len(files))
         status.progress()
-        return r.json()
+        return json_resp
 
     # TODO: fix progress to include both local files and uploads
     def bulk_upload_files(

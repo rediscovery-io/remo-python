@@ -433,7 +433,7 @@ class Dataset:
             :class:`remo.Image`
         """
         #TODO ALR: do we need to raise an error if no image is found?  
-        #TODO ALR: we have a sdk.get_image by img_id. Should we implement this function in the server for faster processing?
+        #TODO ALR: we have a sdk.get_image by img_id. Should we implement get_image by img_name in the server for faster processing?
         
         if (img_filename) and (img_id):
             raise Exception("You passed both img_filename and img_id. Pass only one of the two")
