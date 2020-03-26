@@ -2,6 +2,7 @@
 
 login = '/api/rest-auth/login/'
 dataset = '/api/dataset/'
+delete_dataset = '/api/user-dataset/{}/'
 dataset_upload = '/api/dataset/{}/upload/'
 dataset_folder_content = '/api/user-dataset/{}/contents/{}/'
 v1_datasets = '/api/v1/ui/datasets/'

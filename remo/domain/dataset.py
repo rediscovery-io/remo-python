@@ -452,7 +452,11 @@ class Dataset:
         elif img_id:
             return self.sdk.get_image(img_id)
        
-                  
+    def delete(self):
+        """
+        Deletes dataset
+        """
+        self.sdk.delete_dataset(self.id)
     
     def search(self, classes=None, task: str = None):
         """

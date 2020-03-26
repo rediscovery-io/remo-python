@@ -206,6 +206,15 @@ class SDK:
         json_data = self.api.get_dataset(dataset_id)
         return Dataset(**json_data)
 
+    def delete_dataset(self, dataset_id: int):
+        """
+        Deletes dataset
+
+        Args:
+            dataset_id: dataset id
+        """
+        self.api.delete_dataset(dataset_id)
+
     def list_annotation_sets(self, dataset_id: int) -> List[AnnotationSet]:
         """
         Returns a list of AnnotationSet containing all the AnnotationSets of a given dataset

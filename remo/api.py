@@ -74,6 +74,9 @@ class BaseAPI:
     def get(self, *args, **kwargs):
         return requests.get(*args, headers=self._auth_header(), **kwargs)
 
+    def delete(self, *args, **kwargs):
+        return requests.delete(*args, headers=self._auth_header(), **kwargs)
+
     @staticmethod
     def _build_url(*args, **kwargs):
         """
@@ -408,3 +411,13 @@ class API(BaseAPI):
 
         url = self.url(backend.v1_search, **params)
         return self.get(url).json()['results']
+
+    def delete_dataset(self, dataset_id: int):
+        """
+        Deletes dataset
+
+        Args:
+            dataset_id: dataset id
+        """
+        url = self.url(backend.delete_dataset.format(dataset_id))
+        self.delete(url)
