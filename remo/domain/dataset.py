@@ -55,10 +55,15 @@ class Dataset:
         
         In terms of supported formats:
         
-        - Adding images: support for ``jpg``,``jpeg``, ``png``, ``tif``
+        - Adding images: support for ``jpg``, ``jpeg``, ``png``, ``tif``
         - Adding annotations: to add annotations, you need to specify the annotation task and make sure the specific file format is one of those supported. See documentation here: https://remo.ai/docs/annotation-formats/
         - Adding archive files: support for ``zip``, ``tar``, ``gzip``
         
+        Example::
+            urls = ['https://remo-scripts.s3-eu-west-1.amazonaws.com/open_images_sample_dataset.zip']
+            my_dataset = remo.create_dataset(name = 'D1', urls = urls)
+            my_dataset.add_data(local_files=annotation_files, annotation_task = 'Object detection')
+            
         Args:
             dataset_id: id of the dataset to add data to
 
@@ -92,10 +97,7 @@ class Dataset:
                     'urls_upload_result': ...
                 }
 
-        Example::
-            urls = ['https://remo-scripts.s3-eu-west-1.amazonaws.com/open_images_sample_dataset.zip']
-            my_dataset = remo.create_dataset(name = 'D1', urls = urls)
-            my_dataset.add_data(local_files=annotation_files, annotation_task = 'Object detection')
+
         """
         
         if annotation_set_id:
@@ -135,17 +137,13 @@ class Dataset:
         Fast upload of annotations to the Dataset.
         
         An Annotation Set will be created and populated in these cases:
+        
             - there are no Annotation Sets
             - the default Annotation Set's task doesn't match the annotation task of the annotations
             - create_new_annotation_set = True
 
         Otherwise, annotations will be added to the relevant Annotation Set (that is,as specified by annotation_set_id or otherwise the default one)
         
-        Args:
-            annotations: list of Annotation objects
-            (optional) annotation_set_id: annotation set id
-            (optional) create_new_annotation_set: if True, a new annotation set will be created
-            
         Example::
             urls = ['https://remo-scripts.s3-eu-west-1.amazonaws.com/open_images_sample_dataset.zip']
             my_dataset = remo.create_dataset(name = 'D1', urls = urls)
@@ -165,6 +163,13 @@ class Dataset:
             annotations.append(annotation)
 
             my_dataset.add_annotations(annotations)
+            
+        Args:
+            annotations: list of Annotation objects
+            (optional) annotation_set_id: annotation set id
+            (optional) create_new_annotation_set: if True, a new annotation set will be created
+            
+
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         temp_path, list_of_classes = create_tempfile(annotations)
