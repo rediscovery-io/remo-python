@@ -200,7 +200,6 @@ class API(BaseAPI):
         r = self.post(url, files=files, data=data)
         json_resp = r.json()
         
-        #TODO ALR: there can be more elements in list jsoned_resp['errors']?
         if (r.status > 400)  and ('errors' in json_resp):
             raise Exception('Error description:' + '\n'.join(json_resp['errors']))
         
