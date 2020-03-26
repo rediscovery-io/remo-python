@@ -202,7 +202,7 @@ class API(BaseAPI):
         
         #TODO ALR: there can be more elements in list jsoned_resp['errors']?
         if (r.status > 400)  and ('errors' in json_resp):
-            raise Exception('Error description:' + json_resp['errors'][0])
+            raise Exception('Error description:' + '\n'.join(json_resp['errors']))
         
         #TODO ALR: what does it mean when r.status_code != http.HTTPStatus.OK?
         if r.status_code != http.HTTPStatus.OK:
