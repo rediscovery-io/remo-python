@@ -195,7 +195,7 @@ class SDK:
 
     def get_dataset(self, dataset_id: int) -> Dataset:
         """
-        Retrieve dataset for given dataset id.
+        Retrieves a dataset with given dataset id.
 
         Args:
             dataset_id: dataset id

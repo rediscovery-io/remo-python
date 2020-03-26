@@ -438,16 +438,14 @@ class Dataset:
         if (img_filename) and (img_id):
             raise Exception("You passed both img_filename and img_id. Pass only one of the two")
         
-        list_of_images = self.images()
         
         if img_filename:
+            list_of_images = self.images()
             for i_image in list_of_images:
                 if i_image.name == img_filename:
                     return i_image
         elif img_id:
-            for i_image in list_of_images:
-                if i_image.id == img_id:
-                    return i_image
+            return self.sdk.get_image(img_id)
        
                   
     
