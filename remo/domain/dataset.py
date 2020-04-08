@@ -136,7 +136,7 @@ class Dataset:
         """
         Fast upload of annotations to the Dataset.
         
-        An Annotation Set will be created and populated in these cases:
+        An Annotation Set will be automatically created and populated in these cases:
         
             - there are no Annotation Sets
             - the default Annotation Set's task doesn't match the annotation task of the annotations
@@ -272,17 +272,17 @@ class Dataset:
         return self.sdk.list_image_annotations(self.id, annotation_set_id, image_id)
 
     def create_annotation_set(
-        self, annotation_task: str, name: str, classes: List[str], path_to_annotation_file: str = None
+        self, annotation_task: str, name: str, classes: List[str] = [], path_to_annotation_file: str = None
     ) -> AnnotationSet:
         """
-        Creates a new annotation set.
+        Creates a new annotation set within the dataset
         If path_to_annotation_file is provided, it populates it with the given annotations.
         The first created annotation set for the given dataset, is considered the default one.
 
         Args:
             annotation_task: annotation task. See also: :class:`remo.task`
             name: annotation set name
-            classes: list of classes. Example: ['Cat', 'Dog']
+            classes: list of classes to prepopulate the annotation set. Example: ['Cat', 'Dog']. Default is no classes
             path_to_annotation_file: path to .csv annotation file
 
         Returns:

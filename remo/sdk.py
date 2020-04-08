@@ -407,16 +407,15 @@ class SDK:
         return annotations
 
     def create_annotation_set(
-        self, annotation_task: str, dataset_id: int, name: str, classes: List[str]
-    ) -> AnnotationSet:
+        self, annotation_task: str, dataset_id: int, name: str, classes: List[str] = []) -> AnnotationSet:
         """
-        Creates a new annotation set
+        Creates a new annotation set within the given dataset
 
         Args:
             annotation_task: specified task for the annotation set. See also: :class:`remo.task`
             dataset_id: dataset id
             name: name of the annotation set
-            classes: list of classes.
+            classes: list of classes. Default is no classes
 
         Returns:
             :class:`remo.AnnotationSet`
