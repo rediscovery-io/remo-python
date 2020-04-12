@@ -49,7 +49,8 @@ Visualising predictions | visualise_predictions - Coming soon
 
 ## Get in touch
 If you have any issues around the SDK, feel free to open an issue in the repo.
-For anything else, you can write on [our forum](https://support.remo.ai)
+
+For anything else, you can write on <a href="https://support.remo.ai" target="_blank">remo support forum</a>  
 
 <br/>
 
