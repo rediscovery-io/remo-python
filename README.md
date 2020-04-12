@@ -25,7 +25,7 @@ If it is installed in a conda environment, calling ` import remo` will also auto
 2- Initialise config: `python -m remo_app init`
 
 
-To read more about Remo, visit [remo.ai](http://remo.ai) (the website is still under construction)
+To read more about Remo, visit [remo.ai](http://remo.ai)
 
 <img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
 
@@ -49,7 +49,7 @@ Visualising predictions | visualise_predictions - Coming soon
 
 ## Get in touch
 If you have any issues around the SDK, feel free to open an issue in the repo.
-For general questions around Remo, you can get in touch at hello AT remo.ai
+For anything else, you can write on [our forum](https://support.remo.ai)
 
 <br/>
 
