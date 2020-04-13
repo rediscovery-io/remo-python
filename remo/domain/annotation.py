@@ -1,6 +1,45 @@
 from typing import List
 from .task import *
 
+
+class Bbox:
+    """
+    Represents coordinates of a bounding box annotation. Used in object detection.
+
+    Args:
+        xmin: X min
+        ymin: Y min
+        xmax: X max
+        ymax: Y max
+    """
+
+    task = object_detection
+    type = 'Bounding Box'
+
+    def __init__(self, xmin: int, ymin: int, xmax: int, ymax: int):
+        self.xmin = xmin
+        self.ymin = ymin
+        self.xmax = xmax
+        self.ymax = ymax
+        self.coordinates = [xmin, ymin, xmax, ymax]
+
+
+class Segment:
+    """
+    Represents coordinates of a segment annotation. Used in instance segmentation.
+
+    Args:
+        points: list of segment coordinates ``[x0, y0, x1, y1, ..., xN, yN]``
+    """
+
+    task = instance_segmentation
+    type = 'Polygon'
+
+    def __init__(self, points: List[int]):
+        self.points = [{'x': x, 'y': y} for x, y in zip(points[::2], points[1::2])]
+        self.coordinates = points
+
+
 class Annotation:
     """
     Represents a single annotation object. This can be:
@@ -26,23 +65,33 @@ class Annotation:
 
     def __init__(self, img_filename: str = None, classes=None, object=None):
         if object and (
-            not isinstance(object, Annotation.Bbox) and not isinstance(object, Annotation.Segment)
+            not isinstance(object, Bbox) and not isinstance(object, Segment)
         ):
             raise Exception('Expected object type Annotation.Bbox or Annotation.Segment')
 
         self.img_filename = img_filename
         self.classes = classes if isinstance(classes, list) else [classes]
         self.object = object
-        self.coordinates = None
-        self.type = None
-        
+
     def __str__(self):
-        my_representation =  "Annotation: {classes} (type:{ann_type}, file:{filename})".format(classes=self.classes, ann_type=self.type, filename=self.img_filename) 
-        
-        return my_representation
+        return "Annotation: {classes} (type:{ann_type}, file:{filename})".format(
+            classes=self.classes, ann_type=self.type, filename=self.img_filename
+        )
 
     def __repr__(self):
         return self.__str__()
+
+    @property
+    def type(self):
+        if not self.object:
+            return None
+        return self.object.type
+
+    @property
+    def coordinates(self):
+        if not self.object:
+            return None
+        return self.object.coordinates
 
     @property
     def task(self):
@@ -52,7 +101,7 @@ class Annotation:
 
     @property
     def bbox(self):
-        if isinstance(self.object, Annotation.Bbox):
+        if isinstance(self.object, Bbox):
             return self.object
         return None
 
@@ -61,13 +110,11 @@ class Annotation:
         if len(values) != 4:
             raise Exception('Bounding box expects 4 values: xmin, ymin, xmax, ymax')
 
-        self.object = Annotation.Bbox(*values)
-        self.coordinates = values
-        self.type = 'Bounding Box'
-        
+        self.object = Bbox(*values)
+
     @property
     def segment(self):
-        if isinstance(self.object, Annotation.Segment):
+        if isinstance(self.object, Segment):
             return self.object
         return None
 
@@ -79,38 +126,4 @@ class Annotation:
             raise Exception(
                 'Segment coordinates need to be an even number of elements indicating (x, y) coordinates of each point.'
             )
-        self.object = Annotation.Segment(points)
-        self.coordinates = points
-        self.type = 'Polygon'
-        
-    
-    class Bbox:
-        """
-        Represents coordinates of a bounding box annotation. Used in object detection.
-
-        Args:
-            xmin: X min
-            ymin: Y min
-            xmax: X max
-            ymax: Y max
-        """
-        task = object_detection
-
-        def __init__(self, xmin: int, ymin: int, xmax: int, ymax: int):
-            self.xmin = xmin
-            self.ymin = ymin
-            self.xmax = xmax
-            self.ymax = ymax
-
-    class Segment:
-        """
-        Represents coordinates of a segment annotation. Used in instance segmentation.
-
-        Args:
-            points: list of segment coordinates ``[x0, y0, x1, y1, ..., xN, yN]``
-        """
-
-        task = instance_segmentation
-
-        def __init__(self, points: List[int]):
-            self.points = [{'x': x, 'y': y} for x, y in zip(points[::2], points[1::2])]
+        self.object = Segment(points)

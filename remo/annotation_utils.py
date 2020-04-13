@@ -6,74 +6,108 @@ from .domain.task import *
 
 Annotation = TypeVar('Annotation')
 
+
 def check_annotation_task(expected_task, actual_task):
     if expected_task is not actual_task:
-        raise Exception("Expected annotation task '{}', but received annotation for '{}'".format(expected_task,actual_task))
-            
+        raise Exception(
+            "Expected annotation task '{}', but received annotation for '{}'".format(
+                expected_task, actual_task
+            )
+        )
+
+
+class SimpleCSVBase:
+    task = None
+    headers = None
+
+    def validate_annotation_task(self, annotations: List[Annotation]):
+        for annotation in annotations:
+            check_annotation_task(self.task, annotation.task)
+
+    def prepare_data(self, annotations: List[Annotation]) -> List[List[str]]:
+        self.validate_annotation_task(annotations)
+        return [self.headers, *self._csv_data(annotations)]
+
+    def _csv_data(self, annotations: List[Annotation]) -> List[List[str]]:
+        return []
+
+
+class SimpleCSVForObjectDetection(SimpleCSVBase):
+    task = object_detection
+    headers = ["file_name", "class_name", "xmin", "ymin", "xmax", "ymax"]
+
+    def _csv_data(self, annotations: List[Annotation]) -> List[List[str]]:
+        return [
+            [annotation.img_filename, ';'.join(annotation.classes), *annotation.coordinates]
+            for annotation in annotations
+        ]
+
+
+class SimpleCSVForInstanceSegmentation(SimpleCSVBase):
+    task = instance_segmentation
+    headers = ["file_name", "class_name", "coordinates"]
+
+    def _csv_data(self, annotations: List[Annotation]) -> List[List[str]]:
+        return [
+            [
+                annotation.img_filename,
+                ';'.join(annotation.classes),
+                '; '.join(map(str, annotation.coordinates)),
+            ]
+            for annotation in annotations
+        ]
+
+
+class SimpleCSVForImageClassification(SimpleCSVBase):
+    task = image_classification
+    headers = ["file_name", "class_name"]
+
+    def _csv_data(self, annotations: List[Annotation]) -> List[List[str]]:
+        return [[annotation.img_filename, ';'.join(annotation.classes)] for annotation in annotations]
+
+
+csv_makers = {
+    SimpleCSVForObjectDetection.task: SimpleCSVForObjectDetection(),
+    SimpleCSVForInstanceSegmentation.task: SimpleCSVForInstanceSegmentation(),
+    SimpleCSVForImageClassification.task: SimpleCSVForImageClassification()
+}
+
+
 def prepare_annotations_for_upload(annotations: List[Annotation], annotation_task):
-    
-    my_objects_list = []
-    
-    
-    if annotation_task is object_detection:
-        
-        my_objects_list.append(["file_name","class_name","xmin","ymin","xmax","ymax"])
+    csv_maker = csv_makers.get(annotation_task)
+    if not csv_maker:
+        raise Exception(
+            "Annotation task '{}' not recognised. "
+            "Supported annotation tasks are 'instance_segmentation', 'object_detection' and "
+            "'image_classification'".format(annotation_task)
+        )
 
-        for i_annotation in annotations:
-            check_annotation_task(annotation_task, i_annotation.task)
+    return csv_maker.prepare_data(annotations)
 
-            my_inner_list = []
-            my_inner_list.append(i_annotation.img_filename)
-            my_inner_list.append(i_annotation.classes)
-            my_inner_list.extend(i_annotation.coordinates)
-            my_objects_list.append(my_inner_list)
-        
-    elif annotation_task is instance_segmentation:
-        
-        my_objects_list.append(["file_name","class_name","coordinates"])
-        
-        for i_annotation in annotations:
-            
-            check_annotation_task(annotation_task, i_annotation.task)
 
-            my_inner_list = []
-            my_inner_list.append(i_annotation.img_filename)
-            my_inner_list.append(i_annotation.classes)
-            my_inner_list.append['; '.join(map(str, i_annotation.coordinates))]          
-            my_objects_list.append(my_inner_list)
-        
-        
-    elif annotation_task is image_classification:
-        my_objects_list.append(["file_name","class_name"])
-        
-        for i_annotation in annotations:
-            
-            check_annotation_task(annotation_task, i_annotation.task)
-
-            my_inner_list = []
-            my_inner_list.append(i_annotation.img_filename)
-            my_inner_list.append(i_annotation.classes)
-            my_objects_list.append(my_inner_list)
-
-    else:
-        raise Exception("Annotation task '{}' not recognised. Supported annotation tasks are 'instance_segmentation', 'object_detection' and 'image_classification'".format(annotation_task))
-
-    return my_objects_list
-    
-def create_tempfile(annotations: List[Annotation]) -> str:
+def create_tempfile(annotations: List[Annotation]) -> (str, List[str]):
     fd, temp_path = tempfile.mkstemp(suffix='.csv')
-    
+
     annotation_task = annotations[0].task
     prepared_data = prepare_annotations_for_upload(annotations, annotation_task)
-    
+
     # getting a list of classes. Skipping the first row as it contains the csv header
     list_of_classes = [row[1] for row in prepared_data[1:]]
-    list_of_classes = list(set(list_of_classes))
-    
+
+    classes = set()
+    if isinstance(list_of_classes, list) and list_of_classes:
+        for item in list_of_classes:
+            if isinstance(item, list):
+                classes.union(item)
+            else:
+                classes.add(item)
+
+    list_of_classes = list(classes)
+
     with os.fdopen(fd, 'w') as temp:
         writer = csv.writer(temp)
         writer.writerows(prepared_data)
-            
+
     return temp_path, list_of_classes
 
 

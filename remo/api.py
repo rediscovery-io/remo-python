@@ -160,6 +160,7 @@ class API(BaseAPI):
             payload = {"classes": existing_annotations + classes}
 
         if payload:
+            payload['status'] = 'done'
             return self.post(url, json=payload).json()
 
     def upload_file(self, dataset_id, path, annotation_task=None, folder_id=None):
