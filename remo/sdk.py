@@ -126,8 +126,8 @@ class SDK:
 
             folder_id: specifies target virtual folder in the remo dataset. If None, it adds to the root level.
 
-            annotation_set_id: specifies target annotation set in the dataset. If None, it adds to the default annotation set.
-
+            annotation_set_id: specifies target annotation set in the dataset. If None: if no annotation set exists, one will be automatically created. If exactly one annotation set already exists, it will add annotations to that annotation set, provided the task matches.
+            
             class_encoding: specifies how to convert labels in annotation files to readable labels. If None,  Remo will try to interpret the encoding automatically - which for standard words, means they will be read as they are. 
                 See also: :class:`remo.class_encodings`.
 
@@ -147,6 +147,18 @@ class SDK:
             'folder_id': folder_id,
             'annotation_set_id': annotation_set_id,
         }
+        
+        # logic to deal with the case where we are trying to upload annotations without specifying the annotation set id
+        if annotation_task and (not annotation_set_id):
+            annotation_sets = self.api.list_annotation_sets(dataset_id)
+            
+            if len(annotation_sets)>1:
+                raise Exception('Define which annotation set you want to use. Dataset ' + str(dataset_id) + ' has ' + str(len(annotation_sets)) + ' annotation sets. You can see them with my_dataset.annotation_sets()')
+                
+            elif len(annotation_sets)==1:
+                kwargs['annotation_set_id'] = annotation_sets[0].id
+                
+            
 
         if local_files:
             self._raise_value_error(local_files, 'local_files', list, 'list of paths')
