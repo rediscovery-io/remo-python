@@ -22,7 +22,6 @@ class Dataset:
         from remo import _sdk
 
         self.sdk = _sdk
-
         self.id = id
         self.name = name
         self.n_images = quantity
@@ -169,25 +168,21 @@ class Dataset:
             
 
         """
-        annotation_set = self.get_annotation_set(annotation_set_id)
+        if annotation_set_id:
+            annotation_set = self.get_annotation_set(annotation_set_id)
+            
         temp_path, list_of_classes = create_tempfile(annotations)
-        print(annotation_set)
-        print('we are here')
+        
         
         if annotation_set_id and create_new_annotation_set:
             raise Exception("You passed an annotation set but also set create_new_annotation_set = True. You can't have both.")
             
         if create_new_annotation_set or (not annotation_set):
-        
             n_annotation_sets = len(self.annotation_sets())
-            
-            print('we are here2')
             self.create_annotation_set(annotation_task=annotations[0].task, name='my_ann_set_' + str(n_annotation_sets+1),
                                        classes = list_of_classes, path_to_annotation_file = temp_path)
             
         else:
-            print('we are here3')
-            print(annotation_set.id)
             self.add_data(annotation_task = annotation_set.task, annotation_set_id =annotation_set.id, 
                           paths_to_upload = [temp_path])
         
@@ -195,13 +190,7 @@ class Dataset:
         try:
             os.remove(temp_path)
         except:
-            print('we are here4')
-            pass
-
-            
-        #TODO: don't retrieve all annotation set, only do it if ID not passed.
-        #But: need to add check in add_annotation, that annotation_set.dataset_id == image.dataset_id
-        # also check that tasks align
+            pass  
         
     def export_annotations(
         self,
