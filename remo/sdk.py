@@ -216,6 +216,9 @@ class SDK:
             :class:`remo.Dataset`
         """
         json_data = self.api.get_dataset(dataset_id)
+        if json_data['detail'] == "Not found.":
+            raise Exception("Dataset ID " + str(dataset_id) + " not found. You can check your existing datasets with `remo.list_datasets()`")
+            
         return Dataset(**json_data)
 
     def delete_dataset(self, dataset_id: int):
