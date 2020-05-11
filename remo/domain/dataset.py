@@ -135,13 +135,12 @@ class Dataset:
         """
         Fast upload of annotations to the Dataset.
         
-        An Annotation Set will be automatically created and populated in these cases:
+        If annotation_set_id is not provided, an Annotation Set will be automatically created and populated in these cases:
         
-            - there are no Annotation Sets
-            - the default Annotation Set's task doesn't match the annotation task of the annotations
+            - the Dataset doesn't have any Annotation Sets
             - create_new_annotation_set = True
 
-        Otherwise, annotations will be added to the relevant Annotation Set (that is,as specified by annotation_set_id or otherwise the default one)
+        Otherwise, annotations will be added to the Annotation Set specified by annotation_set_id.
         
         Example::
             urls = ['https://remo-scripts.s3-eu-west-1.amazonaws.com/open_images_sample_dataset.zip']
@@ -175,10 +174,10 @@ class Dataset:
         print(annotation_set)
         print('we are here')
         
-        if annotation_set and create_new_annotation_set:
+        if annotation_set_id and create_new_annotation_set:
             raise Exception("You passed an annotation set but also set create_new_annotation_set = True. You can't have both.")
             
-        if create_new_annotation_set or (not annotation_set) or (annotation_set.task != annotations[0].task):
+        if create_new_annotation_set or (not annotation_set):
         
             n_annotation_sets = len(self.annotation_sets())
             
