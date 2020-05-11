@@ -26,7 +26,6 @@ class Dataset:
         self.id = id
         self.name = name
         self.n_images = quantity
-        self._default_annotation_set_id = None
 
     def __str__(self):
         return "Dataset {id} - '{name}'".format(id=self.id, name=self.name)
@@ -173,6 +172,8 @@ class Dataset:
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         temp_path, list_of_classes = create_tempfile(annotations)
+        print(annotation_set)
+        print('we are here')
         
         if annotation_set and create_new_annotation_set:
             raise Exception("You passed an annotation set but also set create_new_annotation_set = True. You can't have both.")
@@ -181,10 +182,13 @@ class Dataset:
         
             n_annotation_sets = len(self.annotation_sets())
             
+            print('we are here2')
             self.create_annotation_set(annotation_task=annotations[0].task, name='my_ann_set_' + str(n_annotation_sets+1),
                                        classes = list_of_classes, path_to_annotation_file = temp_path)
             
         else:
+            print('we are here3')
+            print(annotation_set.id)
             self.add_data(annotation_task = annotation_set.task, annotation_set_id =annotation_set.id, 
                           paths_to_upload = [temp_path])
         
@@ -192,6 +196,7 @@ class Dataset:
         try:
             os.remove(temp_path)
         except:
+            print('we are here4')
             pass
 
             
@@ -316,37 +321,23 @@ class Dataset:
         if not annotation_set_id:
             return self.default_annotation_set()
         
-        if annotation_set_id != -1:
-            annotation_set = self.sdk.get_annotation_set(annotation_set_id)
-            if annotation_set and annotation_set.dataset_id == self.id:
-                return annotation_set
-            else:
-                raise Exception('Annotation set with ID = {} is not part of dataset {}. You can check the list of annotation sets in your dataset using dataset.annotation_sets()'.format(annotation_set_id, self.name))
+        annotation_set = self.sdk.get_annotation_set(annotation_set_id)
+        if annotation_set and annotation_set.dataset_id == self.id:
+            return annotation_set
+        else:
+            raise Exception('Annotation set with ID = {} is not part of dataset {}. You can check the list of annotation sets in your dataset using dataset.annotation_sets()'.format(annotation_set_id, self.__str__()))
 
     def default_annotation_set(self) -> AnnotationSet:
         """
-        If a default annotation set exists, it returns that annotation set.
-        If a default annotation set doesn't exist, it sets the first annotation set to be default and returns that annotation set.
+        If the dataset has only one annotation set, it returns that annotation set. 
+        Otherwise, it raises an exception.
         """
-        if self._default_annotation_set_id:
-            return self.get_annotation_set(self._default_annotation_set_id)
-
         annotation_sets = self.annotation_sets()
-        if annotation_sets:
-            annotation_set = annotation_sets[0]
-            self._default_annotation_set_id = annotation_set.id
-            return annotation_set
-
-    def set_default_annotation_set(self, annotation_set_id: int):
-        """
-        Sets the default annotation set for a dataset. 
-        Important: default annotation sets are not stored in Remo, so every time a script runs 
-        the default annotation set will be assigned to the first annotation set that was created.
-
-        Args:
-            annotation_set_id: annotation set id
-        """
-        self._default_annotation_set_id = annotation_set_id
+        
+        if len(annotation_sets)>1:
+            raise Exception('Define which annotation set you want to use. ' + self.__str__() + ' has ' + str(len(annotation_sets)) + ' annotation sets. You can see them with my_dataset.annotation_sets()')
+                            
+        return annotation_set[0]
 
     def get_annotation_statistics(self, annotation_set_id: int = None):
         """
@@ -379,7 +370,8 @@ class Dataset:
     def classes(self, annotation_set_id: int = None) -> List[str]:
         """
         Lists all the classes within the dataset
-
+        # ALR TODO: if user doens't specify id, and there is >1 sets, get_annotation_set raises an error. Wouldn't it be better if the error was raised from inside this calss?
+        
         Args:
              annotation_set_id: annotation set id. If not specified the default annotation set is considered.
 
@@ -389,8 +381,6 @@ class Dataset:
         annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
             return annotation_set.classes()
-
-        print('ERROR: annotation set not defined')
 
     def annotations(self, annotation_set_id: int = None) -> List[Annotation]:
         """
