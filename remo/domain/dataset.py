@@ -123,7 +123,7 @@ class Dataset:
 
     def annotation_sets(self) -> List[AnnotationSet]:
         """
-        Lists the annotation sets within the dataset. The first created annotation set, is considered the default one.
+        Lists the annotation sets within the dataset. 
 
         Returns:
             List[:class:`remo.AnnotationSet`]
@@ -323,8 +323,11 @@ class Dataset:
         annotation_sets = self.annotation_sets()
         
         if len(annotation_sets)>1:
-            raise Exception('Define which annotation set you want to use. ' + self.__str__() + ' has ' + str(len(annotation_sets)) + ' annotation sets. You can see them with my_dataset.annotation_sets()')
-                            
+            raise Exception('Define which annotation set you want to use. ' + self.__str__() + ' has ' + str(len(annotation_sets)) + ' annotation sets. You can see them with `my_dataset.annotation_sets()`')
+            
+        elif len(annotation_sets) ==0:
+            raise Exception(self.__str__() + " doesn't have any annotations. You can check the list of annotation sets with `my_dataset.annotation_sets()`")
+            
         return annotation_set[0]
 
     def get_annotation_statistics(self, annotation_set_id: int = None):
