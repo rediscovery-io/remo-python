@@ -70,7 +70,7 @@ class Annotation:
             raise Exception('Expected object type Annotation.Bbox or Annotation.Segment')
 
         self.img_filename = img_filename
-        self.classes = classes if isinstance(classes, list) else [classes]
+        self.classes = classes
         self.object = object
 
     def __str__(self):
@@ -80,6 +80,24 @@ class Annotation:
 
     def __repr__(self):
         return self.__str__()
+
+    @property
+    def classes(self):
+        if isinstance(self.__classes, list):
+            return self.__classes
+        elif isinstance(self.__classes, str):
+            self.__classes = [self.classes]
+            return self.__classes
+        return []
+
+    @classes.setter
+    def classes(self, classes):
+        if isinstance(classes, list):
+            self.__classes = classes
+        elif isinstance(classes, str):
+            self.__classes = [classes]
+        else:
+            self.__classes = []
 
     @property
     def type(self):

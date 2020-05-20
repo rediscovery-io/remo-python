@@ -176,14 +176,13 @@ class Dataset:
             annotation_set = self.get_annotation_set(annotation_set_id)
             
         temp_path, list_of_classes = create_tempfile(annotations)
-        
-        
+
         if annotation_set_id and create_new_annotation_set:
             raise Exception("You passed an annotation set but also set create_new_annotation_set = True. You can't have both.")
             
         if create_new_annotation_set or (not annotation_set_id):
             n_annotation_sets = len(self.annotation_sets())
-            self.create_annotation_set(annotation_task=annotations[0].task, name='my_ann_set_' + str(n_annotation_sets+1),
+            self.create_annotation_set(annotation_task=annotations[0].task, name='my_ann_set_{}'.format(n_annotation_sets+1),
                                        classes = list_of_classes, path_to_annotation_file = temp_path)
             
         else:
@@ -191,10 +190,11 @@ class Dataset:
                           paths_to_upload = [temp_path])
         
         #TODO ALR: removing the temp_path doesn't work on Windows, hence the try except as a temp fix
+
         try:
             os.remove(temp_path)
         except:
-            pass  
+            pass
         
     def export_annotations(
         self,

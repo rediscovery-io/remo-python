@@ -325,7 +325,10 @@ class API(BaseAPI):
 
     def get_upload_session_status(self, session_id: str):
         url = self.url(backend.v1_uploads_status.format(session_id))
-        return self.get(url).json()
+        try:
+            return self.get(url).json()
+        except:
+            return {}
 
     def list_datasets(self):
         url = self.url(backend.v1_datasets)

@@ -20,6 +20,14 @@ class SimpleCSVBase:
     task = None
     headers = None
 
+    @staticmethod
+    def inline_classes(classes):
+        if isinstance(classes, list):
+            return ';'.join(classes)
+        if isinstance(classes, str):
+            return classes
+        return ''
+
     def validate_annotation_task(self, annotations: List[Annotation]):
         for annotation in annotations:
             check_annotation_task(self.task, annotation.task)
@@ -38,7 +46,7 @@ class SimpleCSVForObjectDetection(SimpleCSVBase):
 
     def _csv_data(self, annotations: List[Annotation]) -> List[List[str]]:
         return [
-            [annotation.img_filename, ';'.join(annotation.classes), *annotation.coordinates]
+            [annotation.img_filename,  self.inline_classes(annotation.classes), *annotation.coordinates]
             for annotation in annotations
         ]
 
@@ -47,12 +55,16 @@ class SimpleCSVForInstanceSegmentation(SimpleCSVBase):
     task = instance_segmentation
     headers = ["file_name", "class_name", "coordinates"]
 
+    @staticmethod
+    def inline_coordinates(coordinates):
+        return '; '.join(map(str, coordinates))
+
     def _csv_data(self, annotations: List[Annotation]) -> List[List[str]]:
         return [
             [
                 annotation.img_filename,
-                ';'.join(annotation.classes),
-                '; '.join(map(str, annotation.coordinates)),
+                self.inline_classes(annotation.classes),
+                self.inline_coordinates(annotation.coordinates),
             ]
             for annotation in annotations
         ]
@@ -63,7 +75,7 @@ class SimpleCSVForImageClassification(SimpleCSVBase):
     headers = ["file_name", "class_name"]
 
     def _csv_data(self, annotations: List[Annotation]) -> List[List[str]]:
-        return [[annotation.img_filename, ';'.join(annotation.classes)] for annotation in annotations]
+        return [[annotation.img_filename, self.inline_classes(annotation.classes)] for annotation in annotations]
 
 
 csv_makers = {
