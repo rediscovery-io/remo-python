@@ -1,4 +1,5 @@
 import os
+import time
 from typing import List
 
 from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
@@ -50,6 +51,7 @@ class SDK:
         urls: List[str] = None,
         annotation_task: str = None,
         class_encoding=None,
+        wait_for_complete=True
     ) -> Dataset:
         """
         Creates a new dataset in Remo and optionally populate it with images and annotations.
@@ -77,6 +79,8 @@ class SDK:
             class_encoding: specifies how to convert class labels in annotation files to classes.
                 See also: :class:`remo.class_encodings`.
 
+            wait_for_complete: blocks function until upload data completes
+
         Returns:
             :class:`remo.Dataset`
         """
@@ -84,7 +88,8 @@ class SDK:
         json_data = self.api.create_dataset(name)
         ds = Dataset(**json_data)
         ds.add_data(
-            local_files, paths_to_upload, urls, annotation_task=annotation_task, class_encoding=class_encoding
+            local_files, paths_to_upload, urls, annotation_task=annotation_task, class_encoding=class_encoding,
+            wait_for_complete=wait_for_complete
         )
         ds.fetch()
         return ds
@@ -99,6 +104,7 @@ class SDK:
         folder_id: int = None,
         annotation_set_id: int = None,
         class_encoding=None,
+        wait_for_complete=True
     ) -> dict:
         """
         Adds images and/or annotations to an existing dataset.
@@ -131,6 +137,8 @@ class SDK:
             class_encoding: specifies how to convert labels in annotation files to readable labels. If None,  Remo will try to interpret the encoding automatically - which for standard words, means they will be read as they are. 
                 See also: :class:`remo.class_encodings`.
 
+            wait_for_complete: blocks function until upload data completes
+
         Returns:
             Dictionary with results for linking files, upload files and upload urls::
 
@@ -141,47 +149,102 @@ class SDK:
                 }
 
         """
-        result = {}
         kwargs = {
             'annotation_task': annotation_task,
             'folder_id': folder_id,
             'annotation_set_id': annotation_set_id,
         }
-        
+
         # logic to deal with the case where we are trying to upload annotations without specifying the annotation set id
         if annotation_task and (not annotation_set_id):
-            annotation_sets = self.api.list_annotation_sets(dataset_id)
-            
-            if len(annotation_sets)>1:
-                raise Exception('Define which annotation set you want to use. Dataset ' + str(dataset_id) + ' has ' + str(len(annotation_sets)) + ' annotation sets. You can see them with my_dataset.annotation_sets()')
-                
-            elif len(annotation_sets)==1:
-                kwargs['annotation_set_id'] = annotation_sets[0].id
-                
-            
+            annotation_sets = self.list_annotation_sets(dataset_id)
 
+            if len(annotation_sets) > 1:
+                raise Exception(
+                    'Define which annotation set you want to use. Dataset {} has {} annotation sets. '
+                    'You can see them with my_dataset.annotation_sets()'.format(dataset_id, len(annotation_sets))
+                )
+
+            elif len(annotation_sets) == 1:
+                kwargs['annotation_set_id'] = annotation_sets[0].id
+
+        # check values
         if local_files:
             self._raise_value_error(local_files, 'local_files', list, 'list of paths')
+        if paths_to_upload:
+            self._raise_value_error(paths_to_upload, 'paths_to_upload', list, 'list of paths')
+        if urls:
+            self._raise_value_error(urls, 'urls', list, 'list of URLs')
+
+        session_id = self.api.create_new_upload_session(dataset_id)
+        kwargs['session_id'] = session_id
+
+        if local_files:
             encoding = class_encodings.for_linking(class_encoding)
-            result['files_link_result'] = self.api.upload_local_files(
+            self.api.upload_local_files(
                 dataset_id, local_files, class_encoding=encoding, **kwargs
             )
 
         if paths_to_upload:
-            self._raise_value_error(paths_to_upload, 'paths_to_upload', list, 'list of paths')
             encoding = class_encodings.for_upload(class_encoding)
-            result['files_upload_result'] = self.api.bulk_upload_files(
+            self.api.bulk_upload_files(
                 dataset_id, paths_to_upload, class_encoding=encoding, **kwargs
             )
 
         if urls:
-            self._raise_value_error(urls, 'urls', list, 'list of URLs')
             encoding = class_encodings.for_linking(class_encoding)
-            result['urls_upload_result'] = self.api.upload_urls(
+            self.api.upload_urls(
                 dataset_id, urls, class_encoding=encoding, **kwargs
             )
 
-        return result
+        self.api.complete_upload_session(session_id)
+
+        if not wait_for_complete:
+            return {'session_id': session_id}
+
+        last_status = ''
+        while True:
+            time.sleep(2)
+            session = self.api.get_upload_session_status(session_id)
+            status = session.get('status')
+            substatus = session.get('substatus')
+
+            if status in ('not complete', 'pending', 'in progress'):
+                msg = 'Status: {}'.format(status.capitalize())
+                if last_status != status:
+                    print(msg)
+                    last_status = status
+
+                if substatus:
+                    msg = 'Details: {} {}'.format(substatus, ' ' * (100 - len(substatus)))
+                    print(msg, end='\r')
+
+            elif status in ('done', 'failed'):
+                print('\n')
+                if status == 'done':
+                    msg = 'Data upload completed'
+                else:
+                    msg = 'Data upload completed with some errors:'
+                print(msg)
+                if status == 'failed':
+                    errors = session.get('errors', [])
+                    for err in errors:
+                        msg = err['error'] if 'value' not in err else '{}: {}'.format(err['value'], err['error'])
+                        print(msg)
+                    errors = session['images'].get('errors', [])
+                    for err in errors:
+                        filename, errs = err['filename'], err['errors']
+                        msg = errs[0] if len(errs) == 1 else '\n * ' + '\n * '.join(errs)
+                        msg = '{}: {}'.format(filename, msg)
+                        print(msg)
+                    errors = session['annotations'].get('errors', [])
+                    for err in errors:
+                        filename, errs = err['filename'], err['errors']
+                        msg = errs[0] if len(errs) == 1 else '\n * ' + '\n * '.join(errs)
+                        msg = '{}: {}'.format(filename, msg)
+                        print(msg)
+
+                return session
 
     @staticmethod
     def _raise_value_error(value, value_name, expected_type, expected_description):
@@ -200,10 +263,7 @@ class SDK:
             List[:class:`remo.Dataset`]
         """
         json_data = self.api.list_datasets()
-        return [
-            Dataset(**ds_item)
-            for ds_item in json_data.get('results', [])
-        ]
+        return [Dataset(**ds_item) for ds_item in json_data.get('results', [])]
 
     def get_dataset(self, dataset_id: int) -> Dataset:
         """
@@ -216,11 +276,13 @@ class SDK:
             :class:`remo.Dataset`
         """
         json_data = self.api.get_dataset(dataset_id)
-        
-        if 'detail' in json_data.keys():
-            if json_data['detail'] == "Not found.":
-                raise Exception("Dataset ID " + str(dataset_id) + " not found. You can check your existing datasets with `remo.list_datasets()`")
-            
+
+        if json_data.get('detail') == "Not found.":
+            raise Exception(
+                "Dataset ID {} not found. "
+                "You can check your existing datasets with `remo.list_datasets()`".format(dataset_id)
+            )
+
         return Dataset(**json_data)
 
     def delete_dataset(self, dataset_id: int):
@@ -272,8 +334,11 @@ class SDK:
         annotation_set = self.api.get_annotation_set(annotation_set_id)
 
         if 'detail' in annotation_set:
-            raise Exception('Annotation set with ID = {} not found. You can check the list of annotation sets in your dataset using dataset.annotation_sets()'.format(annotation_set_id))
-            
+            raise Exception(
+                'Annotation set with ID = {} not found. '
+                'You can check the list of annotation sets in your dataset using dataset.annotation_sets()'.format(annotation_set_id)
+            )
+
         return AnnotationSet(
             id=annotation_set['id'],
             name=annotation_set['name'],
@@ -363,7 +428,9 @@ class SDK:
         resp = self.api.get_annotation_info(dataset_id, annotation_set_id, image_id)
         return resp.get('annotation_info', [])
 
-    def list_image_annotations(self, dataset_id: int, annotation_set_id: int, image_id: int) -> List[Annotation]:
+    def list_image_annotations(
+        self, dataset_id: int, annotation_set_id: int, image_id: int
+    ) -> List[Annotation]:
         """
         Returns annotations for a given image
 
@@ -383,7 +450,7 @@ class SDK:
         annotations = []
         for item in annotation_items:
             annotation = Annotation(img_filename=img.name)
-            
+
             if 'lower' in item:
                 annotation.classes = item.get('name')
             else:
@@ -403,7 +470,7 @@ class SDK:
                     annotation.segment = segment
 
             annotations.append(annotation)
-            
+
         return annotations
 
     def list_annotations(self, dataset_id: int, annotation_set_id: int) -> List[Annotation]:
@@ -424,7 +491,8 @@ class SDK:
         return annotations
 
     def create_annotation_set(
-        self, annotation_task: str, dataset_id: int, name: str, classes: List[str] = []) -> AnnotationSet:
+        self, annotation_task: str, dataset_id: int, name: str, classes: List[str] = []
+    ) -> AnnotationSet:
         """
         Creates a new annotation set within the given dataset
 
@@ -439,7 +507,9 @@ class SDK:
         """
         annotation_set = self.api.create_annotation_set(annotation_task, dataset_id, name, classes)
         if 'error' in annotation_set:
-            raise Exception('Error while creating an annotation set. Message:\n{}'.format(annotation_set['error']))
+            raise Exception(
+                'Error while creating an annotation set. Message:\n{}'.format(annotation_set['error'])
+            )
 
         return AnnotationSet(
             id=annotation_set['id'],
@@ -461,7 +531,7 @@ class SDK:
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         dataset_id = annotation_set.dataset_id
-        
+
         annotation_info = self.get_annotation_info(dataset_id, annotation_set_id, image_id)
         object_id = len(annotation_info)
 
@@ -487,7 +557,7 @@ class SDK:
                     }
                 )
                 object_id += 1
-                
+
             elif item.segment:
                 objects.append(
                     {
@@ -539,8 +609,9 @@ class SDK:
         json_data = self.api.list_dataset_images(dataset_id, limit=limit, offset=offset)
         if 'error' in json_data:
             raise Exception(
-                'Failed to get all images for dataset ID = {}. Error message:\n: {}'
-                .format(dataset_id, json_data.get('error'))
+                'Failed to get all images for dataset ID = {}. Error message:\n: {}'.format(
+                    dataset_id, json_data.get('error')
+                )
             )
 
         images = json_data.get('results', [])
@@ -570,16 +641,16 @@ class SDK:
         """
         json_data = self.api.get_image(image_id)
         if 'error' in json_data:
-            raise Exception('Failed to get image by ID = {}. Error message:\n: {}'.format(image_id, json_data.get('error')))
+            raise Exception(
+                'Failed to get image by ID = {}. Error message:\n: {}'.format(
+                    image_id, json_data.get('error')
+                )
+            )
 
         return Image(**json_data)
 
     def search_images(
-        self,
-        classes=None,
-        task: str = None,
-        dataset_id: int = None,
-        limit: int = None,
+        self, classes=None, task: str = None, dataset_id: int = None, limit: int = None,
     ):
         """
         Search images by class and annotation task

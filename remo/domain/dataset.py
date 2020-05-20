@@ -41,6 +41,7 @@ class Dataset:
         folder_id: int = None,
         annotation_set_id: int = None,
         class_encoding=None,
+        wait_for_complete=True
     ) -> dict:
         """
         Adds images and/or annotations to the dataset.
@@ -86,6 +87,8 @@ class Dataset:
             class_encoding: specifies how to convert labels in annotation files to readable labels. If None,  Remo will try to interpret the encoding automatically - which for standard words, means they will be read as they are. 
                 See also: :class:`remo.class_encodings`.
 
+            wait_for_complete: blocks function until upload data completes
+
         Returns:
             Dictionary with results for linking files, upload files and upload urls::
 
@@ -112,6 +115,7 @@ class Dataset:
             folder_id=folder_id,
             annotation_set_id=annotation_set_id,
             class_encoding=class_encoding,
+            wait_for_complete=wait_for_complete
         )
 
     def fetch(self):
