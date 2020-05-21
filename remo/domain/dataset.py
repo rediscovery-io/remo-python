@@ -87,7 +87,7 @@ class Dataset:
             class_encoding: specifies how to convert labels in annotation files to readable labels. If None,  Remo will try to interpret the encoding automatically - which for standard words, means they will be read as they are. 
                 See also: :class:`remo.class_encodings`.
 
-            wait_for_complete: blocks function until upload data completes
+            wait_for_complete: if True, the function waits for upload data to complete 
 
         Returns:
             Dictionary with results for linking files, upload files and upload urls::
