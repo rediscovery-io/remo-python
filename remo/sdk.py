@@ -202,30 +202,56 @@ class SDK:
         if not wait_for_complete:
             return {'session_id': session_id}
 
-        last_status = ''
+        return self._report_processing_data_progress(session_id)
+
+    def _report_processing_data_progress(self, session_id: str):
+        """
+        Reports progress for upload session
+
+        Args:
+            session_id: upload session id
+
+        Returns:
+             session status
+        """
+        def format_msg(msg, *args, max_length=100):
+            msg = msg.format(*args)
+            return '{} {}'.format(msg, ' ' * (max_length - len(msg)))
+
+
+        last_msg = ''
         while True:
-            time.sleep(2)
             session = self.api.get_upload_session_status(session_id)
             status = session.get('status')
             substatus = session.get('substatus')
+            uploaded = session['uploaded']['total']
 
-            if status in ('not complete', 'pending', 'in progress'):
-                msg = 'Status: {}'.format(status.capitalize())
-                if last_status != status:
-                    print(msg)
-                    last_status = status
-
-                if substatus:
-                    msg = 'Details: {} {}'.format(substatus, ' ' * (100 - len(substatus)))
+            if status == 'not complete':
+                msg = format_msg('Acquiring data - {} files, {}', uploaded['items'], uploaded['human_size'])
+                if msg != last_msg:
                     print(msg, end='\r')
+                    last_msg = msg
+
+            elif status == 'pending':
+                msg = format_msg('Acquiring data - completed')
+                if msg != last_msg:
+                    print(msg)
+                    last_msg = msg
+
+            elif status == 'in progress':
+                msg = 'Processing data'
+                if substatus:
+                    msg = '{} - {}'.format(msg, substatus)
+                msg = format_msg(msg)
+                if msg != last_msg:
+                    print(msg, end='\r')
+                    last_msg = msg
 
             elif status in ('done', 'failed'):
-                print('\n')
-                if status == 'done':
-                    msg = 'Data upload completed'
-                else:
-                    msg = 'Data upload completed with some errors:'
+                print(format_msg('Processing data - completed'))
+                msg = 'Data upload completed' if status == 'done' else 'Data upload completed with some errors:'
                 print(msg)
+
                 if status == 'failed':
                     errors = session.get('errors', [])
                     for err in errors:
@@ -245,6 +271,7 @@ class SDK:
                         print(msg)
 
                 return session
+            time.sleep(1)
 
     @staticmethod
     def _raise_value_error(value, value_name, expected_type, expected_description):
