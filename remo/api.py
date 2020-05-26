@@ -183,6 +183,7 @@ class API(BaseAPI):
         status=None,
         annotation_set_id=None,
         class_encoding=None,
+        session_id: str = None
     ):
         files = [
             ('files', (os.path.basename(path), open(path, 'rb'), filetype.guess_mime(path)))
@@ -191,7 +192,8 @@ class API(BaseAPI):
         data = {}
         if annotation_task:
             data['annotation_task'] = annotation_task
-
+        if session_id:
+            data['session_id'] = session_id
         if isinstance(class_encoding, dict):
             for key, val in class_encoding.items():
                 data['class_encoding_{}'.format(key)] = val
@@ -204,12 +206,11 @@ class API(BaseAPI):
         r = self.post(url, files=files, data=data)
         json_resp = r.json()
         
-        if (r.status > 400)  and ('errors' in json_resp):
+        if (r.status_code >= http.HTTPStatus.BAD_REQUEST) and ('errors' in json_resp):
             raise Exception('Error description:' + '\n'.join(json_resp['errors']))
         
-        #TODO ALR: what does it mean when r.status_code != http.HTTPStatus.OK?
         if r.status_code != http.HTTPStatus.OK:
-            print('Possible Error - Response:', r.text, 'files:', files_to_upload)
+            print('Error - Response:', r.text, 'files:', files_to_upload)
 
         status.update(len(files))
         status.progress()
@@ -224,6 +225,7 @@ class API(BaseAPI):
         folder_id=None,
         annotation_set_id=None,
         class_encoding=None,
+        session_id: str = None
     ):
 
         # files to upload
@@ -231,14 +233,13 @@ class API(BaseAPI):
         groups = self.split_files_by_size(files)
         status = UploadStatus(len(files))
         with ThreadPoolExecutor(1) as ex:
-            res = ex.map(
+            results = ex.map(
                 lambda bulk: self.upload_files(
-                    dataset_id, bulk, annotation_task, folder_id, status, annotation_set_id, class_encoding
+                    dataset_id, bulk, annotation_task, folder_id, status, annotation_set_id, class_encoding, session_id
                 ),
                 groups,
             )
 
-        results = res
         return results
 
     def chunks(self, my_list, chunk_size=2000):
@@ -274,6 +275,7 @@ class API(BaseAPI):
         folder_id=None,
         annotation_set_id=None,
         class_encoding=None,
+        session_id: str = None
     ):
         payload = {"local_files": local_files}
         if annotation_task:
@@ -282,6 +284,8 @@ class API(BaseAPI):
             payload['folder_id'] = folder_id
         if isinstance(class_encoding, dict):
             payload['class_encoding'] = class_encoding
+        if session_id:
+            payload['session_id'] = session_id
 
         url = self.url(backend.dataset_upload.format(dataset_id), annotation_set_id=annotation_set_id)
         return self.post(url, json=payload).json()
@@ -294,6 +298,7 @@ class API(BaseAPI):
         folder_id=None,
         annotation_set_id=None,
         class_encoding=None,
+        session_id: str = None
     ):
         payload = {"urls": urls}
         if annotation_task:
@@ -302,9 +307,28 @@ class API(BaseAPI):
             payload['folder_id'] = folder_id
         if isinstance(class_encoding, dict):
             payload['class_encoding'] = class_encoding
+        if session_id:
+            payload['session_id'] = session_id
 
         url = self.url(backend.dataset_upload.format(dataset_id), annotation_set_id=annotation_set_id)
         return self.post(url, json=payload).json()
+
+    def create_new_upload_session(self, dataset_id: int) -> str:
+        payload = {'dataset_id': dataset_id}
+        url = self.url(backend.v1_uploads)
+        data = self.post(url, json=payload).json()
+        return data.get('session_id')
+
+    def complete_upload_session(self, session_id: str):
+        url = self.url(backend.v1_uploads_complete.format(session_id))
+        self.post(url)
+
+    def get_upload_session_status(self, session_id: str):
+        url = self.url(backend.v1_uploads_status.format(session_id))
+        try:
+            return self.get(url).json()
+        except:
+            return {}
 
     def list_datasets(self):
         url = self.url(backend.v1_datasets)

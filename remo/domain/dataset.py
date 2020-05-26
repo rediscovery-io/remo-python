@@ -41,6 +41,7 @@ class Dataset:
         folder_id: int = None,
         annotation_set_id: int = None,
         class_encoding=None,
+        wait_for_complete=True
     ) -> dict:
         """
         Adds images and/or annotations to the dataset.
@@ -86,6 +87,8 @@ class Dataset:
             class_encoding: specifies how to convert labels in annotation files to readable labels. If None,  Remo will try to interpret the encoding automatically - which for standard words, means they will be read as they are. 
                 See also: :class:`remo.class_encodings`.
 
+            wait_for_complete: if True, the function waits for upload data to complete 
+
         Returns:
             Dictionary with results for linking files, upload files and upload urls::
 
@@ -112,6 +115,7 @@ class Dataset:
             folder_id=folder_id,
             annotation_set_id=annotation_set_id,
             class_encoding=class_encoding,
+            wait_for_complete=wait_for_complete
         )
 
     def fetch(self):
@@ -172,14 +176,13 @@ class Dataset:
             annotation_set = self.get_annotation_set(annotation_set_id)
             
         temp_path, list_of_classes = create_tempfile(annotations)
-        
-        
+
         if annotation_set_id and create_new_annotation_set:
             raise Exception("You passed an annotation set but also set create_new_annotation_set = True. You can't have both.")
             
         if create_new_annotation_set or (not annotation_set_id):
             n_annotation_sets = len(self.annotation_sets())
-            self.create_annotation_set(annotation_task=annotations[0].task, name='my_ann_set_' + str(n_annotation_sets+1),
+            self.create_annotation_set(annotation_task=annotations[0].task, name='my_ann_set_{}'.format(n_annotation_sets+1),
                                        classes = list_of_classes, path_to_annotation_file = temp_path)
             
         else:
@@ -187,10 +190,11 @@ class Dataset:
                           paths_to_upload = [temp_path])
         
         #TODO ALR: removing the temp_path doesn't work on Windows, hence the try except as a temp fix
+
         try:
             os.remove(temp_path)
         except:
-            pass  
+            pass
         
     def export_annotations(
         self,
