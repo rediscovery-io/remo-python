@@ -12,13 +12,18 @@ def connect():
     """
     from .config import Config
     config = Config.load()
-    connect_sdk(config.server_url(), config.user_email, config.user_password)
+    connect_sdk(config.server_url(), config.user_email, config.user_password, config.viewer)
 
 
 def connect_sdk(server: str, email: str, password: str, viewer: str = 'browser'):
     """
     Connect to a remote running remo server.
     
+    Args:
+        server: address where remo is running
+        email:  email address used for authentication
+        password: password used for authentication
+        (optional) viewer: viewer to use
     """
     global _sdk
     _sdk = SDK(server, email, password, viewer)
