@@ -59,15 +59,6 @@ class JupyterViewer(AbstractViewer):
         """)
 
 
-
-
-
-
-
-
-
-
-
 class BrowserViewer(AbstractViewer):
     def browse(self, url: str):
         print('Open', url)
@@ -100,7 +91,21 @@ class ElectronViewer(AbstractViewer):
 
 def factory(name: str):
     viewer = {'jupyter': JupyterViewer, 'browser': BrowserViewer, 'electron': ElectronViewer}.get(name)
+
     if viewer:
         return viewer()
 
     raise NotImplementedError('Viewer {} - not implemented'.format(name))
+
+
+def is_jupyter_notebook():
+    try:
+        shell = get_ipython().__class__.__name__
+        if shell == 'ZMQInteractiveShell':
+            return True  # Jupyter notebook or qtconsole
+        elif shell == 'TerminalInteractiveShell':
+            return False  # Terminal running IPython
+        else:
+            return False  # Other type (?)
+    except NameError:
+        return False  # Probably standard Python interpreter
