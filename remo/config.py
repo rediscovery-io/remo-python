@@ -6,6 +6,11 @@ REMO_HOME = os.getenv('REMO_HOME', str(Path.home().joinpath('.remo')))
 
 
 class Config:
+    """
+    Remo Config
+
+    This class is used to ...
+    """
     __slots__ = ['port', 'server', 'user_name', 'user_email', 'user_password', 'viewer']
     _default_port = 8123
     _default_server = 'http://localhost'

@@ -5,13 +5,21 @@ from .version import __version__
 _sdk = None
 
 
-def init():
+def connect():
+    """
+    Connect to a local running remo server.
+    
+    """
     from .config import Config
     config = Config.load()
-    init_sdk(config.server_url(), config.user_email, config.user_password)
+    connect_sdk(config.server_url(), config.user_email, config.user_password)
 
 
-def init_sdk(server: str, email: str, password: str, viewer: str = 'browser'):
+def connect_sdk(server: str, email: str, password: str, viewer: str = 'browser'):
+    """
+    Connect to a remote running remo server.
+    
+    """
     global _sdk
     _sdk = SDK(server, email, password, viewer)
     # set access to public SDK methods
@@ -23,6 +31,6 @@ def init_sdk(server: str, email: str, password: str, viewer: str = 'browser'):
         setattr(sys.modules[__name__], name, getattr(_sdk, name))
 
 try:
-    init()
+    connect()
 except:
     pass
