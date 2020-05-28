@@ -9,7 +9,8 @@ class Config:
     """
     Remo Config
 
-    This class is used to ...
+    This class is used to initialise various settings.
+    #TODO: add description of how those are initiliased from code vs from config file
     """
     __slots__ = ['port', 'server', 'user_name', 'user_email', 'user_password', 'viewer']
     _default_port = 8123
