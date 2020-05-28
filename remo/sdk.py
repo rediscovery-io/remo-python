@@ -39,7 +39,7 @@ class SDK:
         Allows to choose one of available viewers
 
         Args:
-            viewer: allows to choose between browser, electron and jupyter viewer
+            viewer: choose between 'browser', 'electron' and 'jupyter' viewer
         """
         self.viewer = factory(viewer)
 
