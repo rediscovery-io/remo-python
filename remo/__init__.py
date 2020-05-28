@@ -8,12 +8,12 @@ _sdk = None
 def init():
     from .config import Config
     config = Config.load()
-    init_sdk(SDK(config.server_url(), config.user_email, config.user_password))
+    init_sdk(config.server_url(), config.user_email, config.user_password)
 
 
-def init_sdk(sdk: SDK):
+def init_sdk(server: str, email: str, password: str, viewer: str = 'browser'):
     global _sdk
-    _sdk = sdk
+    _sdk = SDK(server, email, password, viewer)
     # set access to public SDK methods
     import sys
 
@@ -21,3 +21,8 @@ def init_sdk(sdk: SDK):
     functions = filter(is_public_sdk_method, dir(_sdk))
     for name in functions:
         setattr(sys.modules[__name__], name, getattr(_sdk, name))
+
+try:
+    init()
+except:
+    pass
