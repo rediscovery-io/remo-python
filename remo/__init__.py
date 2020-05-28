@@ -23,7 +23,7 @@ def connect_sdk(server: str, email: str, password: str, viewer: str = 'browser')
         server: address where remo is running
         email:  email address used for authentication
         password: password used for authentication
-        (optional) viewer: viewer to use
+        (optional) viewer: viewer to use, one between 'browser', 'electron' and 'jupyter'
     """
     global _sdk
     _sdk = SDK(server, email, password, viewer)
