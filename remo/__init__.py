@@ -5,19 +5,10 @@ from .version import __version__
 _sdk = None
 
 
-def connect():
-    """
-    Connect to a local running remo server.
-    
-    """
-    from .config import Config
-    config = Config.load()
-    connect_sdk(config.server_url(), config.user_email, config.user_password, config.viewer)
-
-
-def connect_sdk(server: str, email: str, password: str, viewer: str = 'browser'):
+def connect(server: str = '', email: str = '', password: str = '', viewer: str = 'browser'):
     """
     Connect to a remote running remo server.
+    By default connects to a local running remo server.
     
     Args:
         server: address where remo is running
@@ -25,6 +16,11 @@ def connect_sdk(server: str, email: str, password: str, viewer: str = 'browser')
         password: password used for authentication
         (optional) viewer: viewer to use, one between 'browser', 'electron' and 'jupyter'
     """
+    if not (server and email and password):
+        from .config import Config
+        config = Config.load()
+        server, email, password, viewer = config.server_url(), config.user_email, config.user_password, config.viewer
+
     global _sdk
     _sdk = SDK(server, email, password, viewer)
     # set access to public SDK methods
