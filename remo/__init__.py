@@ -8,7 +8,7 @@ _sdk = None
 def connect(server: str = '', email: str = '', password: str = '', viewer: str = 'browser'):
     """
     Connect to a remo server.
-    By default connects to a local running remo server.
+    If no parameters are passed, it connects to a local running remo server. To connect to a remote remo, specify connection details.
     
     Args:
         server: address where remo is running
