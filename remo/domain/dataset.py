@@ -138,10 +138,10 @@ class Dataset:
         """
         Fast upload of annotations to the Dataset.
         
-        If annotation_set_id is not provided, an Annotation Set will be automatically created and populated in these cases:
+        If annotation_set_id is not provided, annotations will be added to:
         
-            - the Dataset doesn't have any Annotation Sets
-            - create_new_annotation_set = True
+            - the only annotation set present, if the Dataset has exactly one Annotation Set and the tasks match
+            - a new annotation set, if the Dataset doesn't have any Annotation Sets or if ceate_new_annotation_set = True
 
         Otherwise, annotations will be added to the Annotation Set specified by annotation_set_id.
         
@@ -172,14 +172,20 @@ class Dataset:
             
 
         """
-        if annotation_set_id:
-            annotation_set = self.get_annotation_set(annotation_set_id)
-            
-        temp_path, list_of_classes = create_tempfile(annotations)
-
         if annotation_set_id and create_new_annotation_set:
             raise Exception("You passed an annotation set but also set create_new_annotation_set = True. You can't have both.")
-            
+   
+        if annotation_set_id:
+            annotation_set = self.get_annotation_set(annotation_set_id)
+        else:
+            annotation_sets = self.annotation_sets()
+            if len(annotation_sets)>0:
+                annotation_set = self.get_annotation_set()
+                annotation_set_id = annotation_set.id
+                
+        temp_path, list_of_classes = create_tempfile(annotations)
+
+         
         if create_new_annotation_set or (not annotation_set_id):
             n_annotation_sets = len(self.annotation_sets())
             self.create_annotation_set(annotation_task=annotations[0].task, name='my_ann_set_{}'.format(n_annotation_sets+1),
@@ -332,7 +338,7 @@ class Dataset:
         elif len(annotation_sets) ==0:
             raise Exception(self.__str__() + " doesn't have any annotations. You can check the list of annotation sets with `my_dataset.annotation_sets()`")
             
-        return annotation_set[0]
+        return annotation_sets[0]
 
     def get_annotation_statistics(self, annotation_set_id: int = None):
         """
