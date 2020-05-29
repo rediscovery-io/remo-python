@@ -42,7 +42,7 @@ What | Where
 ---|---
 Documentation | [Official Docs](https://remo.ai/docs/sdk-intro/)
 Intro Notebook | [Intro to Remo-Python notebook](examples/intro_to_remo-python.ipynb)
-Uploading annotations | [Upload Annotations Tutorial notebook](examples/tutorial_upload_annotations.ipynb)
+Uploading annotations | [Upload Annotations and Predictions Tutorial notebook](examples/tutorial_upload_annotations_or_predictions.ipynb)
 Visualising predictions | visualise_predictions - Coming soon
 
 <br/>
