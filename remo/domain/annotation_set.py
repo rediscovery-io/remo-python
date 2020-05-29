@@ -1,6 +1,7 @@
 from typing import List, TypeVar
 
 from .annotation import Annotation
+from remo.annotation_utils import create_tempfile
 
 Dataset = TypeVar('Dataset')
 
@@ -58,7 +59,52 @@ class AnnotationSet:
     def __repr__(self):
         return self.__str__()
 
-    def add_annotation(self, image_id: int, annotation: Annotation):
+    def add_annotations(self, annotations: List[Annotation]):
+        
+        """
+        Upload of annotations to the annotation set.
+        
+        Example::
+            urls = ['https://remo-scripts.s3-eu-west-1.amazonaws.com/open_images_sample_dataset.zip']
+            ds = remo.create_dataset(name = 'D1', urls = urls)
+            ann_set = ds.create_annotation_set(annotation_task = 'Object Detection', name = 'test_set')
+            
+            image_name = '000a1249af2bc5f0.jpg'
+            annotations = []
+
+            annotation = remo.Annotation()
+            annotation.img_filename = image_name
+            annotation.classes='Human hand'
+            annotation.bbox=[227, 284, 678, 674]
+            annotations.append(annotation)
+
+            annotation = remo.Annotation()
+            annotation.img_filename = image_name
+            annotation.classes='Fashion accessory'
+            annotation.bbox=[496, 322, 544,370]
+            annotations.append(annotation)
+
+            ann_set.add_annotations(annotations)
+            
+        Args:
+            annotations: list of Annotation objects
+            
+        """
+            
+        temp_path, list_of_classes = create_tempfile(annotations)
+        
+            
+        self.sdk.add_data_to_dataset(
+            dataset_id = self.dataset_id,
+            paths_to_upload=[temp_path],
+            annotation_task=self.task,
+            annotation_set_id=self.id
+        )
+
+    
+    
+    
+    def add_image_annotation(self, image_id: int, annotation: Annotation):
         """
         Adds new annotation to the image
 
