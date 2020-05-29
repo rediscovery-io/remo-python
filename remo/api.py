@@ -49,8 +49,7 @@ class BaseAPI:
         try:
             resp = requests.post(self.url(backend.login), data={"password": password, "email": email})
         except requests.exceptions.ConnectionError:
-            print('ERROR: Failed connect to server')
-            return
+            raise Exception('Failed connect to server: {}'.format(self.server))
 
         if resp.status_code != http.HTTPStatus.OK:
             raise Exception(resp.json())
