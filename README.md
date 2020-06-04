@@ -22,7 +22,7 @@ Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and
 This will install both the Python library and the remo app.
 If it is installed in a conda environment, calling ` import remo` will also automatically launch remo. Otherwise, you can call it with `python -m remo_app` from command line.
 
-2- Initialise config: `python -m remo_app init`
+2. Initialise config: `python -m remo_app init`
 
 
 To read more about Remo, visit [remo.ai](http://remo.ai)
