@@ -24,10 +24,10 @@ This will install both the Python library and the remo app.
 2. Initialise config: `python -m remo_app init`
 
 
-That's it. To launch remo, run `python -m remo_app`. To call remo from python, use `import remo`
+That's it! To launch remo, run `python -m remo_app`. To call remo from python, use `import remo`
 
 
-To read more about remo, visit [remo.ai](http://remo.ai)
+To read more about installation and other features, visit [remo.ai](http://remo.ai)
 
 <img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
 
