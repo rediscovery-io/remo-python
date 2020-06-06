@@ -34,9 +34,9 @@ To read more about Remo, visit [remo.ai](http://remo.ai)
 
 
 
-## Remo python SDK
+## Remo python library
 
-You can see example of usage of the SDK in our documentiation or in the examples folder. 
+You can see example of usage of the library in our documentiation or in the examples folder. 
 
 What | Where
 ---|---
@@ -48,15 +48,15 @@ Visualising predictions | visualise_predictions - Coming soon
 <br/>
 
 ## Get in touch
-If you have any issues around the SDK, feel free to open an issue in the repo.
+If you have any issues around the library, feel free to open an issue in the repo.
 
-For anything else, you can write on our <a href="https://support.remo.ai" target="_blank">discuss forum</a>  
+For anything else, you can write on our <a href="https://support.remo.ai" target="_blank">discuss forum.</a>  
 
 <br/>
 
 ## For contributors
 
-The SDK is organized in 3 main layers:
+The library is organized in 3 main layers:
 - api
 - sdk
 - domain objects, such as datasets
