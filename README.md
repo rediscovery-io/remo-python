@@ -1,12 +1,12 @@
 
 <img src="https://github.com/rediscovery-io/remo-python/blob/master/img/remo_normal.png" width="200">
 
-# Welcome to Remo
+# Welcome to remo
 This the open source repository for remo python library.
 
 Remo is an open-access web-application for managing and visualising images and annotations for Computer Vision. 
 
-Use Remo to:
+Use remo to:
 
 - **visualise and inspect** datasets and annotations
 - **organise and search** your images
@@ -25,8 +25,9 @@ This will install both the Python library and the remo app.
 
 
 That's it! 
+
 To launch remo, run `python -m remo_app`. 
-To call remo from python once you have a server running, use `import remo`
+To call remo from python once you have a server running, use `import remo`.
 
 
 To read more about installation and other features, visit [remo.ai](http://remo.ai)
