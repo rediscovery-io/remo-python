@@ -253,7 +253,7 @@ class Dataset:
         if annotation_set:
             self.sdk.export_annotations_to_file(
                 output_file,
-                annotation_set_id,
+                annotation_set.id,
                 annotation_format=annotation_format,
                 full_path=full_path,
                 export_coordinates=export_coordinates,
