@@ -1,12 +1,12 @@
 
 <img src="https://github.com/rediscovery-io/remo-python/blob/master/img/remo_normal.png" width="200">
 
-# Welcome to Remo
-This the open source repository for Remo python library.
+# Welcome to remo
+This the open source repository for remo python library.
 
 Remo is an open-access web-application for managing and visualising images and annotations for Computer Vision. 
 
-Use Remo to:
+Use remo to:
 
 - **visualise and inspect** datasets and annotations
 - **organise and search** your images
@@ -15,28 +15,34 @@ Use Remo to:
 
 Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and uses a lightweight database to store metadata.
 
+<img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
+
 ## Quick installation
 
 1. In a Python 3.6+ environment: `pip install remo` 
 
 This will install both the Python library and the remo app.
-If it is installed in a conda environment, calling ` import remo` will also automatically launch remo. Otherwise, you can call it with `python -m remo_app` from command line.
 
-2- Initialise config: `python -m remo_app init`
+2. Initialise config: `python -m remo_app init`
 
 
-To read more about Remo, visit [remo.ai](http://remo.ai)
+That's it! 
 
-<img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
+To launch remo, run `python -m remo_app`. 
+To call remo from python once you have a server running, use `import remo`.
+
+
+To read more about installation and other features, visit [remo.ai](http://remo.ai)
+
 
 <br/>
 
 
 
 
-## Remo python SDK
+## Remo python library
 
-You can see example of usage of the SDK in our documentiation or in the examples folder. 
+You can see example of usage of the library in our documentiation or in the examples folder. 
 
 What | Where
 ---|---
@@ -48,15 +54,15 @@ Visualising predictions | visualise_predictions - Coming soon
 <br/>
 
 ## Get in touch
-If you have any issues around the SDK, feel free to open an issue in the repo.
+If you have any issues around the library, feel free to open an issue in the repo.
 
-For anything else, you can write on <a href="https://support.remo.ai" target="_blank">remo support forum</a>  
+For anything else, you can write on our <a href="https://support.remo.ai" target="_blank">discuss forum.</a>  
 
 <br/>
 
 ## For contributors
 
-The SDK is organized in 3 main layers:
+The library is organized in 3 main layers:
 - api
 - sdk
 - domain objects, such as datasets
