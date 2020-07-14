@@ -34,4 +34,4 @@ def connect(server: str = '', email: str = '', password: str = '', viewer: str =
 try:
     connect()
 except:
-    pass
+    raise Exception("Warning: Can't find a running remo app. \nYou can start a local remo doing 'python -m remo_app' from the command line, or connect to a remote running remo using 'remo.connect()'")
