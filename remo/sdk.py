@@ -762,3 +762,44 @@ class SDK:
 
     def _view(self, url, *args, **kwargs):
         return self.viewer.browse(self.api.url(url, *args, **kwargs))
+    
+    def generate_annotations_from_folders(self, path: str, output_filename: str):
+        """
+        Returns Annotations file from a given folder of folders where the 
+        name of the folder is the class label and saves it to a CSV in the same 
+        directory.
+
+        Input: path to folder: str
+               desired filename: str
+
+        Returns: 
+                CSV of Files: CSV
+                CSV of data encoding: CSV
+        """
+
+        def natural_sort(l): 
+            convert = lambda text: int(text) if text.isdigit() else text.lower() 
+            alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+            return sorted(l, key = alphanum_key)
+        def classes(path):
+            classes = [d.name for d in os.scandir(path) if d.is_dir()]
+            classes = natural_sort(classes)
+            class_to_idx = {cls_name: i for i, cls_name in enumerate(classes)}
+            return classes, class_to_idx
+
+        classes_list, mapping = classes(path)
+
+        im_dict = {}
+        im_dict["file_name"] = "class_name"
+        for class_name in classes_list:
+            im_list = os.listdir(path + "/" + class_name)
+            for im in im_list:
+                im_dict[os.path.abspath(path) + "/" + class_name + "/" + im] = class_name
+
+        with open(output_filename + "_annotations.csv", "w") as f:
+            for key in im_dict.keys():
+                f.write("%s, %s\n" % (key, im_dict[key]))
+
+        with open(output_filename + "_encoding.csv", "w") as g:
+            for key in mapping.keys():
+                g.write("%s, %s\n" % (key, mapping[key]))
