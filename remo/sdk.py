@@ -765,7 +765,7 @@ class SDK:
     def _view(self, url, *args, **kwargs):
         return self.viewer.browse(self.api.url(url, *args, **kwargs))
     
-    def generate_annotations_from_folders(self, path: str, output_filename: str):
+    def generate_annotations_from_folders(self, path: str, output_filename="image_classification", generate_encoding=False):
         """
         Creates a CSV annotation file for image classification tasks, where images are stored in folders with names matching the labels of the images. The CSV file is saved in the same input directory where images are stored. 
         Example of data structure for a dog / cat dataset: 
@@ -783,6 +783,7 @@ class SDK:
         Args: 
                path_to_data_folder: path to the source folder where data is stored
                output_filename: filename of the output annotation file
+               generate_encoding: Generate a csv mapping classes to index
 
         Returns: 
                 CSV of Files: CSV
@@ -793,6 +794,7 @@ class SDK:
             convert = lambda text: int(text) if text.isdigit() else text.lower() 
             alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
             return sorted(l, key = alphanum_key)
+        
         def classes(path):
             classes = [d.name for d in os.scandir(path) if d.is_dir()]
             classes = natural_sort(classes)
@@ -804,14 +806,15 @@ class SDK:
         im_dict = {}
         im_dict["file_name"] = "class_name"
         for class_name in classes_list:
-            im_list = os.listdir(path + "/" + class_name)
+            im_list = os.listdir(os.path.join(path, class_name))
             for im in im_list:
-                im_dict[os.path.abspath(path) + "/" + class_name + "/" + im] = class_name
+                im_dict[os.path.join(os.path.abspath(path), class_name, im)] = class_name
 
         with open(output_filename + "_annotations.csv", "w") as f:
             for key in im_dict.keys():
                 f.write("%s, %s\n" % (key, im_dict[key]))
-
-        with open(output_filename + "_encoding.csv", "w") as g:
-            for key in mapping.keys():
-                g.write("%s, %s\n" % (key, mapping[key]))
+        
+        if generate_encoding:
+            with open(output_filename + "_encoding.csv", "w") as g:
+                for key in mapping.keys():
+                    g.write("%s, %s\n" % (key, mapping[key]))
