@@ -1,7 +1,6 @@
 import os
 import time
 import re
-import csv
 from typing import List
 
 from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
