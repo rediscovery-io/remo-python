@@ -767,9 +767,18 @@ class SDK:
     
     def generate_annotations_from_folders(self, path: str, output_filename: str):
         """
-        Returns Annotations file from a given folder of folders where the 
-        name of the folder is the class label and saves it to a CSV in the same 
-        directory.
+        Creates a CSV annotation file for image classification tasks, where images are stored in folders with names matching the labels of the images. The CSV file is saved in the same input directory where images are stored. 
+        Example of data structure for a dog / cat dataset: 
+              - source_folder
+                  - dog
+                     - img1.jpg
+                     - img2.jpg
+                     - ...
+                  - cat
+                     - img199.jpg
+                     - img200.jpg
+                     - ...
+
 
         Args: 
                path_to_data_folder: path to the source folder where data is stored
