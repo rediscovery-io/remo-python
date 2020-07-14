@@ -777,6 +777,10 @@ class SDK:
                      - img199.jpg
                      - img200.jpg
                      - ...
+        Example:
+            data_path = "flowers_data/train"
+            remo.generate_annotations_from_folders(path_to_data_folder=data_path, output_filename="flowers", generate_encoding=True)
+            
 
 
         Args: 
