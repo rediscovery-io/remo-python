@@ -771,8 +771,9 @@ class SDK:
         name of the folder is the class label and saves it to a CSV in the same 
         directory.
 
-        Input: path to folder: str
-               desired filename: str
+        Args: 
+               path_to_data_folder: path to the source folder where data is stored
+               output_filename: filename of the output annotation file
 
         Returns: 
                 CSV of Files: CSV
