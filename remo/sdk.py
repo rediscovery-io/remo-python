@@ -1,6 +1,5 @@
 import os
 import time
-import re
 from typing import List
 
 from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
