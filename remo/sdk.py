@@ -774,7 +774,7 @@ class SDK:
     def _view(self, url, *args, **kwargs):
         return self.viewer.browse(self.api.url(url, *args, **kwargs))
     
-    def generate_annotations_from_folders(path_to_data_folder: str):
+    def generate_annotations_from_folders(self, path_to_data_folder: str):
         """
         Creates a CSV annotation file for image classification tasks, where images are stored in folders with names matching the labels of the images. The CSV file is saved in the same input directory where images are stored. 
         Example of data structure for a dog / cat dataset: 
