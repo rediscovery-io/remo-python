@@ -773,3 +773,43 @@ class SDK:
 
     def _view(self, url, *args, **kwargs):
         return self.viewer.browse(self.api.url(url, *args, **kwargs))
+    
+    def generate_annotations_from_folders(path_to_data_folder: str):
+        """
+        Creates a CSV annotation file for image classification tasks, where images are stored in folders with names matching the labels of the images. The CSV file is saved in the same input directory where images are stored. 
+        Example of data structure for a dog / cat dataset: 
+              - cats_and_dogs
+                  - dog
+                     - img1.jpg
+                     - img2.jpg
+                     - ...
+                  - cat
+                     - img199.jpg
+                     - img200.jpg
+                     - ...
+            
+        Example::
+            # Download and unzip this sample dataset: s-3.s3-eu-west-1.amazonaws.com/cats_and_dogs.zip
+            data_path = "cats_and_dogs"
+            remo.generate_annotations_from_folders(path_to_data_folder=data_path)
+            
+        Args: 
+               path_to_data_folder: path to the source folder where data is stored
+
+        Returns: 
+                csv_annotation_path: string, path to the generated CSV annotation file
+        """
+        classes = [d.name for d in os.scandir(path_to_data_folder) if d.is_dir()]
+        im_dict = {}
+        im_dict["file_name"] = "class_name"
+        for class_name in classes:
+            im_list = os.listdir(os.path.join(path_to_data_folder, class_name))
+            for im in im_list:
+                im_dict[os.path.join(os.path.abspath(path_to_data_folder), class_name, im)] = class_name
+
+        csv_annotation_path = os.path.join(path_to_data_folder, "annotations.csv")
+        with open(csv_annotation_path , "w") as f:
+            for key in im_dict.keys():
+                f.write("%s, %s\n" % (key, im_dict[key]))
+        
+        return csv_annotation_path
