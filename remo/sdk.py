@@ -798,6 +798,9 @@ class SDK:
             for im in im_list:
                 im_dict[os.path.join(os.path.abspath(path_to_data_folder), class_name, im)] = class_name
 
-        with open(os.path.join(path_to_data_folder, "annotations.csv"), "w") as f:
+        csv_annotation_path = os.path.join(path_to_data_folder, "annotations.csv")
+        with open(csv_annotation_path , "w") as f:
             for key in im_dict.keys():
                 f.write("%s, %s\n" % (key, im_dict[key]))
+        
+        return csv_annotation_path
