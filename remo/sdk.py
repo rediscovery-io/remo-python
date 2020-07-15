@@ -218,6 +218,24 @@ class SDK:
             msg = msg.format(*args)
             return '{} {}'.format(msg, ' ' * (max_length - len(msg)))
 
+        def print_session_errors(data, key='error'):
+            for err in data:
+                msg = err[key] if 'value' not in err else '{}: {}'.format(err['value'], err[key])
+                print(msg)
+
+        def print_session_warnings(data):
+            print_session_errors(data, key='warning')
+
+        def print_file_errors(data, key='errors'):
+            errors = data.get(key, [])
+            for err in errors:
+                filename, errs = err['filename'], err[key]
+                msg = errs[0] if len(errs) == 1 else '\n * ' + '\n * '.join(errs)
+                msg = '{}: {}'.format(filename, msg)
+                print(msg)
+
+        def print_file_warnings(data):
+            print_file_errors(data, key='warnings')
 
         last_msg = ''
         while True:
@@ -253,22 +271,15 @@ class SDK:
                 print(msg)
 
                 if status == 'failed':
-                    errors = session.get('errors', [])
-                    for err in errors:
-                        msg = err['error'] if 'value' not in err else '{}: {}'.format(err['value'], err['error'])
-                        print(msg)
-                    errors = session['images'].get('errors', [])
-                    for err in errors:
-                        filename, errs = err['filename'], err['errors']
-                        msg = errs[0] if len(errs) == 1 else '\n * ' + '\n * '.join(errs)
-                        msg = '{}: {}'.format(filename, msg)
-                        print(msg)
-                    errors = session['annotations'].get('errors', [])
-                    for err in errors:
-                        filename, errs = err['filename'], err['errors']
-                        msg = errs[0] if len(errs) == 1 else '\n * ' + '\n * '.join(errs)
-                        msg = '{}: {}'.format(filename, msg)
-                        print(msg)
+                    print_session_errors(session.get('errors', []))
+                    print_file_errors(session['images'])
+                    print_file_errors(session['annotations'])
+
+                if session.get('warnings', []) or session['images'].get('warnings', []) or session['annotations'].get('warnings', []):
+                    print('With some warnings:')
+                    print_session_warnings(session.get('warnings', []))
+                    print_file_warnings(session['images'])
+                    print_file_warnings(session['annotations'])
 
                 return session
             time.sleep(1)
