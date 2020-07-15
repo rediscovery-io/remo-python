@@ -764,11 +764,11 @@ class SDK:
     def _view(self, url, *args, **kwargs):
         return self.viewer.browse(self.api.url(url, *args, **kwargs))
     
-    def generate_annotations_from_folders(self, path_to_data_folder: str, output_filename="image_classification", generate_encoding=False):
+    def generate_annotations_from_folders(path_to_data_folder: str):
         """
         Creates a CSV annotation file for image classification tasks, where images are stored in folders with names matching the labels of the images. The CSV file is saved in the same input directory where images are stored. 
         Example of data structure for a dog / cat dataset: 
-              - source_folder
+              - training_data
                   - dog
                      - img1.jpg
                      - img2.jpg
@@ -777,47 +777,28 @@ class SDK:
                      - img199.jpg
                      - img200.jpg
                      - ...
-        Example:
-            data_path = "flowers_data/train"
-            remo.generate_annotations_from_folders(path_to_data_folder=data_path, output_filename="flowers", generate_encoding=True)
             
-
-
+        Example::
+            # Unzip the file provided in the the following URL
+            # URL: s-3.s3-eu-west-1.amazonaws.com/cats_and_dogs.zip
+            data_path = "dogs_vs_cats"
+            remo.generate_annotations_from_folders(path_to_data_folder=data_path)
+            
         Args: 
                path_to_data_folder: path to the source folder where data is stored
-               output_filename: filename of the output annotation file
-               generate_encoding: Generate a csv mapping classes to index
+               class_encoding: path to class_encoding file
 
         Returns: 
-                CSV of Files: CSV
-                CSV of data encoding: CSV
+                CSV of Annotations: CSV
         """
-
-        def natural_sort(l): 
-            convert = lambda text: int(text) if text.isdigit() else text.lower() 
-            alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
-            return sorted(l, key = alphanum_key)
-        
-        def classes(path):
-            classes = [d.name for d in os.scandir(path) if d.is_dir()]
-            classes = natural_sort(classes)
-            class_to_idx = {cls_name: i for i, cls_name in enumerate(classes)}
-            return classes, class_to_idx
-
-        classes_list, mapping = classes(path)
-
+        classes = [d.name for d in os.scandir(path_to_data_folder) if d.is_dir()]
         im_dict = {}
         im_dict["file_name"] = "class_name"
-        for class_name in classes_list:
-            im_list = os.listdir(os.path.join(path, class_name))
+        for class_name in classes:
+            im_list = os.listdir(os.path.join(path_to_data_folder, class_name))
             for im in im_list:
-                im_dict[os.path.join(os.path.abspath(path), class_name, im)] = class_name
+                im_dict[os.path.join(os.path.abspath(path_to_data_folder), class_name, im)] = class_name
 
-        with open(output_filename + "_annotations.csv", "w") as f:
+        with open(os.path.join(path_to_data_folder, "annotations.csv"), "w") as f:
             for key in im_dict.keys():
                 f.write("%s, %s\n" % (key, im_dict[key]))
-        
-        if generate_encoding:
-            with open(output_filename + "_encoding.csv", "w") as g:
-                for key in mapping.keys():
-                    g.write("%s, %s\n" % (key, mapping[key]))
