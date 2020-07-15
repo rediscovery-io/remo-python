@@ -784,7 +784,6 @@ class SDK:
             
         Args: 
                path_to_data_folder: path to the source folder where data is stored
-               class_encoding: path to class_encoding file
 
         Returns: 
                 csv_annotation_path: string, path to the generated CSV annotation file
