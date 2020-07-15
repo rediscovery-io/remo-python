@@ -45,37 +45,37 @@ class Dataset:
     ) -> dict:
         """
         Adds images and/or annotations to the dataset.
-        
+
         Use the parameters as follows:
-        
-        - Use ``local files`` to link (rather than copy) images. 
-        - Use ``paths_to_upload`` if you want to copy image files or archive files. 
+
+        - Use ``local files`` to link (rather than copy) images.
+        - Use ``paths_to_upload`` if you want to copy image files or archive files.
         - Use ``urls`` to download from the web images, annotations or archives.
-        
+
         In terms of supported formats:
-        
+
         - Adding images: support for ``jpg``, ``jpeg``, ``png``, ``tif``
         - Adding annotations: to add annotations, you need to specify the annotation task and make sure the specific file format is one of those supported. See documentation here: https://remo.ai/docs/annotation-formats/
         - Adding archive files: support for ``zip``, ``tar``, ``gzip``
-        
+
         Example::
             urls = ['https://remo-scripts.s3-eu-west-1.amazonaws.com/open_images_sample_dataset.zip']
             my_dataset = remo.create_dataset(name = 'D1', urls = urls)
             my_dataset.add_data(local_files=annotation_files, annotation_task = 'Object detection')
-            
+
         Args:
             dataset_id: id of the dataset to add data to
 
             local_files: list of files or directories containing annotations and image files
                 Remo will create smaller copies of your images for quick previews but it will point at the original files to show original resolutions images.
                 Folders will be recursively scanned for image files.
-                
+
 
             paths_to_upload: list of files or directories containing images, annotations and archives.
-                These files will be copied inside .remo folder. 
+                These files will be copied inside .remo folder.
                 Folders will be recursively scanned for image files.
                 Unpacked archive will be scanned for images, annotations and nested archives.
-                
+
             urls: list of urls pointing to downloadable target, which can be image, annotation file or archive.
 
             annotation_task: annotation tasks tell remo how to parse annotations. See also: :class:`remo.task`.
@@ -84,10 +84,10 @@ class Dataset:
 
             annotation_set_id: specifies target annotation set in the dataset. If None, it adds to the default annotation set.
 
-            class_encoding: specifies how to convert labels in annotation files to readable labels. If None,  Remo will try to interpret the encoding automatically - which for standard words, means they will be read as they are. 
+            class_encoding: specifies how to convert labels in annotation files to readable labels. If None,  Remo will try to interpret the encoding automatically - which for standard words, means they will be read as they are.
                 See also: :class:`remo.class_encodings`.
 
-            wait_for_complete: if True, the function waits for upload data to complete 
+            wait_for_complete: if True, the function waits for upload data to complete
 
         Returns:
             Dictionary with results for linking files, upload files and upload urls::
@@ -100,12 +100,12 @@ class Dataset:
 
 
         """
-        
+
         if annotation_set_id:
             annotation_set = self.get_annotation_set(annotation_set_id)
             if not annotation_set:
                 raise Exception('Annotation set ID = {} not found'.format(annotation_set_id))
-            
+
         return self.sdk.add_data_to_dataset(
             self.id,
             local_files=local_files,
@@ -127,7 +127,7 @@ class Dataset:
 
     def annotation_sets(self) -> List[AnnotationSet]:
         """
-        Lists the annotation sets within the dataset. 
+        Lists the annotation sets within the dataset.
 
         Returns:
             List[:class:`remo.AnnotationSet`]
@@ -137,14 +137,14 @@ class Dataset:
     def add_annotations(self, annotations: List[Annotation], annotation_set_id: int = None, create_new_annotation_set: bool = False):
         """
         Fast upload of annotations to the Dataset.
-        
+
         If annotation_set_id is not provided, annotations will be added to:
-        
+
             - the only annotation set present, if the Dataset has exactly one Annotation Set and the tasks match
             - a new annotation set, if the Dataset doesn't have any Annotation Sets or if ceate_new_annotation_set = True
 
         Otherwise, annotations will be added to the Annotation Set specified by annotation_set_id.
-        
+
         Example::
             urls = ['https://remo-scripts.s3-eu-west-1.amazonaws.com/open_images_sample_dataset.zip']
             my_dataset = remo.create_dataset(name = 'D1', urls = urls)
@@ -164,17 +164,17 @@ class Dataset:
             annotations.append(annotation)
 
             my_dataset.add_annotations(annotations)
-            
+
         Args:
             annotations: list of Annotation objects
             (optional) annotation_set_id: annotation set id
             (optional) create_new_annotation_set: if True, a new annotation set will be created
-            
+
 
         """
         if annotation_set_id and create_new_annotation_set:
             raise Exception("You passed an annotation set but also set create_new_annotation_set = True. You can't have both.")
-   
+
         if annotation_set_id:
             annotation_set = self.get_annotation_set(annotation_set_id)
         else:
@@ -182,26 +182,26 @@ class Dataset:
             if len(annotation_sets)>0:
                 annotation_set = self.get_annotation_set()
                 annotation_set_id = annotation_set.id
-                
+
         temp_path, list_of_classes = create_tempfile(annotations)
 
-         
+
         if create_new_annotation_set or (not annotation_set_id):
             n_annotation_sets = len(self.annotation_sets())
             self.create_annotation_set(annotation_task=annotations[0].task, name='my_ann_set_{}'.format(n_annotation_sets+1),
                                        classes = list_of_classes, path_to_annotation_file = temp_path)
-            
+
         else:
-            self.add_data(annotation_task = annotation_set.task, annotation_set_id =annotation_set.id, 
+            self.add_data(annotation_task = annotation_set.task, annotation_set_id =annotation_set.id,
                           paths_to_upload = [temp_path])
-        
+
         #TODO ALR: removing the temp_path doesn't work on Windows, hence the try except as a temp fix
 
         try:
             os.remove(temp_path)
         except:
             pass
-        
+
     def export_annotations(
         self,
         annotation_set_id: int = None,
@@ -318,7 +318,7 @@ class Dataset:
         """
         if not annotation_set_id:
             return self.default_annotation_set()
-        
+
         annotation_set = self.sdk.get_annotation_set(annotation_set_id)
         if annotation_set and annotation_set.dataset_id == self.id:
             return annotation_set
@@ -327,17 +327,17 @@ class Dataset:
 
     def default_annotation_set(self) -> AnnotationSet:
         """
-        If the dataset has only one annotation set, it returns that annotation set. 
+        If the dataset has only one annotation set, it returns that annotation set.
         Otherwise, it raises an exception.
         """
         annotation_sets = self.annotation_sets()
-        
+
         if len(annotation_sets)>1:
             raise Exception('Define which annotation set you want to use. ' + self.__str__() + ' has ' + str(len(annotation_sets)) + ' annotation sets. You can see them with `my_dataset.annotation_sets()`')
-            
+
         elif len(annotation_sets) ==0:
             raise Exception(self.__str__() + " doesn't have any annotations. You can check the list of annotation sets with `my_dataset.annotation_sets()`")
-            
+
         return annotation_sets[0]
 
     def get_annotation_statistics(self, annotation_set_id: int = None):
@@ -371,8 +371,7 @@ class Dataset:
     def classes(self, annotation_set_id: int = None) -> List[str]:
         """
         Lists all the classes within the dataset
-        # ALR TODO: if user doens't specify id, and there is >1 sets, get_annotation_set raises an error. Wouldn't it be better if the error was raised from inside this calss?
-        
+
         Args:
              annotation_set_id: annotation set id. If not specified the default annotation set is considered.
 
@@ -409,10 +408,10 @@ class Dataset:
 
         Returns:
             List[:class:`remo.Image`]
-            
+
         Example::
             my_dataset.images()
-            
+
         """
         return self.sdk.list_dataset_images(self.id, limit=limit, offset=offset)
 
@@ -428,13 +427,13 @@ class Dataset:
         Returns:
             :class:`remo.Image`
         """
-        #TODO ALR: do we need to raise an error if no image is found?  
+        #TODO ALR: do we need to raise an error if no image is found?
         #TODO ALR: we have a sdk.get_image by img_id. Should we implement get_image by img_name in the server for faster processing?
-        
+
         if (img_filename) and (img_id):
             raise Exception("You passed both img_filename and img_id. Pass only one of the two")
-        
-        
+
+
         if img_filename:
             list_of_images = self.images()
             for i_image in list_of_images:
@@ -442,17 +441,17 @@ class Dataset:
                     return i_image
         elif img_id:
             return self.sdk.get_image(img_id)
-       
+
     def delete(self):
         """
         Deletes dataset
         """
         self.sdk.delete_dataset(self.id)
-    
+
     def search(self, classes=None, task: str = None):
         """
         Given a list of classes and annotation task, it returns a list of all the images with mathcing annotations
-        
+
         Args:
             classes: string or list of strings - search for images which match all given classes
             task: annotation task. See also: :class:`remo.task`
