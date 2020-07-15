@@ -788,7 +788,7 @@ class SDK:
                class_encoding: path to class_encoding file
 
         Returns: 
-                CSV of Annotations: CSV
+                csv_annotation_path: string, path to the generated CSV annotation file
         """
         classes = [d.name for d in os.scandir(path_to_data_folder) if d.is_dir()]
         im_dict = {}
