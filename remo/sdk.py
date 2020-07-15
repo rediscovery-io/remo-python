@@ -767,7 +767,7 @@ class SDK:
         """
         Creates a CSV annotation file for image classification tasks, where images are stored in folders with names matching the labels of the images. The CSV file is saved in the same input directory where images are stored. 
         Example of data structure for a dog / cat dataset: 
-              - training_data
+              - cats_and_dogs
                   - dog
                      - img1.jpg
                      - img2.jpg
