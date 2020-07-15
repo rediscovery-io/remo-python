@@ -778,7 +778,6 @@ class SDK:
                      - ...
             
         Example::
-            # Unzip the file provided in the the following URL
             # Download and unzip this sample dataset: s-3.s3-eu-west-1.amazonaws.com/cats_and_dogs.zip
             data_path = "cats_and_dogs"
             remo.generate_annotations_from_folders(path_to_data_folder=data_path)
