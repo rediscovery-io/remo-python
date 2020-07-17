@@ -1,7 +1,7 @@
 import os
 import time
 from typing import List
-
+import csv
 from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
 from .api import API
 
@@ -799,17 +799,21 @@ class SDK:
         Returns: 
                 csv_annotation_path: string, path to the generated CSV annotation file
         """
+        
         classes = [d.name for d in os.scandir(path_to_data_folder) if d.is_dir()]
         im_dict = {}
-        im_dict["file_name"] = "class_name"
         for class_name in classes:
             im_list = os.listdir(os.path.join(path_to_data_folder, class_name))
             for im in im_list:
-                im_dict[os.path.join(os.path.abspath(path_to_data_folder), class_name, im)] = class_name
+                im_dict[im] = class_name
 
         csv_annotation_path = os.path.join(path_to_data_folder, "annotations.csv")
-        with open(csv_annotation_path , "w") as f:
-            for key in im_dict.keys():
-                f.write("%s, %s\n" % (key, im_dict[key]))
+        with open(csv_annotation_path, 'w', newline='') as csvfile:
+            fieldnames = ["file_name", "class_name"]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            writer.writeheader()
+            for key in im_dict:
+                writer.writerow({'file_name': key, 'class_name': im_dict[key]})
         
-        return csv_annotation_path
+        return csv_annotation_path  
