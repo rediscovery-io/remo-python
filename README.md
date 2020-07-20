@@ -62,6 +62,12 @@ For anything else, you can write on our <a href="https://support.remo.ai" target
 
 <br/>
 
+## What are we working on next
+
+- Tighter integration with PyTorch
+- Ability to split datasets in train vs test
+- Ability to store and inspect models' performance in remo
+
 ## For contributors
 
 The library is organized in 3 main layers:
