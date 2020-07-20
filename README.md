@@ -2,7 +2,9 @@
 <img src="https://github.com/rediscovery-io/remo-python/blob/master/img/remo_normal.png" width="200">
 
 # Welcome to remo
-This the open source repository for remo python library.
+[![PyPI version](https://badge.fury.io/py/remo-python.svg)](https://badge.fury.io/py/remo-python)
+
+This the open source repository for remo python library. 
 
 Remo is an open-access web-application for managing and visualising images and annotations for Computer Vision. 
 
