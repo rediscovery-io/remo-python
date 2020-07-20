@@ -3,7 +3,7 @@ cleanup:
 	rm -rf build dist remo_sdk.egg-info
 
 wheel: cleanup
-	REMO_SKIP_SDK_INIT="True" python setup.py sdist bdist_wheel
+	python setup.py sdist bdist_wheel
 
 publish: wheel
 	twine upload dist/*
