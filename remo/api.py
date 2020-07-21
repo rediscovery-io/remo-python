@@ -228,7 +228,7 @@ class API(BaseAPI):
     ):
 
         # files to upload
-        files = FileResolver(files_to_upload, annotation_task is not None).resolve()
+        files = FileResolver(files_to_upload, annotation_task or annotation_set_id).resolve()
         groups = self.split_files_by_size(files)
         status = UploadStatus(len(files))
         with ThreadPoolExecutor(1) as ex:
