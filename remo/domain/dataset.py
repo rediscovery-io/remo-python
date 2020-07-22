@@ -27,10 +27,11 @@ class Dataset:
         self.n_images = quantity
 
     def __str__(self):
-        return "Dataset {id} - '{name}'".format(id=self.id, name=self.name)
+        
+        return "Dataset {id:2d} - {name:5s} - {n_images} images".format(id=self.id, name="'" + self.name + "'", n_images = self.n_images)
 
     def __repr__(self):
-        return self.__str__() + ' repr'
+        return self.__str__()
     
     def info(self):
         """
