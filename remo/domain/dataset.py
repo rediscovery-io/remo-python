@@ -30,7 +30,24 @@ class Dataset:
         return "Dataset {id} - '{name}'".format(id=self.id, name=self.name)
 
     def __repr__(self):
-        return self.__str__()
+        return self.__str__() + ' repr'
+    
+    def info(self):
+        """
+        Prints basic info about the dataset:
+        
+        - Dataset name
+        - Dataset ID
+        - Number of images contained in the dataset
+        - Number of annotation sets contained in the dataset
+
+        """
+        my_info = 'Dataset name: ' + self.name
+        my_info = my_info + '\nDataset ID: ' + str(self.id)
+        my_info = my_info + '\n# Images: ' + str(self.n_images)
+        my_info = my_info + '\n# Annotation Sets: ' + str(len(self.annotation_sets()))
+        print(my_info)
+
 
     def add_data(
         self,
