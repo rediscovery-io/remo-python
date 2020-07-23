@@ -28,7 +28,7 @@ class Dataset:
 
     def __str__(self):
         
-        return "Dataset {id:2d} - {name:5s} - {n_images:,} images".format(id=self.id, name="'" + self.name + "'", n_images = self.n_images)
+        return "Dataset {id:2d} - {name:5s} - {n_images:,} images".format(id=self.id, name="'{}'".format(self.name), n_images = self.n_images)
 
     def __repr__(self):
         return self.__str__()
@@ -43,11 +43,10 @@ class Dataset:
         - Number of annotation sets contained in the dataset
 
         """
-        my_info = 'Dataset name: ' + self.name
-        my_info = my_info + '\nDataset ID: ' + str(self.id)
-        my_info = my_info + '\n# Images: ' + str(self.n_images)
-        my_info = my_info + '\n# Annotation Sets: ' + str(len(self.annotation_sets()))
-        print(my_info)
+        print("""Dataset name: {name}
+Dataset ID: {id}
+# Images: {n_images}
+# Annotation Sets: {n_annotation_sets}""".format(name=self.name, id=self.id, n_images=self.n_images, n_annotation_sets=len(self.annotation_sets()))
 
 
     def add_data(
