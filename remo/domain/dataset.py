@@ -1,5 +1,5 @@
 import os
-from typing import List, TypeVar, Callable
+from typing import List, TypeVar
 
 from .annotation import Annotation
 from .image import Image
@@ -27,12 +27,13 @@ class Dataset:
         self.n_images = quantity
 
     def __str__(self):
-        
-        return "Dataset {id:2d} - {name:5s} - {n_images:,} images".format(id=self.id, name="'{}'".format(self.name), n_images = self.n_images)
+        return "Dataset {id:2d} - {name:5s} - {n_images:,} images".format(
+            id=self.id, name="'{}'".format(self.name), n_images=self.n_images
+        )
 
     def __repr__(self):
         return self.__str__()
-    
+
     def info(self):
         """
         Prints basic info about the dataset:
@@ -43,11 +44,13 @@ class Dataset:
         - Number of annotation sets contained in the dataset
 
         """
-        print("""Dataset name: {name}
+        info = """Dataset name: {name}
 Dataset ID: {id}
-# Images: {n_images}
-# Annotation Sets: {n_annotation_sets}""".format(name=self.name, id=self.id, n_images=self.n_images, n_annotation_sets=len(self.annotation_sets()))
-
+Images: {n_images}
+Annotation Sets: {n_annotation_sets}""".format(
+            id=self.id, name=self.name, n_images=self.n_images, n_annotation_sets=len(self.annotation_sets())
+        )
+        print(info)
 
     def add_data(
         self,
@@ -58,7 +61,7 @@ Dataset ID: {id}
         folder_id: int = None,
         annotation_set_id: int = None,
         class_encoding=None,
-        wait_for_complete=True
+        wait_for_complete=True,
     ) -> dict:
         """
         Adds images and/or annotations to the dataset.
@@ -132,7 +135,7 @@ Dataset ID: {id}
             folder_id=folder_id,
             annotation_set_id=annotation_set_id,
             class_encoding=class_encoding,
-            wait_for_complete=wait_for_complete
+            wait_for_complete=wait_for_complete,
         )
 
     def fetch(self):
@@ -151,7 +154,12 @@ Dataset ID: {id}
         """
         return self.sdk.list_annotation_sets(self.id)
 
-    def add_annotations(self, annotations: List[Annotation], annotation_set_id: int = None, create_new_annotation_set: bool = False):
+    def add_annotations(
+        self,
+        annotations: List[Annotation],
+        annotation_set_id: int = None,
+        create_new_annotation_set: bool = False,
+    ):
         """
         Fast upload of annotations to the Dataset.
 
@@ -190,29 +198,37 @@ Dataset ID: {id}
 
         """
         if annotation_set_id and create_new_annotation_set:
-            raise Exception("You passed an annotation set but also set create_new_annotation_set = True. You can't have both.")
+            raise Exception(
+                "You passed an annotation set but also set create_new_annotation_set = True. You can't have both."
+            )
 
         if annotation_set_id:
             annotation_set = self.get_annotation_set(annotation_set_id)
         else:
             annotation_sets = self.annotation_sets()
-            if len(annotation_sets)>0:
+            if len(annotation_sets) > 0:
                 annotation_set = self.get_annotation_set()
                 annotation_set_id = annotation_set.id
 
         temp_path, list_of_classes = create_tempfile(annotations)
 
-
         if create_new_annotation_set or (not annotation_set_id):
             n_annotation_sets = len(self.annotation_sets())
-            self.create_annotation_set(annotation_task=annotations[0].task, name='my_ann_set_{}'.format(n_annotation_sets+1),
-                                       classes = list_of_classes, path_to_annotation_file = temp_path)
+            self.create_annotation_set(
+                annotation_task=annotations[0].task,
+                name='my_ann_set_{}'.format(n_annotation_sets + 1),
+                classes=list_of_classes,
+                path_to_annotation_file=temp_path,
+            )
 
         else:
-            self.add_data(annotation_task = annotation_set.task, annotation_set_id =annotation_set.id,
-                          paths_to_upload = [temp_path])
+            self.add_data(
+                annotation_task=annotation_set.task,
+                annotation_set_id=annotation_set.id,
+                paths_to_upload=[temp_path],
+            )
 
-        #TODO ALR: removing the temp_path doesn't work on Windows, hence the try except as a temp fix
+        # TODO ALR: removing the temp_path doesn't work on Windows, hence the try except as a temp fix
 
         try:
             os.remove(temp_path)
@@ -321,7 +337,6 @@ Dataset ID: {id}
 
         return annotation_set
 
-
     def get_annotation_set(self, annotation_set_id: int = None) -> AnnotationSet:
         """
         Retrieves annotation set with given id.
@@ -340,7 +355,11 @@ Dataset ID: {id}
         if annotation_set and annotation_set.dataset_id == self.id:
             return annotation_set
         else:
-            raise Exception('Annotation set with ID = {} is not part of dataset {}. You can check the list of annotation sets in your dataset using dataset.annotation_sets()'.format(annotation_set_id, self.__str__()))
+            raise Exception(
+                'Annotation set with ID = {} is not part of dataset {}. You can check the list of annotation sets in your dataset using dataset.annotation_sets()'.format(
+                    annotation_set_id, self.__str__()
+                )
+            )
 
     def default_annotation_set(self) -> AnnotationSet:
         """
@@ -349,11 +368,20 @@ Dataset ID: {id}
         """
         annotation_sets = self.annotation_sets()
 
-        if len(annotation_sets)>1:
-            raise Exception('Define which annotation set you want to use. ' + self.__str__() + ' has ' + str(len(annotation_sets)) + ' annotation sets. You can see them with `my_dataset.annotation_sets()`')
+        if len(annotation_sets) > 1:
+            raise Exception(
+                'Define which annotation set you want to use. '
+                + self.__str__()
+                + ' has '
+                + str(len(annotation_sets))
+                + ' annotation sets. You can see them with `my_dataset.annotation_sets()`'
+            )
 
-        elif len(annotation_sets) ==0:
-            raise Exception(self.__str__() + " doesn't have any annotations. You can check the list of annotation sets with `my_dataset.annotation_sets()`")
+        elif len(annotation_sets) == 0:
+            raise Exception(
+                self.__str__()
+                + " doesn't have any annotations. You can check the list of annotation sets with `my_dataset.annotation_sets()`"
+            )
 
         return annotation_sets[0]
 
@@ -432,7 +460,7 @@ Dataset ID: {id}
         """
         return self.sdk.list_dataset_images(self.id, limit=limit, offset=offset)
 
-    def image(self, img_filename = None, img_id = None) -> Image:
+    def image(self, img_filename=None, img_id=None) -> Image:
         """
         Returns the :class:`remo.Image` with matching img_filename or img_id.
         Pass either img_filename or img_id.
@@ -444,12 +472,11 @@ Dataset ID: {id}
         Returns:
             :class:`remo.Image`
         """
-        #TODO ALR: do we need to raise an error if no image is found?
-        #TODO ALR: we have a sdk.get_image by img_id. Should we implement get_image by img_name in the server for faster processing?
+        # TODO ALR: do we need to raise an error if no image is found?
+        # TODO ALR: we have a sdk.get_image by img_id. Should we implement get_image by img_name in the server for faster processing?
 
         if (img_filename) and (img_id):
             raise Exception("You passed both img_filename and img_id. Pass only one of the two")
-
 
         if img_filename:
             list_of_images = self.images()
