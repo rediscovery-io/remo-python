@@ -240,6 +240,9 @@ class SDK:
         last_msg = ''
         while True:
             session = self.api.get_upload_session_status(session_id)
+            if not session:
+                raise Exception('Something went wrong, got empty session from server')
+
             status = session.get('status')
             substatus = session.get('substatus')
             uploaded = session['uploaded']['total']
