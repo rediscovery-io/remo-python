@@ -276,7 +276,7 @@ class API(BaseAPI):
         class_encoding=None,
         session_id: str = None
     ):
-        payload = {"local_files": [os.path.abspath(i) for i in local_files if os.path.exists(i)]}
+        payload = {"local_files": [os.path.abspath(path) for path in local_files if os.path.exists(path)]}
         if annotation_task:
             payload['annotation_task'] = annotation_task
         if folder_id:
