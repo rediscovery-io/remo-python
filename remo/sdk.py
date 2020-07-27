@@ -403,7 +403,7 @@ class SDK:
         Args:
             annotation_set_id: annotation set id
             annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
-            full_path: uses full image path (e.g. local path), can be one of ['true', 'false'], default='false'
+            full_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
             export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
         Returns:
@@ -414,7 +414,7 @@ class SDK:
             annotation_format=annotation_format,
             export_coordinates=export_coordinates,
             full_path=full_path,
-            export_tags=str(export_tags).lower()
+            export_tags=export_tags
         )
 
     def export_annotations_to_file(
@@ -423,7 +423,7 @@ class SDK:
         annotation_set_id: int,
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
-        full_path: str = 'true',
+        full_path: bool = True,
         export_tags: bool = True
     ):
         """
@@ -433,7 +433,7 @@ class SDK:
             output_file: output file to save
             annotation_set_id: annotation set id
             annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
-            full_path: uses full image path (e.g. local path), can be one of ['true', 'false'], default='false'
+            full_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
             export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
         """
@@ -442,7 +442,7 @@ class SDK:
             annotation_format=annotation_format,
             export_coordinates=export_coordinates,
             full_path=full_path,
-            export_tags=str(export_tags).lower()
+            export_tags=export_tags
         )
         self._save_to_file(content, output_file)
 
