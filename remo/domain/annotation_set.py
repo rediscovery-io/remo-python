@@ -115,16 +115,16 @@ class AnnotationSet:
         self.sdk.add_annotation(self.id, image_id, annotation)
 
     def export_annotations(
-        self, annotation_format: str = 'json', export_coordinates: str = 'pixel', full_path: str = 'true'
+        self, annotation_format: str = 'json', export_coordinates: str = 'pixel', full_path: bool = True, export_tags: bool = True
     ):
         """
         Exports annotations in a given format
 
         Args:
             annotation_format: choose format from this list ['json', 'coco', 'csv']
-            full_path: uses full image path (e.g. local path), can be one of ['true', 'false'], default='false'
+            full_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
-
+            export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
         Returns:
             annotation file content
         """
@@ -133,6 +133,7 @@ class AnnotationSet:
             annotation_format=annotation_format,
             export_coordinates=export_coordinates,
             full_path=full_path,
+            export_tags=export_tags
         )
 
     def export_annotations_to_file(
@@ -140,7 +141,8 @@ class AnnotationSet:
         output_file: str,
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
-        full_path: str = 'true',
+        full_path: bool = True,
+        export_tags: bool = True
     ):
         """
         Exports annotations in given format and save to output file
@@ -148,8 +150,9 @@ class AnnotationSet:
         Args:
             output_file: output file to save
             annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
-            full_path: uses full image path (e.g. local path), can be one of ['true', 'false'], default='false'
+            full_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
+            export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
         """
         self.sdk.export_annotations_to_file(
             output_file,
@@ -157,6 +160,7 @@ class AnnotationSet:
             annotation_format=annotation_format,
             full_path=full_path,
             export_coordinates=export_coordinates,
+            export_tags=export_tags
         )
 
     def classes(self) -> List[str]:
