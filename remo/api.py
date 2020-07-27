@@ -358,7 +358,7 @@ class API(BaseAPI):
         return self.get(url).json()
 
     def export_annotations(
-        self, annotation_set_id: int, annotation_format='json', export_coordinates='pixel', full_path='true', export_tags: bool = True,
+        self, annotation_set_id: int, annotation_format='json', export_coordinates='pixel', full_path=True, export_tags: bool = True,
     ) -> bytes:
         """
         Exports annotations in given format
