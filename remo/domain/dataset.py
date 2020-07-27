@@ -241,6 +241,7 @@ Annotation Sets: {n_annotation_sets}""".format(
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
         full_path: str = 'true',
+        export_tags: bool = True
     ) -> bytes:
         """
         Export annotations for a given annotation set
@@ -250,7 +251,8 @@ Annotation Sets: {n_annotation_sets}""".format(
             annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
             full_path: uses full image path (e.g. local path), can be one of ['true', 'false'], default='false'
-
+            export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
+            
         Returns:
             annotation file content
         """
@@ -260,6 +262,7 @@ Annotation Sets: {n_annotation_sets}""".format(
                 annotation_format=annotation_format,
                 export_coordinates=export_coordinates,
                 full_path=full_path,
+                export_tags=str(export_tags).lower()
             )
 
         print('ERROR: annotation set not defined')
@@ -271,6 +274,7 @@ Annotation Sets: {n_annotation_sets}""".format(
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
         full_path: str = 'true',
+        export_tags: bool = True
     ):
         """
         Exports annotations in given format and save to output file
@@ -281,6 +285,7 @@ Annotation Sets: {n_annotation_sets}""".format(
             annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
             full_path: uses full image path (e.g. local path), can be one of ['true', 'false'], default='false'
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
+            export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
@@ -290,6 +295,7 @@ Annotation Sets: {n_annotation_sets}""".format(
                 annotation_format=annotation_format,
                 full_path=full_path,
                 export_coordinates=export_coordinates,
+                export_tags=str(export_tags).lower()
             )
         else:
             print('ERROR: annotation set not defined')
