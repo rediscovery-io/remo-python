@@ -261,8 +261,8 @@ Annotation Sets: {n_annotation_sets}""".format(
             return annotation_set.export_annotations(
                 annotation_format=annotation_format,
                 export_coordinates=export_coordinates,
-                full_path=full_path,
-                export_tags=export_tags
+                full_path=full_path
+                export_tags=str(export_tags).lower()
             )
 
         print('ERROR: annotation set not defined')
@@ -295,7 +295,7 @@ Annotation Sets: {n_annotation_sets}""".format(
                 annotation_format=annotation_format,
                 full_path=full_path,
                 export_coordinates=export_coordinates,
-                export_tags=export_tags
+                export_tags=str(export_tags).lower()
             )
         else:
             print('ERROR: annotation set not defined')

@@ -377,7 +377,7 @@ class API(BaseAPI):
             annotation_format=annotation_format,
             export_coordinates=export_coordinates,
             full_path=full_path,
-            export_tags=export_tags
+            export_tags=str(export_tags).lower()
         )
         return self.get(url).content
 
