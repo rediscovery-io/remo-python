@@ -2,6 +2,8 @@ import os
 import time
 from typing import List
 import csv
+import math
+import glob
 from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
 from .api import API
 
@@ -824,4 +826,51 @@ class SDK:
             for key in im_dict:
                 writer.writerow({'file_name': key, 'class_name': im_dict[key]})
         
-        return csv_annotation_path  
+        return csv_annotation_path
+
+
+def train_test_valid_split(self, path_to_data_folder, train=0.8, test=0.1, valid=0.1):
+    """
+        Splits a given dataset and its annotations into training, testing and validation set based on percentage.
+            
+        Example::
+            # Download and unzip this sample dataset: https://s-3.s3-eu-west-1.amazonaws.com/flowers.zip
+            data_path = "./flowers"
+            remo.train_test_valid_split(path_to_data_folder=data_path, train=0.8, test=0.1, valid=0.1)
+            
+        Args: 
+               path_to_data_folder: path to the source folder where data is stored
+               train: Percentage of the dataset to be tagged as train [0, 1]
+               test: Percentage of the dataset to be tagged as test [0, 1]
+               valid: Percentage of the dataset to be tagged as valid [0, 1]
+               
+
+        Returns: 
+                tag_path: string, path to the generated train_test_valid_split CSV file
+        """
+    assert train + valid + test == 1
+
+    im_list = []
+    types = ("*.jpg", "*jpeg", "*.png", "*.tif")
+    for ext in types:
+        im_list.extend([os.path.basename(i) for i in glob.glob(str(folder_path)+"/**/"+ext, recursive=True)])
+    im_list = random.sample(im_list, len(im_list))
+    train_idx = math.floor(len(im_list)*train)  
+    valid_idx = train_idx + math.ceil(len(im_list)*valid)
+    test_idx = valid_idx + math.ceil(len(im_list)*test)
+
+    split = {"train" : im_list[0:train_idx], "valid" : im_list[train_idx:valid_idx], "test" : im_list[valid_idx:test_idx]}
+    tag_dict = {}
+    for o in split:
+        curr_list = split[o]
+        for i in curr_list:
+            tag_dict[i] = o
+    tags_csv_path = os.path.join(folder_path, "train_test_valid_split.csv")
+    with open(tags_csv, 'w', newline='') as csvfile:
+        fieldnames = ["file_name", "tag"]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for key in tag_dict:
+            writer.writerow({'file_name': key, 'tag' : tag_dict[key]})
+
+    return tags_csv_path

@@ -115,7 +115,7 @@ class AnnotationSet:
         self.sdk.add_annotation(self.id, image_id, annotation)
 
     def export_annotations(
-        self, annotation_format: str = 'json', export_coordinates: str = 'pixel', full_path: bool = True, export_tags: book = True
+        self, annotation_format: str = 'json', export_coordinates: str = 'pixel', full_path: bool = True, export_tags: bool = True
     ):
         """
         Exports annotations in a given format
