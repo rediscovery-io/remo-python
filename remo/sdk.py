@@ -830,53 +830,54 @@ class SDK:
         return csv_annotation_path
 
 
-    def train_test_valid_split(self, path_to_data_folder: str, train: float=0.8, test: float =0.1, valid: float=0.1):
+    def generate_tags_from_folders(self, tags_dictionary : dict):
         """
-        Splits a given dataset and its annotations into training, testing and validation set based on percentage.
-            
+        Creates a CSV file for tags corresponding to an image in the dataset.
+        The CSV file is saved in the present working directory.
+        Example of data structure for a dog / cat dataset: 
+              - images
+                  - 1
+                     - img1.jpg
+                     - img2.jpg
+                     - ...
+                  - 2
+                     - img199.jpg
+                     - img200.jpg
+                     - ...
         Example::
-            # Download and unzip this sample dataset: https://s-3.s3-eu-west-1.amazonaws.com/flowers.zip
-            data_path = "./flowers"
-            remo.train_test_valid_split(path_to_data_folder=data_path, train=0.8, test=0.1, valid=0.1)
+            # Download and unzip this sample dataset: https://s-3.s3-eu-west-1.amazonaws.com/small_flowers.zip
+            import glob
+	    import os
+	    import random
+            im_list = [os.path.basename(i) for i in glob.glob(str("./small_flowers/images")+"/**/*.jpg", recursive=True)])
+            im_list = random.sample(im_list, len(im_list))
+            tags_dict = {"train" : im_list[0:121], "test" : im_list[121:131], "valid" : im_list[131:141]}
+            remo.generate_tags_from_folders(tags_dict)
             
         Args: 
-                path_to_data_folder: path to the source folder where data is stored
-                train: Percentage of the dataset to be tagged as train [0, 1]
-                test: Percentage of the dataset to be tagged as test [0, 1]
-                valid: Percentage of the dataset to be tagged as valid [0, 1]
-                
+               tags_dictionary: dictionary where the keys are the tag and the value is a list of path to files/
 
         Returns: 
-                tag_path: string, path to the generated train_test_valid_split CSV file
+                csv_tags_path: string, path to the generated CSV tags file
         """
-        assert train + valid + test == 1
+        
+        split_dict = {}
 
-        im_list = []
-        types = ("*.jpg", "*jpeg", "*.png", "*.tif")
-        for ext in types:
-            im_list.extend([os.path.basename(i) for i in glob.glob(str(path_to_data_folder)+"/**/"+ext, recursive=True)])
+        for tag in tags_dictionary:
+            for _ in tags_dictionary[tag]:
+                if os.path.isdir(_):
+                    im_list = os.listdir(_)
+                    for im in im_list:
+                        split_dict[im] = tag
+                else:
+                    split_dict[os.path.basename(_)] = tag
+        csv_tags_path = 'train_test_valid_split.csv'
 
-        im_list = random.sample(im_list, len(im_list))
-        train_idx = math.floor(len(im_list)*train)  
-        valid_idx = train_idx + math.ceil(len(im_list)*valid)
-        test_idx = valid_idx + math.ceil(len(im_list)*test)
-
-        split = {"train" : im_list[0:train_idx], "valid" : im_list[train_idx:valid_idx], "test" : im_list[valid_idx:test_idx]}
-
-        tag_dict = {}
-
-        for o in split:
-            curr_list = split[o]
-            for i in curr_list:
-                tag_dict[i] = o
-
-        tags_csv_path = os.path.join(path_to_data_folder, "train_test_valid_split.csv")
-
-        with open(tags_csv_path, 'w', newline='') as csvfile:
+        with open(csv_tags_path, 'w', newline='') as csvfile:
             fieldnames = ["file_name", "tag"]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-            for key in tag_dict:
-                writer.writerow({'file_name': key, 'tag' : tag_dict[key]})
-
-        return tags_csv_path
+            for key in split_dict:
+                writer.writerow({'file_name': key, 'tag' : split_dict[key]})
+        
+        return csv_tags_path
