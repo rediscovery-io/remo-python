@@ -855,7 +855,7 @@ class SDK:
             remo.generate_tags_from_folders(tags_dict)
             
         Args: 
-               tags_dictionary: dictionary where the keys are the tag and the value is a list of path to files/
+               tags_dictionary: dictionary where the keys are the tag and the value is a list of paths to images/folder of images.
 
         Returns: 
                 csv_tags_path: string, path to the generated CSV tags file
