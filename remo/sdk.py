@@ -2,6 +2,9 @@ import os
 import time
 from typing import List
 import csv
+import math
+import glob
+import random
 from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
 from .api import API
 
@@ -824,4 +827,57 @@ class SDK:
             for key in im_dict:
                 writer.writerow({'file_name': key, 'class_name': im_dict[key]})
         
-        return csv_annotation_path  
+        return csv_annotation_path
+
+
+    def generate_tags_from_folders(self, tags_dictionary : dict):
+        """
+        Creates a CSV file for tags corresponding to an image in the dataset.
+        The CSV file is saved in the present working directory.
+        Example of data structure for a dog / cat dataset: 
+              - images
+                  - 1
+                     - img1.jpg
+                     - img2.jpg
+                     - ...
+                  - 2
+                     - img199.jpg
+                     - img200.jpg
+                     - ...
+        Example::
+            # Download and unzip this sample dataset: https://s-3.s3-eu-west-1.amazonaws.com/small_flowers.zip
+            import glob
+	    import os
+	    import random
+            im_list = [os.path.basename(i) for i in glob.glob(str("./small_flowers/images")+"/**/*.jpg", recursive=True)])
+            im_list = random.sample(im_list, len(im_list))
+            tags_dict = {"train" : im_list[0:121], "test" : im_list[121:131], "valid" : im_list[131:141]}
+            remo.generate_tags_from_folders(tags_dict)
+            
+        Args: 
+               tags_dictionary: dictionary where the keys are the tag and the value is a list of paths to images/folder of images.
+
+        Returns: 
+                csv_tags_path: string, path to the generated CSV tags file
+        """
+        
+        split_dict = {}
+
+        for tag in tags_dictionary:
+            for _ in tags_dictionary[tag]:
+                if os.path.isdir(_):
+                    im_list = os.listdir(_)
+                    for im in im_list:
+                        split_dict[im] = tag
+                else:
+                    split_dict[os.path.basename(_)] = tag
+        csv_tags_path = 'train_test_valid_split.csv'
+
+        with open(csv_tags_path, 'w', newline='') as csvfile:
+            fieldnames = ["file_name", "tag"]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for key in split_dict:
+                writer.writerow({'file_name': key, 'tag' : split_dict[key]})
+        
+        return csv_tags_path
