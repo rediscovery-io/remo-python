@@ -34,6 +34,9 @@ class SDK:
         self.viewer = None
         self.set_viewer(viewer)
 
+    def set_public_url(self, public_url: str):
+        self.api.set_public_url(public_url)
+
     def set_viewer(self, viewer: str):
         """
         Allows to choose one of available viewers
@@ -780,7 +783,7 @@ class SDK:
         return self._view(frontend.annotation_set_insights.format(annotation_set_id))
 
     def _view(self, url, *args, **kwargs):
-        return self.viewer.browse(self.api.url(url, *args, **kwargs))
+        return self.viewer.browse(self.api.public_url(url, *args, **kwargs))
     
     def generate_annotations_from_folders(self, path_to_data_folder: str):
         """
