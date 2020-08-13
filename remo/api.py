@@ -43,6 +43,7 @@ class BaseAPI:
     def __init__(self, server, email, password):
         self.server = server
         self.token = None
+        self._public_url = ''
         self._login(email, password)
 
     def _login(self, email, password):
@@ -63,6 +64,13 @@ class BaseAPI:
         if not self._is_authenticated():
             raise Exception('Not authenticated')
         return {'Authorization': 'Token {}'.format(self.token)}
+
+    def set_public_url(self, public_url: str):
+        self._public_url = public_url
+
+    def public_url(self, endpoint, *args, **kwargs):
+        url = self._public_url if self._public_url else self.server
+        return self._build_url(url, endpoint, *args, **kwargs)
 
     def url(self, endpoint, *args, **kwargs):
         return self._build_url(self.server, endpoint, *args, **kwargs)
