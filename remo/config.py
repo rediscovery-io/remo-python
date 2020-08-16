@@ -5,11 +5,11 @@ from pathlib import Path
 REMO_HOME_ENV = 'REMO_HOME'
 
 
-def REMO_HOME():
+def get_remo_home():
     return os.getenv(REMO_HOME_ENV, str(Path.home().joinpath('.remo')))
 
 
-def set_REMO_HOME(path: str):
+def set_remo_home(path: str):
     if not os.path.exists(path):
         os.makedirs(path)
     os.environ[REMO_HOME_ENV] = path
@@ -38,9 +38,12 @@ class Config:
         return '{}:{}'.format(self.server, self.port)
 
     @staticmethod
-    def load(config_path: str = str(os.path.join(REMO_HOME(), 'remo.json'))):
+    def load(config_path: str = None):
+        if not config_path:
+            config_path = str(os.path.join(get_remo_home(), 'remo.json'))
+
         if not os.path.exists(config_path):
-            return None
+            raise Exception(f'Config file not found, file {config_path} not exists')
 
         with open(config_path) as cfg_file:
             config = json.load(cfg_file)

@@ -6,7 +6,7 @@ from abc import abstractmethod, ABCMeta
 import webbrowser
 import uuid
 
-from remo.config import REMO_HOME
+from remo.config import get_remo_home
 
 
 class AbstractViewer(metaclass=ABCMeta):
@@ -86,7 +86,7 @@ class ElectronViewer(AbstractViewer):
         return '{} {}'.format(executable, ' '.join('--{}={}'.format(k, v) for k, v in kwargs.items() if v))
 
     def get_remo_path(self):
-        return str(os.path.join(REMO_HOME(), self.exe_path.get(platform.system())))
+        return str(os.path.join(get_remo_home(), self.exe_path.get(platform.system())))
 
 
 def factory(name: str):
