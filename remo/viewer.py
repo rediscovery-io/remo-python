@@ -3,9 +3,10 @@ import re
 import platform
 import subprocess
 from abc import abstractmethod, ABCMeta
-from pathlib import Path
 import webbrowser
 import uuid
+
+from remo.config import REMO_HOME
 
 
 class AbstractViewer(metaclass=ABCMeta):
@@ -67,7 +68,6 @@ class BrowserViewer(AbstractViewer):
 
 class ElectronViewer(AbstractViewer):
     exe_path = {'Linux': 'app/remo', 'Darwin': 'app/remo.app/Contents/MacOS/remo', 'Windows': 'app/remo.exe'}
-    REMO_HOME = os.getenv('REMO_HOME', str(Path.home().joinpath('.remo')))
     url_rxp = re.compile(r'(http[s]?://[.\w-]+)(:([0-9]+))?/?(.+)?')
 
     def browse(self, url):
@@ -86,7 +86,7 @@ class ElectronViewer(AbstractViewer):
         return '{} {}'.format(executable, ' '.join('--{}={}'.format(k, v) for k, v in kwargs.items() if v))
 
     def get_remo_path(self):
-        return str(os.path.join(self.REMO_HOME, self.exe_path.get(platform.system())))
+        return str(os.path.join(REMO_HOME(), self.exe_path.get(platform.system())))
 
 
 def factory(name: str):

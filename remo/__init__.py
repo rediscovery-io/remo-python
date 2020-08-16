@@ -5,7 +5,7 @@ from .version import __version__
 _sdk = None
 
 
-def connect(server: str = '', email: str = '', password: str = '', viewer: str = 'browser'):
+def connect(server: str = '', email: str = '', password: str = '', viewer: str = 'browser', remo_home: str = None):
     """
     Connect to a remo server.
     If no parameters are passed, it connects to a local running remo server. To connect to a remote remo, specify connection details.
@@ -15,7 +15,13 @@ def connect(server: str = '', email: str = '', password: str = '', viewer: str =
         email:  email address used for authentication
         password: password used for authentication
         (optional) viewer: viewer to use, one between 'browser', 'electron' and 'jupyter'
+        (optional) remo_home: location of remo home
     """
+
+    if remo_home:
+        from .config import set_REMO_HOME
+        set_REMO_HOME(remo_home)
+
     if not (server and email and password):
         from .config import Config
         config = Config.load()
