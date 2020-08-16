@@ -19,8 +19,8 @@ def connect(server: str = '', email: str = '', password: str = '', viewer: str =
     """
 
     if remo_home:
-        from .config import set_REMO_HOME
-        set_REMO_HOME(remo_home)
+        from .config import set_remo_home
+        set_remo_home(remo_home)
 
     if not (server and email and password):
         from .config import Config
