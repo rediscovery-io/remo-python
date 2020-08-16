@@ -2,7 +2,17 @@ import json
 import os
 from pathlib import Path
 
-REMO_HOME = os.getenv('REMO_HOME', str(Path.home().joinpath('.remo')))
+REMO_HOME_ENV = 'REMO_HOME'
+
+
+def REMO_HOME():
+    return os.getenv(REMO_HOME_ENV, str(Path.home().joinpath('.remo')))
+
+
+def set_REMO_HOME(path: str):
+    if not os.path.exists(path):
+        os.makedirs(path)
+    os.environ[REMO_HOME_ENV] = path
 
 
 class Config:
@@ -28,7 +38,7 @@ class Config:
         return '{}:{}'.format(self.server, self.port)
 
     @staticmethod
-    def load(config_path: str = str(os.path.join(REMO_HOME, 'remo.json'))):
+    def load(config_path: str = str(os.path.join(REMO_HOME(), 'remo.json'))):
         if not os.path.exists(config_path):
             return None
 
