@@ -830,10 +830,11 @@ class SDK:
         return csv_annotation_path
 
 
-    def generate_tags_from_folders(self, tags_dictionary : dict):
+    def generate_image_tags(self, tags_dictionary : dict):
         """
-        Creates a CSV file for tags corresponding to an image in the dataset.
-        The CSV file is saved in the present working directory.
+        Creates a CSV annotation file containing tags for a list of images, as defined in the tags_dictionary.
+        The CSV file is saved in the current working directory.
+        
         Example of data structure for a dog / cat dataset: 
               - images
                   - 1
@@ -847,15 +848,15 @@ class SDK:
         Example::
             # Download and unzip this sample dataset: https://s-3.s3-eu-west-1.amazonaws.com/small_flowers.zip
             import glob
-	    import os
-	    import random
+            import os
+            import random
             im_list = [os.path.basename(i) for i in glob.glob(str("./small_flowers/images")+"/**/*.jpg", recursive=True)])
             im_list = random.sample(im_list, len(im_list))
             tags_dict = {"train" : im_list[0:121], "test" : im_list[121:131], "valid" : im_list[131:141]}
             remo.generate_tags_from_folders(tags_dict)
             
         Args: 
-               tags_dictionary: dictionary where the keys are the tag and the value is a list of paths to images/folder of images.
+               tags_dictionary: dictionary where each key is a tags and the value is a List of image filenames (or foder paths containing images) to which we want to assign the tags.
 
         Returns: 
                 csv_tags_path: string, path to the generated CSV tags file
