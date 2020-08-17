@@ -21,4 +21,5 @@ doc/build
 # example datasets
 examples/small_flowers
 examples/small_flowers.zip
-examples/flowers_annotations.zip
+examples/open_images_sample_dataset
+examples/*.zip
