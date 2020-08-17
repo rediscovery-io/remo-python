@@ -830,33 +830,26 @@ class SDK:
         return csv_annotation_path
 
 
-    def generate_image_tags(self, tags_dictionary : dict):
+    def generate_image_tags(self, tags_dictionary : dict, output_file_path : str = './images_tags.csv'):
         """
-        Creates a CSV annotation file containing tags for a list of images, as defined in the tags_dictionary.
+        Creates a CSV annotation file associating tags to images, as defined in the tags_dictionary.
         The CSV file is saved in the current working directory.
         
-        Example of data structure for a dog / cat dataset: 
-              - images
-                  - 1
-                     - img1.jpg
-                     - img2.jpg
-                     - ...
-                  - 2
-                     - img199.jpg
-                     - img200.jpg
-                     - ...
+        Example of a dictionary: {'train': ['img1.jpg', 'img2.jpg'],'test': ['img3.jpg', 'img4.jpg'],'val': ['img5.jpg', 'img6.jpg']}
+ 
         Example::
             # Download and unzip this sample dataset: https://s-3.s3-eu-west-1.amazonaws.com/small_flowers.zip
             import glob
             import os
             import random
-            im_list = [os.path.basename(i) for i in glob.glob(str("./small_flowers/images")+"/**/*.jpg", recursive=True)])
+            im_list = [os.path.basename(i) for i in glob.glob(str('./small_flowers/images')+'/**/*.jpg', recursive=True)])
             im_list = random.sample(im_list, len(im_list))
-            tags_dict = {"train" : im_list[0:121], "test" : im_list[121:131], "valid" : im_list[131:141]}
-            remo.generate_tags_from_folders(tags_dict)
+            tags_dict = {'train' : im_list[0:121], 'test' : im_list[121:131], 'valid' : im_list[131:141]}
+            remo.generate_image_tags(tags_dict)
             
         Args: 
                tags_dictionary: dictionary where each key is a tags and the value is a List of image filenames (or foder paths containing images) to which we want to assign the tags.
+               output_file_path: location and filename where to store the file. Default: './images_tags.csv'
 
         Returns: 
                 csv_tags_path: string, path to the generated CSV tags file
@@ -872,13 +865,12 @@ class SDK:
                         split_dict[im] = tag
                 else:
                     split_dict[os.path.basename(_)] = tag
-        csv_tags_path = 'train_test_valid_split.csv'
 
-        with open(csv_tags_path, 'w', newline='') as csvfile:
+        with open(output_file_path, 'w', newline='') as csvfile:
             fieldnames = ["file_name", "tag"]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for key in split_dict:
                 writer.writerow({'file_name': key, 'tag' : split_dict[key]})
         
-        return csv_tags_path
+        return output_file_path
