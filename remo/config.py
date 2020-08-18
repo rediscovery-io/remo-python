@@ -3,16 +3,27 @@ import os
 from pathlib import Path
 
 REMO_HOME_ENV = 'REMO_HOME'
+default_remo_home = str(Path.home().joinpath('.remo'))
+default_colab_remo_home = '/gdrive/My Drive/RemoApp'
 
 
 def get_remo_home():
-    return os.getenv(REMO_HOME_ENV, str(Path.home().joinpath('.remo')))
+    for path in (os.getenv(REMO_HOME_ENV, default_remo_home), default_colab_remo_home):
+        if path and os.path.exists(path):
+            return path
 
 
 def set_remo_home(path: str):
-    if not os.path.exists(path):
-        os.makedirs(path)
+    os.makedirs(path, exist_ok=True)
     os.environ[REMO_HOME_ENV] = path
+
+
+def set_remo_home_from_default_remo_config() -> bool:
+    if os.path.exists(Config.default_path()):
+        config = Config.load(Config.default_path())
+        if config and config.remo_home:
+            set_remo_home(config.remo_home)
+            return True
 
 
 class Config:
@@ -22,7 +33,20 @@ class Config:
     This class is used to initialise various settings.
     #TODO: add description of how those are initiliased from code vs from config file
     """
-    __slots__ = ['port', 'server', 'user_name', 'user_email', 'user_password', 'viewer']
+
+    name = 'remo.json'
+    __slots__ = [
+        'port',
+        'server',
+        'user_name',
+        'user_email',
+        'user_password',
+        'viewer',
+        'uuid',
+        'public_url',
+        'remo_home',
+        'cloud_platform',
+    ]
     _default_port = 8123
     _default_server = 'http://localhost'
     _default_user_name = 'Admin User'
@@ -40,7 +64,7 @@ class Config:
     @staticmethod
     def load(config_path: str = None):
         if not config_path:
-            config_path = str(os.path.join(get_remo_home(), 'remo.json'))
+            config_path = str(os.path.join(get_remo_home(), Config.name))
 
         if not os.path.exists(config_path):
             raise Exception(f'Config file not found, file {config_path} not exists')
@@ -49,3 +73,13 @@ class Config:
             config = json.load(cfg_file)
 
         return Config(config)
+
+    @staticmethod
+    def default_path():
+        return Config.path(default_remo_home)
+
+    @staticmethod
+    def path(dir_path: str = None):
+        if not dir_path:
+            dir_path = get_remo_home()
+        return str(os.path.join(dir_path, Config.name))
