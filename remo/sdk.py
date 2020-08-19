@@ -265,10 +265,12 @@ class SDK:
             elif status == 'in progress':
                 msg = 'Processing data'
                 if substatus:
-                    msg = '{} - {}'.format(msg, substatus)
+                    msg = '\r{}'.format(substatus)
+                else:
+                    msg = '{}'.format(msg)
                 msg = format_msg(msg)
                 if msg != last_msg:
-                    print(msg, end='\r')
+                    print(msg, end=' ')
                     last_msg = msg
 
             elif status in ('done', 'failed'):
