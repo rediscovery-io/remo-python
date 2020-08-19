@@ -2,9 +2,8 @@ import os
 import time
 from typing import List
 import csv
-import math
-import glob
-import random
+from pathlib import Path
+
 from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
 from .api import API
 
@@ -785,7 +784,7 @@ class SDK:
     def _view(self, url, *args, **kwargs):
         return self.viewer.browse(self.api.url(url, *args, **kwargs))
     
-    def generate_annotations_from_folders(self, path_to_data_folder: str):
+    def generate_annotations_from_folders(self, path_to_data_folder: str, full_path : bool = True):
         """
         Creates a CSV annotation file for image classification tasks, where images are stored in folders with names matching the labels of the images. The CSV file is saved in the same input directory where images are stored. 
         Example of data structure for a dog / cat dataset: 
@@ -806,6 +805,7 @@ class SDK:
             
         Args: 
                path_to_data_folder: path to the source folder where data is stored
+               full_path: if absolute path to images is required, default : True
 
         Returns: 
                 csv_annotation_path: string, path to the generated CSV annotation file
@@ -813,10 +813,17 @@ class SDK:
         
         classes = [d.name for d in os.scandir(path_to_data_folder) if d.is_dir()]
         im_dict = {}
+
         for class_name in classes:
-            im_list = os.listdir(os.path.join(path_to_data_folder, class_name))
-            for im in im_list:
-                im_dict[im] = class_name
+            class_path = os.path.join(path_to_data_folder, class_name)
+            im_list = os.listdir(class_path)
+            if full_path:
+                for im in im_list:
+                    im_dict[os.path.abspath(os.path.join(class_path, im))] = class_name
+            else:
+                for im in im_list:
+                    im_dict[im] = class_name
+
 
         csv_annotation_path = os.path.join(path_to_data_folder, "annotations.csv")
         with open(csv_annotation_path, 'w', newline='') as csvfile:
