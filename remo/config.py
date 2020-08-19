@@ -26,6 +26,16 @@ def set_remo_home_from_default_remo_config() -> bool:
             return True
 
 
+class ViewerOptions:
+    electron = 'electron'
+    browser = 'browser'
+    jupyter = 'jupyter'
+
+
+class CloudPlatformOptions:
+    colab = 'colab'
+
+
 class Config:
     """
     Remo Config
@@ -47,16 +57,11 @@ class Config:
         'remo_home',
         'cloud_platform',
     ]
-    _default_port = 8123
-    _default_server = 'http://localhost'
-    _default_user_name = 'Admin User'
-    _default_user_email = 'admin@remo.ai'
-    _default_user_password = 'adminpass'
-    _default_viewer = 'browser'
 
     def __init__(self, config):
         for name in self.__slots__:
-            setattr(self, name, config.get(name, getattr(self, '_default_{}'.format(name))))
+            default_value = getattr(DefaultConfig, name)
+            setattr(self, name, config.get(name, default_value))
 
     def server_url(self):
         return '{}:{}'.format(self.server, self.port)
@@ -83,3 +88,16 @@ class Config:
         if not dir_path:
             dir_path = get_remo_home()
         return str(os.path.join(dir_path, Config.name))
+
+
+class DefaultConfig(Config):
+    port = 8123
+    server = 'http://localhost'
+    user_name = 'Admin User'
+    user_email = 'admin@remo.ai'
+    user_password = 'adminpass'
+    viewer = ViewerOptions.browser
+    uuid = 'undefined'
+    public_url = None
+    remo_home = None
+    cloud_platform = None
