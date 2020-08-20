@@ -783,7 +783,7 @@ class SDK:
     def _view(self, url, *args, **kwargs):
         return self.viewer.browse(self.api.url(url, *args, **kwargs))
     
-    def generate_annotations_from_folders(self, path_to_data_folder: str, full_path : bool = True):
+    def generate_annotations_from_folders(self, path_to_data_folder: str,  output_file_path : str = './annotations.csv', full_path : bool = True):
         """
         Creates a CSV annotation file for image classification tasks, where images are stored in folders with names matching the labels of the images. The CSV file is saved in the same input directory where images are stored. 
         Example of data structure for a dog / cat dataset: 
@@ -804,10 +804,11 @@ class SDK:
             
         Args: 
                path_to_data_folder: path to the source folder where data is stored
+               output_file_path: location and filename where to store the file. Default: './annotations.csv'
                full_path: if absolute path to images is required, default : True
 
         Returns: 
-                csv_annotation_path: string, path to the generated CSV annotation file
+                output_file_path: string, path to the generated CSV annotation file
         """
         
         classes = [d.name for d in os.scandir(path_to_data_folder) if d.is_dir()]
@@ -823,9 +824,7 @@ class SDK:
                 for im in im_list:
                     im_dict[im] = class_name
 
-
-        csv_annotation_path = os.path.join(path_to_data_folder, "annotations.csv")
-        with open(csv_annotation_path, 'w', newline='') as csvfile:
+        with open(output_file_path, 'w', newline='') as csvfile:
             fieldnames = ["file_name", "class_name"]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -833,10 +832,10 @@ class SDK:
             for key in im_dict:
                 writer.writerow({'file_name': key, 'class_name': im_dict[key]})
         
-        return csv_annotation_path
+        return output_file_path
 
 
-    def generate_image_tags(self, tags_dictionary : dict, output_file_path : str = './images_tags.csv'):
+    def generate_image_tags(self, tags_dictionary : dict, output_file_path : str = './images_tags.csv', full_path : bool = True):
         """
         Creates a CSV annotation file associating tags to images, as defined in the tags_dictionary.
         The CSV file is saved in the current working directory.
@@ -856,21 +855,31 @@ class SDK:
         Args: 
                tags_dictionary: dictionary where each key is a tags and the value is a List of image filenames (or foder paths containing images) to which we want to assign the tags.
                output_file_path: location and filename where to store the file. Default: './images_tags.csv'
+               full_path: if absolute path to images is required, default : True
 
         Returns: 
-                csv_tags_path: string, path to the generated CSV tags file
+                output_file_path: string, path to the generated CSV tags file
         """
         
         split_dict = {}
-
-        for tag in tags_dictionary:
-            for _ in tags_dictionary[tag]:
-                if os.path.isdir(_):
-                    im_list = os.listdir(_)
-                    for im in im_list:
-                        split_dict[im] = tag
-                else:
-                    split_dict[os.path.basename(_)] = tag
+        if full_path:
+            for tag in tags_dictionary:
+                for _ in tags_dictionary[tag]:
+                    if os.path.isdir(_):
+                        im_list = os.listdir(_)
+                        for im in im_list:
+                            split_dict[im] = tag
+                    else:
+                        split_dict[_] = tag
+        else:
+            for tag in tags_dictionary:
+                for _ in tags_dictionary[tag]:
+                    if os.path.isdir(_):
+                        im_list = os.listdir(_)
+                        for im in im_list:
+                            split_dict[os.path.basename(im)] = tag
+                    else:
+                        split_dict[os.path.basename(_)] = tag
 
         with open(output_file_path, 'w', newline='') as csvfile:
             fieldnames = ["file_name", "tag"]
