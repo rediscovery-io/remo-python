@@ -317,7 +317,11 @@ Annotation Sets: {n_annotation_sets}""".format(
         return self.sdk.list_image_annotations(self.id, annotation_set_id, image_id)
 
     def create_annotation_set(
-        self, annotation_task: str, name: str, classes: List[str] = [], path_to_annotation_file: str = None
+        self, 
+        annotation_task: str, 
+        name: str, 
+        classes: List[str] = [], 
+        paths_to_files: List[str] = None,
     ) -> AnnotationSet:
         """
         Creates a new annotation set within the dataset
@@ -328,8 +332,8 @@ Annotation Sets: {n_annotation_sets}""".format(
             annotation_task: annotation task. See also: :class:`remo.task`
             name: annotation set name
             classes: list of classes to prepopulate the annotation set. Example: ['Cat', 'Dog']. Default is no classes
-            path_to_annotation_file: path to .csv annotation file
-
+            paths_to_files: list of paths to files or directories containing files to be uploaded. Useful to upload annotatations while creating an annotation set. Default: None
+            
         Returns:
             :class:`remo.AnnotationSet`
         """
@@ -337,7 +341,7 @@ Annotation Sets: {n_annotation_sets}""".format(
 
         if annotation_set and path_to_annotation_file:
             self.add_data(
-                paths_to_upload=[path_to_annotation_file],
+                paths_to_upload=paths_to_files,
                 annotation_task=annotation_task,
                 annotation_set_id=annotation_set.id,
             )
