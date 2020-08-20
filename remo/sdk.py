@@ -2,7 +2,6 @@ import os
 import time
 from typing import List
 import csv
-from pathlib import Path
 
 from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
 from .api import API
