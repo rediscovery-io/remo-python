@@ -243,7 +243,7 @@ Annotation Sets: {n_annotation_sets}""".format(
         annotation_set_id: int = None,
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
-        full_path: bool = True,
+        append_path: bool = True,
         export_tags: bool = True
     ) -> bytes:
         """
@@ -253,7 +253,7 @@ Annotation Sets: {n_annotation_sets}""".format(
             annotation_set_id: annotation set id, by default will be used default_annotation_set
             annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
-            full_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
+            append_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
             export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
             
         Returns:
@@ -264,7 +264,7 @@ Annotation Sets: {n_annotation_sets}""".format(
             return annotation_set.export_annotations(
                 annotation_format=annotation_format,
                 export_coordinates=export_coordinates,
-                full_path=full_path,
+                append_path=append_path,
                 export_tags=export_tags
             )
 
@@ -276,7 +276,7 @@ Annotation Sets: {n_annotation_sets}""".format(
         annotation_set_id: int = None,
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
-        full_path: bool = True,
+        append_path: bool = True,
         export_tags: bool = True
     ):
         """
@@ -286,7 +286,7 @@ Annotation Sets: {n_annotation_sets}""".format(
             output_file: output file to save
             annotation_set_id: annotation set id
             annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
-            full_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
+            append_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
             export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
         """
@@ -296,7 +296,7 @@ Annotation Sets: {n_annotation_sets}""".format(
                 output_file,
                 annotation_set.id,
                 annotation_format=annotation_format,
-                full_path=full_path,
+                append_path=append_path,
                 export_coordinates=export_coordinates,
                 export_tags=export_tags
             )
