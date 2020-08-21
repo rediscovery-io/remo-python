@@ -51,7 +51,7 @@ What | Where
 Documentation | [Official Docs](https://remo.ai/docs/sdk-intro/)
 Intro Notebook | [Intro to Remo-Python notebook](examples/intro_to_remo-python.ipynb)
 Uploading annotations | [Upload Annotations and Predictions Tutorial notebook](examples/tutorial_upload_annotations.ipynb)
-Image Classification  | [Data Prep, Model Training and Visualizing Predictions notebook](examples/image_classification_tutorial.ipynb)
+Easier dataset management for PyTorch Image Classification | [PyTorch Image Classification notebook](examples/tutorial_pytorch_image_classification.ipynb)
 Object Detection  | Work in progress
 
 <br/>
