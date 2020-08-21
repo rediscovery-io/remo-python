@@ -51,7 +51,7 @@ What | Where
 Documentation | [Official Docs](https://remo.ai/docs/sdk-intro/)
 Intro Notebook | [Intro to Remo-Python notebook](examples/intro_to_remo-python.ipynb)
 Uploading annotations | [Upload Annotations and Predictions Tutorial notebook](examples/tutorial_upload_annotations.ipynb)
-Visualising predictions | visualise_predictions - Coming soon
+Image Classification  | [Data Prep, Model Training and Visualizing Predictions notebook](examples/image_classification_tutorial.ipynb)
 
 <br/>
 
