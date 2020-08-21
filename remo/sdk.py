@@ -2,6 +2,7 @@ import os
 import time
 from typing import List
 import csv
+
 from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
 from .api import API
 
@@ -399,18 +400,19 @@ class SDK:
         annotation_set_id: int,
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
-        full_path: bool = True,
+        append_path: bool = True,
         export_tags : bool = True
     ) -> bytes:
         """
-        Exports annotations in given format
+        Exports annotations with the chosen format.
 
         Args:
             annotation_set_id: annotation set id
-            annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
-            full_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
-            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
-            export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
+            annotation_format: can be one of ['json', 'coco', 'csv']. Default: 'json'
+            append_path: if True, appends the path to the filename (e.g. local path). Default: True
+            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
+            export_tags: if True, exports the tags to a CSV file. Default: True
+            
         Returns:
             annotation file content
         """
@@ -418,7 +420,7 @@ class SDK:
             annotation_set_id,
             annotation_format=annotation_format,
             export_coordinates=export_coordinates,
-            full_path=full_path,
+            full_path=append_path,
             export_tags=export_tags
         )
 
@@ -428,25 +430,25 @@ class SDK:
         annotation_set_id: int,
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
-        full_path: bool = True,
+        append_path: bool = True,
         export_tags: bool = True
     ):
         """
-        Exports annotations in given format
+        Exports annotations to a file with the chosen format.
 
         Args:
             output_file: output file to save
             annotation_set_id: annotation set id
-            annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
-            full_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
-            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
-            export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
+            annotation_format: can be one of ['json', 'coco', 'csv']. Default: 'json'
+            append_path: if True, appends the path to the filename (e.g. local path). Default: True
+            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
+            export_tags: if True, exports also all the tags to a CSV file. Default: True
         """
         content = self.export_annotations(
             annotation_set_id,
             annotation_format=annotation_format,
             export_coordinates=export_coordinates,
-            full_path=full_path,
+            append_path=append_path,
             export_tags=export_tags
         )
         self._save_to_file(content, output_file)
@@ -480,7 +482,9 @@ class SDK:
         return resp.get('annotation_info', [])
 
     def list_image_annotations(
-        self, dataset_id: int, annotation_set_id: int, image_id: int
+        self, dataset_id: int, 
+        annotation_set_id: int, 
+        image_id: int
     ) -> List[Annotation]:
         """
         Returns annotations for a given image
@@ -787,9 +791,12 @@ class SDK:
     def _view(self, url, *args, **kwargs):
         return self.viewer.browse(self.api.public_url(url, *args, **kwargs))
     
-    def generate_annotations_from_folders(self, path_to_data_folder: str):
+    def generate_annotations_from_folders(self, 
+                                          path_to_data_folder: str,  
+                                          output_file_path : str = './annotations.csv', 
+                                          append_path : bool = True):
         """
-        Creates a CSV annotation file for image classification tasks, where images are stored in folders with names matching the labels of the images. The CSV file is saved in the same input directory where images are stored. 
+        Creates a CSV annotation file associating images with labels, starting from folders named with labels (a common folder structure for Image Classification tasks). The CSV file is saved in the same input directory where images are stored.
         Example of data structure for a dog / cat dataset: 
               - cats_and_dogs
                   - dog
@@ -808,20 +815,27 @@ class SDK:
             
         Args: 
                path_to_data_folder: path to the source folder where data is stored
+               output_file_path: location and filename where to store the file. Default: './annotations.csv'
+               append_path: if True, file paths are appended to filenames in the output file, otherwise the filename alone is used. Default : True
 
         Returns: 
-                csv_annotation_path: string, path to the generated CSV annotation file
+                output_file_path: string, path to the generated CSV annotation file. Format: 'file_name', 'class_name'
         """
         
         classes = [d.name for d in os.scandir(path_to_data_folder) if d.is_dir()]
         im_dict = {}
-        for class_name in classes:
-            im_list = os.listdir(os.path.join(path_to_data_folder, class_name))
-            for im in im_list:
-                im_dict[im] = class_name
 
-        csv_annotation_path = os.path.join(path_to_data_folder, "annotations.csv")
-        with open(csv_annotation_path, 'w', newline='') as csvfile:
+        for class_name in classes:
+            class_path = os.path.join(path_to_data_folder, class_name)
+            im_list = os.listdir(class_path)
+            if append_path:
+                for im in im_list:
+                    im_dict[os.path.abspath(os.path.join(class_path, im))] = class_name
+            else:
+                for im in im_list:
+                    im_dict[os.path.basename(im)] = class_name
+
+        with open(output_file_path, 'w', newline='') as csvfile:
             fieldnames = ["file_name", "class_name"]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -829,4 +843,62 @@ class SDK:
             for key in im_dict:
                 writer.writerow({'file_name': key, 'class_name': im_dict[key]})
         
-        return csv_annotation_path  
+        return output_file_path
+
+
+    def generate_image_tags(self, tags_dictionary : dict, 
+                            output_file_path : str = './images_tags.csv', 
+                            append_path : bool = True):
+        """
+        Creates a CSV annotation file associating tags to images, as defined in the tags_dictionary.
+        The CSV file is saved in the current working directory.
+        
+        Example of a dictionary: {'train': ['img1.jpg', 'img2.jpg'],'test': ['img3.jpg', 'img4.jpg'],'val': ['img5.jpg', 'img6.jpg']}
+ 
+        Example::
+            # Download and unzip this sample dataset: https://s-3.s3-eu-west-1.amazonaws.com/small_flowers.zip
+            import glob
+            import os
+            import random
+            im_list = [os.path.basename(i) for i in glob.glob(str('./small_flowers/images')+'/**/*.jpg', recursive=True)])
+            im_list = random.sample(im_list, len(im_list))
+            tags_dict = {'train' : im_list[0:121], 'test' : im_list[121:131], 'valid' : im_list[131:141]}
+            remo.generate_image_tags(tags_dict)
+            
+        Args: 
+               tags_dictionary: dictionary where each key is a tags and the value is a List of image filenames (or foder paths containing images) to which we want to assign the tags.
+               output_file_path: location and filename where to store the file. Default: './images_tags.csv'
+               append_path: if absolute path to images is required. Default: True
+
+        Returns: 
+                output_file_path: string, path to the generated CSV tags file. Format: 'file_name', 'tag'
+        """
+        
+        split_dict = {}
+        if append_path:
+            for tag in tags_dictionary:
+                for _ in tags_dictionary[tag]:
+                    if os.path.isdir(_):
+                        im_list = os.listdir(_)
+                        for im in im_list:
+                            split_dict[im] = tag
+                    else:
+                        split_dict[_] = tag
+        else:
+            for tag in tags_dictionary:
+                for _ in tags_dictionary[tag]:
+                    if os.path.isdir(_):
+                        im_list = os.listdir(_)
+                        for im in im_list:
+                            split_dict[os.path.basename(im)] = tag
+                    else:
+                        split_dict[os.path.basename(_)] = tag
+
+        with open(output_file_path, 'w', newline='') as csvfile:
+            fieldnames = ["file_name", "tag"]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for key in split_dict:
+                writer.writerow({'file_name': key, 'tag' : split_dict[key]})
+        
+        return output_file_path
