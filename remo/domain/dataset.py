@@ -79,12 +79,12 @@ Annotation Sets: {n_annotation_sets}""".format(
         - Adding archive files: support for ``zip``, ``tar``, ``gzip``
 
         Example::
-            ! wget 'https://remo-scripts.s3-eu-west-1.amazonaws.com/open_images_sample_dataset.zip'
-            ! unzip open_images_sample_dataset.zip
+            ! wget 'https://s-3.s3-eu-west-1.amazonaws.com/open-images.zip'
+            ! unzip open-images.zip
             
-            urls = ['https://remo-scripts.s3-eu-west-1.amazonaws.com/open_images_sample_dataset.zip']
+            urls = ['https://s-3.s3-eu-west-1.amazonaws.com/open-images.zip']
             my_dataset = remo.create_dataset(name = 'D1')
-            my_dataset.add_data(local_files=['./open_images_sample_dataset'], annotation_task = 'Object detection')
+            my_dataset.add_data(local_files=['./open-images'], annotation_task = 'Object detection')
 
         Args:
             dataset_id: id of the dataset to add data to
