@@ -251,10 +251,10 @@ Annotation Sets: {n_annotation_sets}""".format(
 
         Args:
             annotation_set_id: annotation set id, by default will be used default_annotation_set
-            annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
-            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
-            append_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
-            export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
+            annotation_format: can be one of ['json', 'coco', 'csv']. Default: 'json'
+            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
+            append_path: if True, it appends the image path to the filename, otherwise it uses just the filename. Default: True
+            export_tags: if True, it also exports tags to a separate CSV file. Default: True
             
         Returns:
             annotation file content
@@ -285,10 +285,10 @@ Annotation Sets: {n_annotation_sets}""".format(
         Args:
             output_file: output file to save
             annotation_set_id: annotation set id
-            annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
-            append_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
-            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
-            export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
+            annotation_format: can be one of ['json', 'coco', 'csv']. Default: 'json'
+            append_path: if True, it appends the image path to the filename, otherwise it uses just the filename. Default: True
+            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
+            export_tags: if True, it also exports tags to a separate CSV file. Default: True
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
