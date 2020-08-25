@@ -221,7 +221,7 @@ Annotation Sets: {n_annotation_sets}""".format(
                 annotation_task=annotations[0].task,
                 name='my_ann_set_{}'.format(n_annotation_sets + 1),
                 classes=list_of_classes,
-                path_to_annotation_file=temp_path,
+                path_to_files=temp_path,
             )
 
         else:
@@ -325,7 +325,7 @@ Annotation Sets: {n_annotation_sets}""".format(
     ) -> AnnotationSet:
         """
         Creates a new annotation set within the dataset
-        If path_to_annotation_file is provided, it populates it with the given annotations.
+        If path_to_files is provided, it populates it with the given annotations.
         The first created annotation set for the given dataset, is considered the default one.
 
         Args:
@@ -339,7 +339,7 @@ Annotation Sets: {n_annotation_sets}""".format(
         """
         annotation_set = self.sdk.create_annotation_set(annotation_task, self.id, name, classes)
 
-        if annotation_set and path_to_annotation_file:
+        if annotation_set and path_to_files:
             self.add_data(
                 paths_to_upload=paths_to_files,
                 annotation_task=annotation_task,
