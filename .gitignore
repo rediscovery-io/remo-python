@@ -17,3 +17,9 @@ dist
 remo_sdk.egg-info
 
 doc/build
+
+# example datasets
+examples/small_flowers
+examples/small_flowers.zip
+examples/open_images_sample_dataset
+examples/*.zip

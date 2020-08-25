@@ -79,9 +79,12 @@ Annotation Sets: {n_annotation_sets}""".format(
         - Adding archive files: support for ``zip``, ``tar``, ``gzip``
 
         Example::
-            urls = ['https://remo-scripts.s3-eu-west-1.amazonaws.com/open_images_sample_dataset.zip']
-            my_dataset = remo.create_dataset(name = 'D1', urls = urls)
-            my_dataset.add_data(local_files=annotation_files, annotation_task = 'Object detection')
+            ! wget 'https://s-3.s3-eu-west-1.amazonaws.com/open-images.zip'
+            ! unzip open-images.zip
+            
+            urls = ['https://s-3.s3-eu-west-1.amazonaws.com/open-images.zip']
+            my_dataset = remo.create_dataset(name = 'D1')
+            my_dataset.add_data(local_files=['./open-images'], annotation_task = 'Object detection')
 
         Args:
             dataset_id: id of the dataset to add data to
@@ -218,7 +221,7 @@ Annotation Sets: {n_annotation_sets}""".format(
                 annotation_task=annotations[0].task,
                 name='my_ann_set_{}'.format(n_annotation_sets + 1),
                 classes=list_of_classes,
-                path_to_annotation_file=temp_path,
+                paths_to_files=temp_path,
             )
 
         else:
@@ -240,7 +243,7 @@ Annotation Sets: {n_annotation_sets}""".format(
         annotation_set_id: int = None,
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
-        full_path: bool = True,
+        append_path: bool = True,
         export_tags: bool = True
     ) -> bytes:
         """
@@ -248,10 +251,10 @@ Annotation Sets: {n_annotation_sets}""".format(
 
         Args:
             annotation_set_id: annotation set id, by default will be used default_annotation_set
-            annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
-            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
-            full_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
-            export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
+            annotation_format: can be one of ['json', 'coco', 'csv']. Default: 'json'
+            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
+            append_path: if True, it appends the image path to the filename, otherwise it uses just the filename. Default: True
+            export_tags: if True, it also exports tags to a separate CSV file. Default: True
             
         Returns:
             annotation file content
@@ -261,7 +264,7 @@ Annotation Sets: {n_annotation_sets}""".format(
             return annotation_set.export_annotations(
                 annotation_format=annotation_format,
                 export_coordinates=export_coordinates,
-                full_path=full_path,
+                append_path=append_path,
                 export_tags=export_tags
             )
 
@@ -273,7 +276,7 @@ Annotation Sets: {n_annotation_sets}""".format(
         annotation_set_id: int = None,
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
-        full_path: bool = True,
+        append_path: bool = True,
         export_tags: bool = True
     ):
         """
@@ -282,10 +285,10 @@ Annotation Sets: {n_annotation_sets}""".format(
         Args:
             output_file: output file to save
             annotation_set_id: annotation set id
-            annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
-            full_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
-            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
-            export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
+            annotation_format: can be one of ['json', 'coco', 'csv']. Default: 'json'
+            append_path: if True, it appends the image path to the filename, otherwise it uses just the filename. Default: True
+            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
+            export_tags: if True, it also exports tags to a separate CSV file. Default: True
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
@@ -293,7 +296,7 @@ Annotation Sets: {n_annotation_sets}""".format(
                 output_file,
                 annotation_set.id,
                 annotation_format=annotation_format,
-                full_path=full_path,
+                append_path=append_path,
                 export_coordinates=export_coordinates,
                 export_tags=export_tags
             )
@@ -314,27 +317,31 @@ Annotation Sets: {n_annotation_sets}""".format(
         return self.sdk.list_image_annotations(self.id, annotation_set_id, image_id)
 
     def create_annotation_set(
-        self, annotation_task: str, name: str, classes: List[str] = [], path_to_annotation_file: str = None
+        self, 
+        annotation_task: str, 
+        name: str, 
+        classes: List[str] = [], 
+        paths_to_files: List[str] = None,
     ) -> AnnotationSet:
         """
         Creates a new annotation set within the dataset
-        If path_to_annotation_file is provided, it populates it with the given annotations.
+        If path_to_files is provided, it populates it with the given annotations.
         The first created annotation set for the given dataset, is considered the default one.
 
         Args:
             annotation_task: annotation task. See also: :class:`remo.task`
             name: annotation set name
             classes: list of classes to prepopulate the annotation set. Example: ['Cat', 'Dog']. Default is no classes
-            path_to_annotation_file: path to .csv annotation file
-
+            paths_to_files: list of paths to files or directories containing files to be uploaded. Useful to upload annotatations while creating an annotation set. Default: None
+            
         Returns:
             :class:`remo.AnnotationSet`
         """
         annotation_set = self.sdk.create_annotation_set(annotation_task, self.id, name, classes)
 
-        if annotation_set and path_to_annotation_file:
+        if annotation_set and paths_to_files:
             self.add_data(
-                paths_to_upload=[path_to_annotation_file],
+                paths_to_upload=paths_to_files,
                 annotation_task=annotation_task,
                 annotation_set_id=annotation_set.id,
             )
