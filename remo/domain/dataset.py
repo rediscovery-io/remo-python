@@ -325,7 +325,7 @@ Annotation Sets: {n_annotation_sets}""".format(
     ) -> AnnotationSet:
         """
         Creates a new annotation set within the dataset
-        If path_to_files is provided, it populates it with the given annotations.
+        If paths_to_files is provided, it populates it with the given annotations.
         The first created annotation set for the given dataset, is considered the default one.
 
         Args:
