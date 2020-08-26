@@ -373,10 +373,10 @@ class API(BaseAPI):
 
         Args:
             annotation_set_id: annotation set id
-            annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
-            full_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
-            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
-            export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
+            annotation_format: can be one of ['json', 'coco', 'csv']. Default: 'json'
+            full_path: if True, appends file path to the filename. uses full image path. Default: True
+            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
+            export_tags: if True, exports the tags to a separate CSV file. Default: True
         Returns:
             annotation file content
         """
