@@ -531,7 +531,7 @@ Annotation Sets: {n_annotation_sets}""".format(
         Opens browser on the annotation tool for the given annotation set
 
         Args:
-              annotation_set_id: annotation set id. If not specified, default one be used.
+              annotation_set_id: annotation set id. If the dataset has only one annotation set, there is no need to specify the annotation_set_id.
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
@@ -544,7 +544,7 @@ Annotation Sets: {n_annotation_sets}""".format(
         Opens browser on annotation set insights page
 
         Args:
-            annotation_set_id: annotation set id. If not specified, default one be used.
+            annotation_set_id: annotation set id. If the dataset has only one annotation set, there is no need to specify the annotation_set_id.
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
