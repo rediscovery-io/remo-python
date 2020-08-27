@@ -195,8 +195,8 @@ Annotation Sets: {n_annotation_sets}""".format(
 
         Args:
             annotations: list of Annotation objects
-            (optional) annotation_set_id: annotation set id
-            (optional) create_new_annotation_set: if True, a new annotation set will be created
+            annotation_set_id: annotation set id
+            create_new_annotation_set: if True, a new annotation set will be created
 
 
         """
