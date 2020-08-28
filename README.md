@@ -59,7 +59,7 @@ Object Detection  | Work in progress
 ## Get in touch
 If you have any issues around the library, feel free to open an issue in the repo.
 
-For anything else, you can write on our <a href="https://support.remo.ai" target="_blank">discuss forum.</a>  
+For anything else, you can write on our <a href="https://discuss.remo.ai" target="_blank">discuss forum.</a>  
 
 <br/>
 
