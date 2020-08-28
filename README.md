@@ -46,13 +46,13 @@ To read more about installation and other features, visit [remo.ai](http://remo.
 
 You can see example of usage of the library in our documentiation or in the examples folder. 
 
-What | Where
----|---
-Documentation | [Official Docs](https://remo.ai/docs/sdk-intro/)
-Intro Notebook | [Intro to Remo-Python notebook](examples/intro_to_remo-python.ipynb)
-Uploading annotations | [Upload Annotations and Predictions Tutorial notebook](examples/tutorial_upload_annotations.ipynb)
-Easier dataset management for PyTorch Image Classification | [PyTorch Image Classification notebook](examples/tutorial_pytorch_image_classification.ipynb)
-Object Detection  | Work in progress
+What | Where | Colab Links
+---|--- | ---
+Documentation | [Official Docs](https://remo.ai/docs/sdk-intro/) | TBA
+Intro Notebook | [Intro to Remo-Python notebook](examples/intro_to_remo-python.ipynb) | TBA
+Uploading annotations | [Upload Annotations and Predictions Tutorial notebook](examples/tutorial_upload_annotations.ipynb) | TBA
+Easier dataset management for PyTorch Image Classification | [PyTorch Image Classification notebook](examples/tutorial_pytorch_image_classification.ipynb) | [![Open All Collab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1y1VZC627J9W2EKtV0vIcl0c3nhCZz82U?usp=sharing)
+Object Detection  | Work in progress | TBA
 
 <br/>
 
