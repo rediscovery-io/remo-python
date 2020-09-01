@@ -1,7 +1,14 @@
-
 <img src="https://github.com/rediscovery-io/remo-python/blob/master/img/remo_normal.png" width="200">
 
 # Welcome to remo
+
+[:smirk: Quick installation](#-smirk--quick-installation)</br>
+[:rabbit: Remo python library](#-rabbit--remo-python-library)</br>
+[:tada: What's new](#-tada--what-s-new)</br>
+[:gift: What we are working on next](#-gift--what-we-are-working-on-next)</br>
+[:bug: Get in touch](#-bug--get-in-touch)</br>
+[:raising_hand: For contributors](#-raising-hand--for-contributors)</br>
+
 [![PyPI version](https://badge.fury.io/py/remo-python.svg)](https://badge.fury.io/py/remo-python)
 
 This the open source repository for remo python library. 
@@ -19,7 +26,7 @@ Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and
 
 <img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
 
-## Quick installation
+## :smirk: Quick installation
 
 1. In a Python 3.6+ environment: `pip install remo` 
 
@@ -42,7 +49,7 @@ To read more about installation and other features, visit [remo.ai](http://remo.
 
 
 
-## Remo python library
+## :rabbit: Remo python library
 
 You can see example of usage of the library in our documentiation or in the examples folder. 
 
@@ -56,24 +63,23 @@ Easier dataset management for PyTorch Image Classification | [PyTorch Object Det
 
 <br/>
 
-## What's new
+## :tada: What's new
 1-Sep-2020: Added tutorial on Remo for PyTorch Object Detection
 
+## :gift: What we are working on next
 
-## Get in touch
+- Tighter integration with PyTorch
+- Ability to split datasets in train vs test
+- Ability to store and inspect models' performance in remo
+
+## :bug: Get in touch
 If you have any issues around the library, feel free to open an issue in the repo.
 
 For anything else, you can write on our <a href="https://discuss.remo.ai" target="_blank">discuss forum.</a>  
 
 <br/>
 
-## What are we working on next
-
-- Tighter integration with PyTorch
-- Ability to split datasets in train vs test
-- Ability to store and inspect models' performance in remo
-
-## For contributors
+## :raising_hand: For contributors
 
 The library is organized in 3 main layers:
 - api
