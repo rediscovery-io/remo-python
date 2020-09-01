@@ -66,11 +66,15 @@ Easier dataset management for PyTorch Image Classification | [PyTorch Object Det
 ## :tada: What's new
 1-Sep-2020: Added tutorial on Remo for PyTorch Object Detection
 
+<br/>
+
 ## :gift: What we are working on next
 
 - Tighter integration with PyTorch
 - Ability to split datasets in train vs test
 - Ability to store and inspect models' performance in remo
+
+<br/>
 
 ## :bug: Get in touch
 If you have any issues around the library, feel free to open an issue in the repo.
