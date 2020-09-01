@@ -52,9 +52,13 @@ Documentation | [Official Docs](https://remo.ai/docs/sdk-intro/)
 Intro Notebook | [Intro to Remo-Python notebook](examples/intro_to_remo-python.ipynb)
 Uploading annotations | [Upload Annotations and Predictions Tutorial notebook](examples/tutorial_upload_annotations.ipynb)
 Easier dataset management for PyTorch Image Classification | [PyTorch Image Classification notebook](examples/tutorial_pytorch_image_classification.ipynb)
-Object Detection  | Work in progress
+Easier dataset management for PyTorch Image Classification | [PyTorch Object Detection notebook](examples/tutorial_pytorch_object_detection.ipynb)
 
 <br/>
+
+## What's new
+1-Sep-2020: Added tutorial on Remo for PyTorch Object Detection
+
 
 ## Get in touch
 If you have any issues around the library, feel free to open an issue in the repo.
