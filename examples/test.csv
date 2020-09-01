@@ -1,0 +1,41 @@
+file_name,classes,xmin,ymin,xmax,ymax,tag
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/001a809ad40a2f84.jpg,Car,88,128,899,675,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/001a809ad40a2f84.jpg,Person,89,206,136,304,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/001a809ad40a2f84.jpg,Person,216,91,336,250,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/001a809ad40a2f84.jpg,Human body,91,205,140,301,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/001a809ad40a2f84.jpg,Human body,217,91,331,235,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/001a809ad40a2f84.jpg,Wheel,156,599,209,642,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/001a809ad40a2f84.jpg,Wheel,683,434,800,678,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/001a809ad40a2f84.jpg,Wheel,852,355,896,493,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00d2a568dd4afd0d.jpg,Car,0,152,79,333,valid
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00d2a568dd4afd0d.jpg,Car,277,118,834,536,valid
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00d2a568dd4afd0d.jpg,Car,588,125,988,289,valid
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00d2a568dd4afd0d.jpg,Land vehicle,588,136,1024,337,valid
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00d2a568dd4afd0d.jpg,Wheel,22,260,58,328,valid
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00d2a568dd4afd0d.jpg,Wheel,279,267,299,321,valid
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00d2a568dd4afd0d.jpg,Wheel,317,316,420,492,valid
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00d2a568dd4afd0d.jpg,Wheel,855,217,917,284,valid
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00b562abdf5766d3.jpg,Car,0,323,1002,681,train
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00b562abdf5766d3.jpg,Wheel,0,536,181,683,train
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00b562abdf5766d3.jpg,Wheel,724,507,910,679,train
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00d9efcc4d1fda53.jpg,Plant,0,174,289,423,valid
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00d9efcc4d1fda53.jpg,Plant,989,339,1022,390,valid
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00d9efcc4d1fda53.jpg,Car,179,156,847,607,valid
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00d9efcc4d1fda53.jpg,Tire,188,454,213,596,valid
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00d9efcc4d1fda53.jpg,Tire,801,417,846,595,valid
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00d9efcc4d1fda53.jpg,Wheel,774,428,846,599,valid
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00b75a8487446cdd.jpg,Car,32,201,977,532,train
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00b75a8487446cdd.jpg,Wheel,163,387,297,512,train
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00b75a8487446cdd.jpg,Wheel,732,396,873,529,train
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/001a794d1865ee47.jpg,Car,300,14,956,546,train
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00acf53b127218c2.jpg,Car,49,100,1024,732,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00acf53b127218c2.jpg,Tire,587,470,728,724,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00acf53b127218c2.jpg,Tire,899,316,961,456,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00acf53b127218c2.jpg,Vehicle,598,62,780,111,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00acf53b127218c2.jpg,Wheel,97,199,136,240,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00acf53b127218c2.jpg,Wheel,286,182,316,214,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00acf53b127218c2.jpg,Wheel,600,468,720,726,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00acf53b127218c2.jpg,Wheel,670,219,716,246,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00acf53b127218c2.jpg,Wheel,896,313,961,462,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00acf53b127218c2.jpg,Wheel,977,236,993,283,test
+/home/harsha/Documents/rediscovery/remo-python/examples/object_detection_dataset/images/00acf53b127218c2.jpg,Vehicle registration plate,155,505,297,617,test
