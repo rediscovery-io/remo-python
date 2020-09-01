@@ -15,7 +15,7 @@ Use remo to:
 
 Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and uses a lightweight database to store metadata.
 
-[![PyPI version](https://badge.fury.io/py/remo-python.svg)](https://badge.fury.io/py/remo-python)
+[![pypi Version](https://img.shields.io/pypi/v/remo-python.svg?color=cool&logo=pypi&logoColor=white)](https://pypi.org/project/remo/) [![PyPi Downloads](https://img.shields.io/pypi/dm/remo?color=cool&logo=pypi&logoColor=white)](https://pypi.org/project/remo/)
 
 # Table of Contents
 [:smirk: Quick installation](#smirk-quick-installation)</br>
