@@ -20,10 +20,10 @@ Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and
 # Table of Contents
 [:smirk: Quick installation](#smirk-quick-installation)</br>
 [:rabbit: Remo python library](#rabbit-remo-python-library)</br>
-[:tada: What's new](#tada-what-s-new)</br>
+[:tada: What's new](#tada-whats-new)</br>
 [:gift: What we are working on next](#gift-what-we-are-working-on-next)</br>
 [:bug: Get in touch](#bug-get-in-touch)</br>
-[:raising_hand: For contributors](#raising-hand-for-contributors)</br>
+[:raising_hand: For contributors](#raising_hand-for-contributors)</br>
 
 
 
