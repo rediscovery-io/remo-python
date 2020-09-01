@@ -2,15 +2,6 @@
 
 # Welcome to remo
 
-[:smirk: Quick installation](#smirk-quick-installation)</br>
-[:rabbit: Remo python library](#rabbit-remo-python-library)</br>
-[:tada: What's new](#-tada-what-s-new)</br>
-[:gift: What we are working on next](#gift-what-we-are-working-on-next)</br>
-[:bug: Get in touch](#bug-get-in-touch)</br>
-[:raising_hand: For contributors](#raising-hand-for-contributors)</br>
-
-[![PyPI version](https://badge.fury.io/py/remo-python.svg)](https://badge.fury.io/py/remo-python)
-
 This the open source repository for remo python library. 
 
 Remo is an open-access web-application for managing and visualising images and annotations for Computer Vision. 
@@ -24,7 +15,19 @@ Use remo to:
 
 Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and uses a lightweight database to store metadata.
 
-<img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
+[![PyPI version](https://badge.fury.io/py/remo-python.svg)](https://badge.fury.io/py/remo-python)
+
+# Table of Contents
+[:smirk: Quick installation](#smirk-quick-installation)</br>
+[:rabbit: Remo python library](#rabbit-remo-python-library)</br>
+[:tada: What's new](#tada-what-s-new)</br>
+[:gift: What we are working on next](#gift-what-we-are-working-on-next)</br>
+[:bug: Get in touch](#bug-get-in-touch)</br>
+[:raising_hand: For contributors](#raising-hand-for-contributors)</br>
+
+
+
+
 
 <br/>
 
@@ -45,6 +48,8 @@ To call remo from python once you have a server running, use `import remo`.
 
 To read more about installation and other features, visit [remo.ai](http://remo.ai)
 
+
+<img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
 
 <br/>
 
