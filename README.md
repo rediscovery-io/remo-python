@@ -15,7 +15,8 @@ Use remo to:
 - **visualise statistics** like # objects per class
 - **quickly annotate** your images
 
-Remo runs on Windows, Linux and Mac. It can be ran from within Jupyter Notebooks and Colab Notebooks.
+Remo runs on Windows, Linux and Mac. It can be accessed from within Jupyter Notebooks, Colab Notebooks, a browser tab or its own app.
+
 It is written using Python and React.JS and uses a lightweight database to store metadata.
 
 <img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
