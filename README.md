@@ -2,12 +2,12 @@
 
 # Welcome to remo
 
-[:smirk: Quick installation](#smirk--quick-installation)</br>
-[:rabbit: Remo python library](#rabbit--remo-python-library)</br>
-[:tada: What's new](#-tada--what-s-new)</br>
-[:gift: What we are working on next](#gift--what-we-are-working-on-next)</br>
-[:bug: Get in touch](#bug--get-in-touch)</br>
-[:raising_hand: For contributors](#raising-hand--for-contributors)</br>
+[:smirk: Quick installation](#smirk-quick-installation)</br>
+[:rabbit: Remo python library](#rabbit-remo-python-library)</br>
+[:tada: What's new](#-tada-what-s-new)</br>
+[:gift: What we are working on next](#gift-what-we-are-working-on-next)</br>
+[:bug: Get in touch](#bug-get-in-touch)</br>
+[:raising_hand: For contributors](#raising-hand-for-contributors)</br>
 
 [![PyPI version](https://badge.fury.io/py/remo-python.svg)](https://badge.fury.io/py/remo-python)
 
