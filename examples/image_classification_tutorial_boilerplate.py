@@ -7,12 +7,16 @@ cat_to_index = { 0 : 'Pink Primrose',
 
 mapping = { value : key for (key, value) in cat_to_index.items()}
 
-classes_dir = ["1", "2", "3"]
 
 root_dir = "./small_flowers/images"
+
+
+# GENERATING TRAIN TEST SPLIT
+
 train_ratio = 0.8
 val_ratio = train_ratio 
 test_ratio = val_ratio + 0.1
+classes_dir = ["1", "2", "3"] 
 
 for label in classes_dir:
     if not os.path.exists(os.path.join(root_dir,  'dataset/train', label)):
@@ -42,19 +46,8 @@ for label in classes_dir:
             shutil.copy(name, os.path.join(root_dir, 'dataset/test', label))
 
 
-images_dir = "./small_flowers/images/dataset"
 
-train_dataset = datasets.ImageFolder(os.path.join(images_dir, "train"), transform = train_transforms)
-test_dataset = datasets.ImageFolder(os.path.join(images_dir, "test"), transform = test_valid_transforms)
-valid_dataset = datasets.ImageFolder(os.path.join(images_dir, "val"), transform = test_valid_transforms)
-
-train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=4, shuffle=True, num_workers=2)
-val_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=2,  shuffle=False, num_workers=2)
-test_loader = torch.utils.data.DataLoader(test_dataset,batch_size=1, shuffle=False, num_workers=2)
-
-dataloaders = { "train" : train_loader, "valid" : val_loader, "test" : test_loader}
-
-
+# VIEW DATASET AND ANNOTATIONS
 def imshow(inp, title=None):
     """Imshow for Tensor."""
 
@@ -78,6 +71,7 @@ inputs, classes = next(iter(dataloaders['valid']))
 # Make a grid from batch
 out = torchvision.utils.make_grid(inputs)
 imshow(out, title=[cat_to_index[class_names[x]] for x in classes])
+
 
 
 def visualize_model(model):
