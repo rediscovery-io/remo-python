@@ -9,11 +9,9 @@ cat_to_index = { 0 : 'Pink Primrose',
 
 annotations_file_path = os.path.join(path_to_annotations, 'annotations.csv')
 
-# GENERATING ANNOTATIONS
 remo.generate_annotations_from_folders(path_to_data_folder = path_to_images, 
                                        output_file_path = annotations_file_path)
 
-# GENERATING TRAIN TEST SPLIT
 im_list = [os.path.abspath(i) for i in glob.glob(path_to_images + '/**/*.jpg', recursive=True)]
 im_list = random.sample(im_list, len(im_list))
 
