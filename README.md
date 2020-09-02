@@ -1,8 +1,6 @@
-
 <img src="https://github.com/rediscovery-io/remo-python/blob/master/img/remo_normal.png" width="200">
 
 # Welcome to remo
-[![PyPI version](https://badge.fury.io/py/remo-python.svg)](https://badge.fury.io/py/remo-python)
 
 This the open source repository for remo python library. 
 
@@ -17,9 +15,23 @@ Use remo to:
 
 Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and uses a lightweight database to store metadata.
 
-<img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
+[![pypi Version](https://img.shields.io/pypi/v/remo-python.svg?color=cool&logo=pypi&logoColor=white)](https://pypi.org/project/remo/) [![PyPi Downloads](https://img.shields.io/pypi/dm/remo?color=cool&logo=pypi&logoColor=white)](https://pypi.org/project/remo/)
 
-## Quick installation
+# Table of Contents
+[:smirk: Quick installation](#smirk-quick-installation)</br>
+[:rabbit: Remo python library](#rabbit-remo-python-library)</br>
+[:tada: What's new](#tada-whats-new)</br>
+[:gift: What we are working on next](#gift-what-we-are-working-on-next)</br>
+[:bug: Get in touch](#bug-get-in-touch)</br>
+[:raising_hand: For contributors](#raising_hand-for-contributors)</br>
+
+
+
+
+
+<br/>
+
+## :smirk: Quick installation
 
 1. In a Python 3.6+ environment: `pip install remo` 
 
@@ -37,15 +49,18 @@ To call remo from python once you have a server running, use `import remo`.
 To read more about installation and other features, visit [remo.ai](http://remo.ai)
 
 
+<img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
+
 <br/>
 
 
 
 
-## Remo python library
+## :rabbit: Remo python library
 
 You can see example of usage of the library in our documentiation or in the examples folder. 
 
+<<<<<<< HEAD
 What | Where | Colab Links
 ---|--- | ---
 Documentation | [Official Docs](https://remo.ai/docs/sdk-intro/) | -
@@ -53,23 +68,47 @@ Intro Notebook | [Intro to Remo-Python notebook](examples/intro_to_remo-python.i
 Uploading annotations | [Upload Annotations and Predictions Tutorial notebook](examples/tutorial_upload_annotations.ipynb) | -
 Easier dataset management for PyTorch Image Classification | [PyTorch Image Classification notebook](examples/tutorial_pytorch_image_classification.ipynb) | [![im_classification_tutorial](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/rediscovery-io/remo-python/blob/master/examples/google-colab/tutorial_pytorch_image_classification.ipynb)
 Object Detection  | [PyTorch Object Detection Notebook](examples/tutorial_pytorch_object_detection.ipynb) | [![obj_detection_tutorial](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/rediscovery-io/remo-python/blob/master/examples/google-colab/tutorial_pytorch_object_detection.ipynb)
+||||||| merged common ancestors
+What | Where
+---|---
+Documentation | [Official Docs](https://remo.ai/docs/sdk-intro/)
+Intro Notebook | [Intro to Remo-Python notebook](examples/intro_to_remo-python.ipynb)
+Uploading annotations | [Upload Annotations and Predictions Tutorial notebook](examples/tutorial_upload_annotations.ipynb)
+Easier dataset management for PyTorch Image Classification | [PyTorch Image Classification notebook](examples/tutorial_pytorch_image_classification.ipynb)
+Object Detection  | Work in progress
+=======
+What | Where
+---|---
+Documentation | [Official Docs](https://remo.ai/docs/sdk-intro/)
+Intro Notebook | [Intro to Remo-Python notebook](examples/intro_to_remo-python.ipynb)
+Uploading annotations | [Upload Annotations and Predictions Tutorial notebook](examples/tutorial_upload_annotations.ipynb)
+Easier dataset management for PyTorch Image Classification | [PyTorch Image Classification notebook](examples/tutorial_pytorch_image_classification.ipynb)
+Easier dataset management for PyTorch Object Detection | [PyTorch Object Detection notebook](examples/tutorial_pytorch_object_detection.ipynb)
+>>>>>>> 359e82aafdb0b46ce242d8a8048b50852788f45d
 
 <br/>
 
-## Get in touch
+## :tada: What's new
+1-Sep-2020: Added tutorial on Remo for PyTorch Object Detection
+
+<br/>
+
+## :gift: What we are working on next
+
+- Tighter integration with PyTorch
+- Ability to split datasets in train vs test
+- Ability to store and inspect models' performance in remo
+
+<br/>
+
+## :bug: Get in touch
 If you have any issues around the library, feel free to open an issue in the repo.
 
 For anything else, you can write on our <a href="https://discuss.remo.ai" target="_blank">discuss forum.</a>  
 
 <br/>
 
-## What are we working on next
-
-- Tighter integration with PyTorch
-- Ability to split datasets in train vs test
-- Ability to store and inspect models' performance in remo
-
-## For contributors
+## :raising_hand: For contributors
 
 The library is organized in 3 main layers:
 - api
