@@ -62,31 +62,13 @@ To read more about installation and other features, visit [remo.ai](http://remo.
 
 You can see example of usage of the library in our documentiation or in the examples folder. 
 
-<<<<<<< HEAD
 What | Where | Colab Links
 ---|--- | ---
 Documentation | [Official Docs](https://remo.ai/docs/sdk-intro/) | -
 Intro Notebook | [Intro to Remo-Python notebook](examples/intro_to_remo-python.ipynb) | -
 Uploading annotations | [Upload Annotations and Predictions Tutorial notebook](examples/tutorial_upload_annotations.ipynb) | -
 Easier dataset management for PyTorch Image Classification | [PyTorch Image Classification notebook](examples/tutorial_pytorch_image_classification.ipynb) | [![im_classification_tutorial](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/rediscovery-io/remo-python/blob/master/examples/google-colab/tutorial_pytorch_image_classification.ipynb)
-Object Detection  | [PyTorch Object Detection Notebook](examples/tutorial_pytorch_object_detection.ipynb) | [![obj_detection_tutorial](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/rediscovery-io/remo-python/blob/master/examples/google-colab/tutorial_pytorch_object_detection.ipynb)
-||||||| merged common ancestors
-What | Where
----|---
-Documentation | [Official Docs](https://remo.ai/docs/sdk-intro/)
-Intro Notebook | [Intro to Remo-Python notebook](examples/intro_to_remo-python.ipynb)
-Uploading annotations | [Upload Annotations and Predictions Tutorial notebook](examples/tutorial_upload_annotations.ipynb)
-Easier dataset management for PyTorch Image Classification | [PyTorch Image Classification notebook](examples/tutorial_pytorch_image_classification.ipynb)
-Object Detection  | Work in progress
-=======
-What | Where
----|---
-Documentation | [Official Docs](https://remo.ai/docs/sdk-intro/)
-Intro Notebook | [Intro to Remo-Python notebook](examples/intro_to_remo-python.ipynb)
-Uploading annotations | [Upload Annotations and Predictions Tutorial notebook](examples/tutorial_upload_annotations.ipynb)
-Easier dataset management for PyTorch Image Classification | [PyTorch Image Classification notebook](examples/tutorial_pytorch_image_classification.ipynb)
-Easier dataset management for PyTorch Object Detection | [PyTorch Object Detection notebook](examples/tutorial_pytorch_object_detection.ipynb)
->>>>>>> 359e82aafdb0b46ce242d8a8048b50852788f45d
+Easier dataset management for PyTorch Object Detection  | [PyTorch Object Detection Notebook](examples/tutorial_pytorch_object_detection.ipynb) | [![obj_detection_tutorial](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/rediscovery-io/remo-python/blob/master/examples/google-colab/tutorial_pytorch_object_detection.ipynb)
 
 <br/>
 
