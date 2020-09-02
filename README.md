@@ -13,7 +13,9 @@ Use remo to:
 - **visualise statistics** like # objects per class
 - **quickly annotate** your images
 
-Remo runs on Windows, Linux and Mac. It is written using Python and React.JS and uses a lightweight database to store metadata.
+Remo runs on Windows, Linux and Mac. It can be accessed from within Jupyter Notebooks, Colab Notebooks, a browser tab or its own app.
+
+It is written using Python and React.JS and uses a lightweight database to store metadata.
 
 [![pypi Version](https://img.shields.io/pypi/v/remo-python.svg?color=cool&logo=pypi&logoColor=white)](https://pypi.org/project/remo/) [![PyPi Downloads](https://img.shields.io/pypi/dm/remo?color=cool&logo=pypi&logoColor=white)](https://pypi.org/project/remo/)
 
