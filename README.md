@@ -1,6 +1,7 @@
 <img src="https://github.com/rediscovery-io/remo-python/blob/master/img/remo_normal.png" width="200">
 
 # Welcome to remo
+[![pypi Version](https://img.shields.io/pypi/v/remo-python.svg?color=cool&logo=pypi&logoColor=white)](https://pypi.org/project/remo/) [![PyPi Downloads](https://img.shields.io/pypi/dm/remo?color=cool&logo=pypi&logoColor=white)](https://pypi.org/project/remo/)
 
 This the open source repository for remo python library. 
 
@@ -17,7 +18,7 @@ Remo runs on Windows, Linux and Mac. It can be accessed from within Jupyter Note
 
 It is written using Python and React.JS and uses a lightweight database to store metadata.
 
-[![pypi Version](https://img.shields.io/pypi/v/remo-python.svg?color=cool&logo=pypi&logoColor=white)](https://pypi.org/project/remo/) [![PyPi Downloads](https://img.shields.io/pypi/dm/remo?color=cool&logo=pypi&logoColor=white)](https://pypi.org/project/remo/)
+
 
 # Table of Contents
 [:smirk: Quick installation](#smirk-quick-installation)</br>
