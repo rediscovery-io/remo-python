@@ -11,6 +11,7 @@
 
 <p align="center">
     <a href="#welcome-to-remo">Welcome</a> •
+  <a href="#features">Features</a> •
   <a href="#smirk-quick-installation">Installation</a> •
   <a href="#rabbit-remo-python-library">Remo-python</a> •
   <a href="#tada-whats-new">What's new</a> •
@@ -41,7 +42,9 @@ It has been designed to be your team's private platform to manage images, in an 
 
 <p align="center"><img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400></p>
 
-**Features**
+----
+
+## Features
 
 *Configuration*
 
@@ -57,6 +60,9 @@ It has been designed to be your team's private platform to manage images, in an 
 - Support for many annotation formats: import and export using a variety of formats (CoCo, Pascal, CSV, etc) and options (skip images witha no annotations, append file paths, etc)
 - Abiliy to upload data directly from URLs or as an archive
 
+
+<br/>
+
 *Annotation*
 
 - Support for Polygons, Bounding boxes, Image labels and Tags
@@ -65,12 +71,17 @@ It has been designed to be your team's private platform to manage images, in an 
 - One-click group actions: rename or delete objects of a class, duplicate sets of annotation
 
 
+<br/>
+
 *Dataset management*
 
 - Centralized access to your data - link directly to your images, in whatever folder they are
 - Easily query your data, searching by filename, class, tag
 - Immediately visualize aggregated statiscs on your datasets
 - Version your annotations using Annotation Sets, and your images using virtual datasets
+
+
+<br/>
 
 *Integration from code*
 
