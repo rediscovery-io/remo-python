@@ -7,6 +7,11 @@ This the open source repository for remo python library.
 
 Remo is an open-access web-based platform for managing, visualising and annotatig Computer Vision datasets.
 
+See it in action: 
+
+<p align="center"><b>Visualizing Datasets: in standard Python vs Remo</b></p>
+<p align="center"><img width="500" src="https://i.imgur.com/LQohoPl.gif"></p>
+
 Use remo to:
 
 - **visualise and inspect** datasets and annotations
@@ -17,6 +22,7 @@ Use remo to:
 Remo runs on Windows, Linux and Mac. It can be accessed from within Jupyter Notebooks, Colab Notebooks, a browser tab or its own app.
 
 It is written using Python and React.JS and uses a lightweight database to store metadata.
+
 
 
 # Table of Contents
