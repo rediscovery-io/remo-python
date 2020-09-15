@@ -18,9 +18,6 @@ Remo runs on Windows, Linux and Mac. It can be accessed from within Jupyter Note
 
 It is written using Python and React.JS and uses a lightweight database to store metadata.
 
-Here's a video comparing visualizing datasets in Python VS using Remo from python
-
-<p align="center"><img width="600" src="https://i.imgur.com/JfhaW4D.gif"></p>
 
 # Table of Contents
 [:smirk: Quick installation](#smirk-quick-installation)</br>
