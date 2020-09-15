@@ -5,18 +5,19 @@
 
 Remo is an open-access web-based platform for managing, annotating and visualizing Computer Vision datasets.
 
-Use remo to:
+Use Remo to:
 
 - **visualise and inspect** datasets and annotations
 - **organise and search** your images
 - **visualise statistics** like # objects per class
 - **quickly annotate as a team**
 
-Remo runs on Windows, Linux and Mac. It can be accessed from within Jupyter Notebooks, Colab Notebooks, a browser tab or its own app.
+It can be installed on on Windows, Linux, Mac or directly in Google Colab Notebooks.
+It can be accessed from within Jupyter Notebooks, a browser tab or on its own app.
 
 See it in action: 
 
-<p align="center"><b>Visualizing Datasets: in standard Python vs Remo</b></p>
+<p align="center">Visualizing Datasets in Jupyter: standard Python vs Remo</p>
 <p align="center"><img width="500" src="https://i.imgur.com/LQohoPl.gif"></p>
 
 
