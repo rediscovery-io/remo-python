@@ -3,9 +3,7 @@
 # Welcome to remo
 [![pypi Version](https://img.shields.io/pypi/v/remo-python.svg?color=cool&logo=pypi&logoColor=white)](https://pypi.org/project/remo/) [![PyPi Downloads](https://img.shields.io/pypi/dm/remo?color=cool&logo=pypi&logoColor=white)](https://pypi.org/project/remo/)
 
-This the open source repository for remo python library. 
-
-Remo is an open-access web-based platform for managing, visualising and annotatig Computer Vision datasets.
+Remo is an open-access web-based platform for managing, annotating and visualizing Computer Vision datasets.
 
 See it in action: 
 
@@ -23,6 +21,7 @@ Remo runs on Windows, Linux and Mac. It can be accessed from within Jupyter Note
 
 It is written using Python and React.JS and uses a lightweight database to store metadata.
 
+This repo is the open source repository for the remo python library. 
 
 
 # Table of Contents
