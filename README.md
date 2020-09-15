@@ -36,17 +36,23 @@ It is designed to be your team's private platform to manage images in an end-to-
 - **organize and search** your images
 - **quickly annotate as a team**
 
-**Configuration:**
+<br/>
+
+**Configuration**
 
 - Runs on Windows, Linux, Mac or directly in Google Colab Notebooks
 - Can be used on a private server to be accessed as a team
 - Can be accessed from within Jupyter Notebooks, a browser tab or on its own app
 
-**Supported data:**
+<br/>
+
+**Supported data**
 
 - Images: jpeg, jpgs, png, tiff
 - Annotations: import and export in a variety of formats (CoCo, Pascal, CSV, etc) and options (skip images witha no annotations, append file paths, etc)
 - Support for polygons, bounding boxes, image labels and tags
+
+<br/>
 
 **See it in action:**
 
@@ -54,8 +60,8 @@ It is designed to be your team's private platform to manage images in an end-to-
 <p align="center"><img width="500" src="https://i.imgur.com/LQohoPl.gif"></p>
 
 
-**About Remo:**
-- It is written using Python, React.JS and PostgreSQL to store metadata
+**About:**
+- Remo is written using Python, React.JS and PostgreSQL to store metadata
 - This repo is the open source repo for the Remo python library, which allows to call Remo directly from Python
 - Remo itself has a permissive license, allowing for free commercial use (provided you give credits and don't redistribute or expose a modified version)
 - Read more here: [remo.ai](http://remo.ai)
