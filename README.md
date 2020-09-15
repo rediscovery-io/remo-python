@@ -1,15 +1,33 @@
-<img src="https://github.com/rediscovery-io/remo-python/blob/master/img/remo_normal.png" width="200">
+<p align="center"><img src="https://github.com/rediscovery-io/remo-python/blob/master/img/remo_normal.png" width="200"></p>
+
+<p align="center">
+  <a href="https://pypi.org/project/remo/">
+    <img src="https://img.shields.io/pypi/v/remo-python.svg?color=cool&logo=pypi&logoColor=white">
+  </a>
+  <a href="https://pypi.org/project/remo/">
+    <img src="https://img.shields.io/pypi/dm/remo?color=cool&logo=pypi&logoColor=white">
+  </a>
+</p>
+
+<p align="center">
+    <a href="#welcome-to-remo">Welcome</a> •
+  <a href="#smirk-quick-installation">Installation</a> •
+  <a href="#rabbit-remo-python-library">Remo-python</a> •
+  <a href="#tada-whats-new">What's new</a> •
+  <a href="#gift-what-we-are-working-on-next">What's next</a> •
+  <a href="#bug-get-in-touch">Get in touch</a>
+</p>
+
+---
 
 # Welcome to remo
-[![pypi Version](https://img.shields.io/pypi/v/remo-python.svg?color=cool&logo=pypi&logoColor=white)](https://pypi.org/project/remo/) [![PyPi Downloads](https://img.shields.io/pypi/dm/remo?color=cool&logo=pypi&logoColor=white)](https://pypi.org/project/remo/)
+
 
 Remo is an open-access web-based platform for managing, annotating and visualizing Computer Vision datasets.
 
-
 It is designed to be your team's private platform to manage images in an end-to-end fashion.
 
-The idea behind is simple: data is your most precious asset, you have to make sure you keep track of all of it: annotations, predictions, images and metadata.
-
+<img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
 
 **Use Remo to:**
 
@@ -25,8 +43,8 @@ The idea behind is simple: data is your most precious asset, you have to make su
 
 **Supported data:**
 
-- Images can be loaded as jpeg, jpgs, png, tiff
-- Annotations can be imported and exported in a variety of formats (CoCo, Pascal, CSV, etc)
+- Images: jpeg, jpgs, png, tiff
+- Annotations: import and export in a variety of formats (CoCo, Pascal, CSV, etc) and options (skip images witha no annotations, append file paths, etc)
 - Support for polygons, bounding boxes, image labels and tags
 
 **See it in action:**
@@ -34,21 +52,12 @@ The idea behind is simple: data is your most precious asset, you have to make su
 <p align="center">Visualizing Datasets in Jupyter: standard Python vs Remo</p>
 <p align="center"><img width="500" src="https://i.imgur.com/LQohoPl.gif"></p>
 
-Remo is written using Python and React.JS and uses a lightweight database to store metadata.
 
-This repo is the open source repository for the Remo python library, which allows to call Remo directly from Python.
-
-
-# Table of Contents
-[:smirk: Quick installation](#smirk-quick-installation)</br>
-[:rabbit: Remo python library](#rabbit-remo-python-library)</br>
-[:tada: What's new](#tada-whats-new)</br>
-[:gift: What we are working on next](#gift-what-we-are-working-on-next)</br>
-[:bug: Get in touch](#bug-get-in-touch)</br>
-[:raising_hand: For contributors](#raising_hand-for-contributors)</br>
-
-
-
+**About Remo:**
+- Remo is written using Python and React.JS and uses a PostgreSQL database to store metadata
+- This repo is the open source repository for the Remo python library, which allows to call Remo directly from Python
+- Remo itself has a permissive license, allowing for free commercial use (provided you give credits and don't redistribute or expose a modified version)
+- Read more here: [remo.ai](http://remo.ai)
 
 
 <br/>
@@ -70,8 +79,6 @@ To call Remo from python once you have a server running, use `import remo`.
 
 To read more about installation and other features, visit [remo.ai](http://remo.ai)
 
-
-<img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
 
 <br/>
 
