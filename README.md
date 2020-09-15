@@ -23,34 +23,60 @@
 # Welcome to remo
 
 
-Remo is an open-access web-based platform for managing, annotating and visualizing Computer Vision datasets.
+Remo is a web-based application to organize, annotate and visualize Computer Vision datasets.
 
-It is designed to be your team's private platform to manage images in an end-to-end fashion.
+It has been designed to be your team's private platform to manage images, in an End-to-End fashion.
 <br/>
-
-<img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
 
 **Use Remo to:**
 
-- **visualize and inspect** datasets, annotations, statistics
-- **organize and search** your images
-- **quickly annotate as a team**
+- **access your datasets from one place**, avoiding scattered files and keeping data secure locally
+- **quickly annotate** your images. We designed our annotation tool from the ground-up
+- **build better datasets** and models, by exploring in depth your Images and Annotations data
+- **collaborate with your team**, accessing the same data remotely
 
 <br/>
+<br/>
 
-**Configuration**
+
+<p align="center"><img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400></p>
+
+**Features**
+
+*Configuration*
 
 - Runs on Windows, Linux, Mac or directly in Google Colab Notebooks
-- Can be used on a private server to be accessed as a team
+- Can be served on a private server, accessed remotely for team collaboration
 - Can be accessed from within Jupyter Notebooks, a browser tab or on its own app
 
 <br/>
 
-**Supported data**
+*Supported data*
 
-- Images: jpeg, jpgs, png, tiff
-- Annotations: import and export in a variety of formats (CoCo, Pascal, CSV, etc) and options (skip images witha no annotations, append file paths, etc)
-- Support for polygons, bounding boxes, image labels and tags
+- Compatible with all the most common image formats: jpeg, jpgs, png, tiff
+- Support for many annotation formats: import and export using a variety of formats (CoCo, Pascal, CSV, etc) and options (skip images witha no annotations, append file paths, etc)
+- Abiliy to upload data directly from URLs or as an archive
+
+*Annotation*
+
+- Support for Polygons, Bounding boxes, Image labels and Tags
+- Manage annotation progress: Sort images by On Hold, Done, To Do and visualize % completion
+- Faster annotation thanks to keyboard shortcuts and the custom design
+- One-click group actions: rename or delete objects of a class, duplicate sets of annotation
+
+
+*Dataset management*
+
+- Centralized access to your data - link directly to your images, in whatever folder they are
+- Easily query your data, searching by filename, class, tag
+- Immediately visualize aggregated statiscs on your datasets
+- Version your annotations using Annotation Sets, and your images using virtual datasets
+
+*Integration from code*
+
+- An easier way to pass annotations and image data to your models
+- Visualize and store your annotations and predictions
+- Create multiple virtual train/test splits without needing to move data around
 
 <br/>
 
