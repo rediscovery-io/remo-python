@@ -61,6 +61,7 @@ It is designed to be your team's private platform to manage images in an end-to-
 
 
 <br/>
+
 **About:**
 - Remo is written using Python, React.JS and PostgreSQL to store metadata
 - This repo is the open source repo for the Remo python library, which allows to call Remo directly from Python
