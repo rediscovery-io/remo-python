@@ -20,11 +20,9 @@ See it in action:
 <p align="center">Visualizing Datasets in Jupyter: standard Python vs Remo</p>
 <p align="center"><img width="500" src="https://i.imgur.com/LQohoPl.gif"></p>
 
-
-**About Remo**
 Remo is written using Python and React.JS and uses a lightweight database to store metadata.
 
-This repo is the open source repository for the remo python library, which allows to call Remo directly from Python.
+This repo is the open source repository for the Remo python library, which allows to call Remo directly from Python.
 
 
 # Table of Contents
@@ -52,8 +50,8 @@ This will install both the Python library and the remo app.
 
 That's it! 
 
-To launch remo, run `python -m remo_app`. 
-To call remo from python once you have a server running, use `import remo`.
+To launch Remo, run `python -m remo_app`. 
+To call Remo from python once you have a server running, use `import remo`.
 
 
 To read more about installation and other features, visit [remo.ai](http://remo.ai)
