@@ -56,10 +56,11 @@ It is designed to be your team's private platform to manage images in an end-to-
 
 **See it in action:**
 
-<p align="center">Visualizing Datasets in Jupyter: standard Python vs Remo</p>
-<p align="center"><img width="500" src="https://i.imgur.com/LQohoPl.gif"></p>
+<p align="center">Visualizing Datasets in Jupyter with Remo</p>
+<p align="center"><img width="500" src="https://i.imgur.com/47wEEob.gif"></p>
 
 
+<br/>
 **About:**
 - Remo is written using Python, React.JS and PostgreSQL to store metadata
 - This repo is the open source repo for the Remo python library, which allows to call Remo directly from Python
