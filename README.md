@@ -26,6 +26,7 @@
 Remo is an open-access web-based platform for managing, annotating and visualizing Computer Vision datasets.
 
 It is designed to be your team's private platform to manage images in an end-to-end fashion.
+<br/>
 
 <img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400>
 
@@ -54,8 +55,8 @@ It is designed to be your team's private platform to manage images in an end-to-
 
 
 **About Remo:**
-- Remo is written using Python and React.JS and uses a PostgreSQL database to store metadata
-- This repo is the open source repository for the Remo python library, which allows to call Remo directly from Python
+- It is written using Python, React.JS and PostgreSQL to store metadata
+- This repo is the open source repo for the Remo python library, which allows to call Remo directly from Python
 - Remo itself has a permissive license, allowing for free commercial use (provided you give credits and don't redistribute or expose a modified version)
 - Read more here: [remo.ai](http://remo.ai)
 
