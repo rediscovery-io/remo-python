@@ -11,7 +11,7 @@
 
 <p align="center">
     <a href="#welcome-to-remo">Welcome</a> •
-  <a href="#features">Features</a> •
+  <a href="#deciduous-tree-features">Features</a> •
   <a href="#smirk-quick-installation">Installation</a> •
   <a href="#rabbit-remo-python-library">Remo-python</a> •
   <a href="#tada-whats-new">What's new</a> •
@@ -26,7 +26,7 @@
 
 Remo is a web-based application to organize, annotate and visualize Computer Vision datasets.
 
-It has been designed to be your team's private platform to manage images, in an End-to-End fashion.
+It has been designed to be your team's private platform to manage images, in an end-to-end fashion.
 <br/>
 
 **Use Remo to:**
@@ -48,7 +48,7 @@ This repo is the open source repo for the Remo python library.
 
 <br/>
 
-# Features
+# :deciduous_tree: Features
 
 *Integration from code*
 
