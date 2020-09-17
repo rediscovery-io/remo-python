@@ -37,12 +37,19 @@ It has been designed to be your team's private platform to manage images, in an 
 - **collaborate with your team**, accessing the same data remotely
 
 <br/>
-<br/>
 
+<p align="center">Visualizing Datasets in Jupyter with Remo</p>
+<p align="center"><img width="500" src="https://i.imgur.com/47wEEob.gif"></p>
 
-<p align="center"><img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400></p>
+---
+
+<p align="center">Annotating using Bounding Box and smart zoom</p>
+<p align="center"><img width="500" src="https://i.imgur.com/hm1tH4p.gif"></p>
+
 
 ----
+
+<br/>
 
 ## Features
 
@@ -91,13 +98,7 @@ It has been designed to be your team's private platform to manage images, in an 
 
 <br/>
 
-**See it in action:**
-
-<p align="center">Visualizing Datasets in Jupyter with Remo</p>
-<p align="center"><img width="500" src="https://i.imgur.com/47wEEob.gif"></p>
-
-
-<br/>
+<p align="center"><img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400></p>
 
 **About Remo**
 
