@@ -50,9 +50,9 @@ It can also be served on a private server for team collaboration, or embedded in
 
 *Integration from code*
 
-- **Easily visualize and browse images, predictions and annotations**
-- **Flexibility in slicing data, without moving it around**: you can create virtual train/test/splits, have data in different folders or even select specific images using tags
-- Allows for a **more standardized interface across different tasks** 
+- **Easily visualize and browse** images, predictions and annotations
+- **Flexibility in slicing data**, without moving it around: you can create virtual train/test/splits, have data in different folders or even select specific images using tags
+- Allows for a more **standardized code interface across tasks** 
 
 <br/>
 
@@ -71,17 +71,19 @@ It can also be served on a private server for team collaboration, or embedded in
 *Supported annotation formats*
 
 - Support for Polygons, Bounding boxes, Image labels and Tags
-- Multiple import and export formats: CoCo, Pascal, CSV, etc
+- Multiple import and export formats,: CoCo, Pascal, CSV, etc
 - Convenient import and export options: skip images without annotations, append file paths, use custom label encoding
+
+Read more here: https://remo.ai/docs/annotation-formats/
 
 <br/>
 
 *Dataset management*
 
-- Centralized access to your data - link directly to your images, in whatever folder they are
-- Easily query your data, searching by filename, class, tag
-- Immediately visualize aggregated statiscs on your datasets
-- Version your annotations using Annotation Sets, and your images using virtual datasets
+- **Centralized access to your data** - link directly to your images, in whatever folder they are
+- **Easily query your data**, searching by filename, class, tag
+- Immediately **visualize aggregated statistics** on your datasets
+- Manage **mupltiple versions of your annotations** using Annotation Sets
 
 
 <br/>
