@@ -40,7 +40,7 @@ It has been designed to be your team's private platform to manage images, in an 
 Remo runs on Windows, Linux, Mac or directly in Google Colab Notebooks. 
 It can also be served on a private server for team collaboration, or embedded in Jupyter Notebooks.
 
-This repo is the open source repo for the Remo python library.
+This repo is the open source repo for the Remo python library. To access the docs and try the online demo: https://remo.ai
 
 <br/>
 
@@ -58,7 +58,7 @@ This repo is the open source repo for the Remo python library.
 
 <br/>
 
-<p align="center"><img src=examples/assets/train_test_stats.JPG height=150></p>
+<p align="center"><img src=examples/assets/train_test_stats.JPG height=220></p>
 
 
 <br/>
