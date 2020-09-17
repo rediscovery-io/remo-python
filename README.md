@@ -40,6 +40,8 @@ It has been designed to be your team's private platform to manage images, in an 
 Remo runs on Windows, Linux, Mac or directly in Google Colab Notebooks. 
 It can also be served on a private server for team collaboration, or embedded in Jupyter Notebooks.
 
+This repo is the open source repo for the Remo python library.
+
 <br/>
 
 <p align="center"><img width="500" src="https://i.imgur.com/47wEEob.gif"></p>
@@ -62,19 +64,15 @@ It can also be served on a private server for team collaboration, or embedded in
 - **Manage annotation progress**: organize images by status (to do, done, on hold) and track % completion
 - **One-click edits on multiple objects**: rename or delete all the objects of a class, duplicate sets of annotation
 
+Supported formats: Polygons, Bounding boxes, Image labels and Tags. 
+
+Multiple import and export formats (CoCo, Pascal, CSV, etc). Convenient import and export options (skip images without annotations, append file paths, label encoding, etc)
+
+Read more here: https://remo.ai/docs/annotation-formats/
 <br/>
 <br/>
 <p align="center"><img src=examples/assets/annotation_progress.jpg height=150></p>
 
-<br/>
-
-*Supported annotation formats*
-
-- Support for Polygons, Bounding boxes, Image labels and Tags
-- Multiple import and export formats,: CoCo, Pascal, CSV, etc
-- Convenient import and export options: skip images without annotations, append file paths, use custom label encoding
-
-Read more here: https://remo.ai/docs/annotation-formats/
 
 <br/>
 
@@ -84,7 +82,6 @@ Read more here: https://remo.ai/docs/annotation-formats/
 - **Easily query your data**, searching by filename, class, tag
 - Immediately **visualize aggregated statistics** on your datasets
 - Manage **mupltiple versions of your annotations** using Annotation Sets
-
 
 <br/>
 
@@ -106,16 +103,6 @@ PyTorch Object Detection using Remo | [PyTorch Object Detection Notebook](exampl
 
 <br/>
 
-
-**About Remo**
-
-- Remo is written using Python, React.JS and PostgreSQL to store metadata
-- This repo is the open source repo for the Remo python library, which allows to call Remo directly from Python
-- Remo itself has a permissive license, allowing for free commercial use (provided you give credits and don't redistribute or expose a modified version)
-- Read more here: [remo.ai](http://remo.ai)
-
-
-<br/>
 
 ## :smirk: Quick installation
 
