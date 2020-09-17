@@ -11,7 +11,7 @@
 
 <p align="center">
     <a href="#welcome-to-remo">Welcome</a> •
-  <a href="#deciduous-tree-features">Features</a> •
+  <a href="#deciduous_tree-features">Features</a> •
   <a href="#smirk-quick-installation">Installation</a> •
   <a href="#rabbit-remo-python-library">Remo-python</a> •
   <a href="#tada-whats-new">What's new</a> •
