@@ -37,7 +37,8 @@ It has been designed to be your team's private platform to manage images, in an 
 - **collaborate with your team**, accessing the same data remotely
 
 
-Remo runs on Windows, Linux, Mac or directly in Google Colab Notebooks. It can also be served on a private server for team collaboration.
+Remo runs on Windows, Linux, Mac or directly in Google Colab Notebooks. 
+It can also be served on a private server for team collaboration, or embedded in Jupyter Notebooks.
 
 <br/>
 
@@ -49,31 +50,29 @@ Remo runs on Windows, Linux, Mac or directly in Google Colab Notebooks. It can a
 
 *Integration from code*
 
-- An easier way to pass annotations and image data to your models
-- Visualize and store your annotations and predictions
-- Create multiple virtual train/test splits without needing to move data around
-- Embed Remo directly in Jupyter or run it enterly in Colab notebooks
-
-<br/>
-
-*Image and Annotation files*
-
-- Compatible with all the most common image formats: jpeg, jpgs, png, tiff
-- Support for many annotation formats: import and export using a variety of formats (CoCo, Pascal, CSV, etc) and options (skip images witha no annotations, append file paths, etc)
-- Abiliy to upload data directly from URLs and archives
+- **Easily visualize and browse images, predictions and annotations**
+- **Flexibility in slicing data, without moving it around**: you can create virtual train/test/splits, have data in different folders or even select specific images using tags
+- Allows for a **more standardized interface across different tasks** 
 
 <br/>
 
 *Annotation*
 
-- Support for Polygons, Bounding boxes, Image labels and Tags
-- Manage annotation progress: Sort images by On Hold, Done, To Do and visualize % completion
-- Faster annotation thanks to keyboard shortcuts and the custom design
-- One-click group actions: rename or delete objects of a class, duplicate sets of annotation
+- **Faster annotation** thanks to an annotation tool we designed from the ground-up
+- **Manage annotation progress**: organize images by status (to do, done, on hold) and track % completion
+- **One-click edits on multiple objects**: rename or delete all the objects of a class, duplicate sets of annotation
 
 <br/>
 <br/>
 <p align="center"><img src=examples/assets/annotation_progress.jpg height=150></p>
+
+<br/>
+
+*Supported annotation formats*
+
+- Support for Polygons, Bounding boxes, Image labels and Tags
+- Multiple import and export formats: CoCo, Pascal, CSV, etc
+- Convenient import and export options: skip images without annotations, append file paths, use custom label encoding
 
 <br/>
 
