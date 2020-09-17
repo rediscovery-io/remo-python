@@ -36,37 +36,31 @@ It has been designed to be your team's private platform to manage images, in an 
 - **build better datasets** and models, by exploring in depth your Images and Annotations data
 - **collaborate with your team**, accessing the same data remotely
 
+
+Remo runs on Windows, Linux, Mac or directly in Google Colab Notebooks. It can also be served on a private server for team collaboration.
+
 <br/>
 
-<p align="center">Visualizing Datasets in Jupyter with Remo</p>
 <p align="center"><img width="500" src="https://i.imgur.com/47wEEob.gif"></p>
 
----
+<br/>
 
-<p align="center">Annotating using Bounding Box and smart zoom</p>
-<p align="center"><img width="500" src="https://i.imgur.com/hm1tH4p.gif"></p>
+# Features
 
+*Integration from code*
 
-----
+- An easier way to pass annotations and image data to your models
+- Visualize and store your annotations and predictions
+- Create multiple virtual train/test splits without needing to move data around
+- Embed Remo directly in Jupyter or run it enterly in Colab notebooks
 
 <br/>
 
-## Features
-
-*Configuration*
-
-- Runs on Windows, Linux, Mac or directly in Google Colab Notebooks
-- Can be served on a private server, accessed remotely for team collaboration
-- Can be accessed from within Jupyter Notebooks, a browser tab or on its own app
-
-<br/>
-
-*Supported data*
+*Image and Annotation files*
 
 - Compatible with all the most common image formats: jpeg, jpgs, png, tiff
 - Support for many annotation formats: import and export using a variety of formats (CoCo, Pascal, CSV, etc) and options (skip images witha no annotations, append file paths, etc)
-- Abiliy to upload data directly from URLs or as an archive
-
+- Abiliy to upload data directly from URLs and archives
 
 <br/>
 
@@ -77,6 +71,9 @@ It has been designed to be your team's private platform to manage images, in an 
 - Faster annotation thanks to keyboard shortcuts and the custom design
 - One-click group actions: rename or delete objects of a class, duplicate sets of annotation
 
+<br/>
+<br/>
+<p align="center"><img src=examples/assets/annotation_progress.jpg height=150></p>
 
 <br/>
 
@@ -90,15 +87,24 @@ It has been designed to be your team's private platform to manage images, in an 
 
 <br/>
 
-*Integration from code*
+<p align="center"><img src=examples/assets/dataset.jpeg alt="alt text" height=200>
+  
+<br/>
 
-- An easier way to pass annotations and image data to your models
-- Visualize and store your annotations and predictions
-- Create multiple virtual train/test splits without needing to move data around
+## :rabbit: Remo python library
+
+You can see example of usage of the library in our documentiation or in the examples folder. 
+
+What | Where | Colab Links
+---|--- | ---
+Documentation | [Official Docs](https://remo.ai/docs/sdk-intro/) | -
+Intro Notebook | [Intro to Remo-Python notebook](examples/intro_to_remo-python.ipynb) | -
+Uploading annotations | [Upload Annotations and Predictions Tutorial notebook](examples/tutorial_upload_annotations.ipynb) | -
+PyTorch Image Classification using Remo | [PyTorch Image Classification notebook](examples/tutorial_pytorch_image_classification.ipynb) | [![im_classification_tutorial](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/rediscovery-io/remo-python/blob/master/examples/google-colab/tutorial_pytorch_image_classification.ipynb)
+PyTorch Object Detection using Remo | [PyTorch Object Detection Notebook](examples/tutorial_pytorch_object_detection.ipynb) | [![obj_detection_tutorial](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/rediscovery-io/remo-python/blob/master/examples/google-colab/tutorial_pytorch_object_detection.ipynb)
 
 <br/>
 
-<p align="center"><img src=examples/assets/dataset.jpeg alt="alt text" width=400><img src=examples/assets/annotation_tool.jpeg width=400></p>
 
 **About Remo**
 
@@ -130,22 +136,6 @@ To read more about installation and other features, visit [remo.ai](http://remo.
 
 <br/>
 
-
-
-
-## :rabbit: Remo python library
-
-You can see example of usage of the library in our documentiation or in the examples folder. 
-
-What | Where | Colab Links
----|--- | ---
-Documentation | [Official Docs](https://remo.ai/docs/sdk-intro/) | -
-Intro Notebook | [Intro to Remo-Python notebook](examples/intro_to_remo-python.ipynb) | -
-Uploading annotations | [Upload Annotations and Predictions Tutorial notebook](examples/tutorial_upload_annotations.ipynb) | -
-PyTorch Image Classification using Remo | [PyTorch Image Classification notebook](examples/tutorial_pytorch_image_classification.ipynb) | [![im_classification_tutorial](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/rediscovery-io/remo-python/blob/master/examples/google-colab/tutorial_pytorch_image_classification.ipynb)
-PyTorch Object Detection using Remo | [PyTorch Object Detection Notebook](examples/tutorial_pytorch_object_detection.ipynb) | [![obj_detection_tutorial](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/rediscovery-io/remo-python/blob/master/examples/google-colab/tutorial_pytorch_object_detection.ipynb)
-
-<br/>
 
 ## :tada: What's new
 1-Sep-2020: Added tutorial on Remo for PyTorch Object Detection
