@@ -88,6 +88,7 @@ Read more here: https://remo.ai/docs/annotation-formats/
 <p align="center"><img src=examples/assets/dataset.jpeg alt="alt text" height=200>
   
 <br/>
+<br/>
 
 ## :rabbit: Remo python library
 
