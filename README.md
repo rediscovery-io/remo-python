@@ -57,11 +57,12 @@ This repo is the open source repo for the Remo python library.
 - Allows for a more **standardized code interface across tasks** 
 
 <br/>
-<br/>
+
 <p align="center"><img src=examples/assets/train_test_stats.JPG height=150></p>
 
 
 <br/>
+
 *Annotation*
 
 - **Faster annotation** thanks to an annotation tool we designed from the ground-up
