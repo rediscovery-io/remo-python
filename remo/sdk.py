@@ -401,7 +401,8 @@ class SDK:
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
         append_path: bool = True,
-        export_tags : bool = True
+        export_tags : bool = True,
+        filter_by_tags: list = None
     ) -> bytes:
         """
         Exports annotations with the chosen format.
@@ -412,6 +413,7 @@ class SDK:
             append_path: if True, appends the path to the filename (e.g. local path). Default: True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
             export_tags: if True, exports the tags to a CSV file. Default: True
+            filter_by_tags: allows to filter results by tags, can be list or str
             
         Returns:
             annotation file content
@@ -421,7 +423,8 @@ class SDK:
             annotation_format=annotation_format,
             export_coordinates=export_coordinates,
             full_path=append_path,
-            export_tags=export_tags
+            export_tags=export_tags,
+            filter_by_tags=filter_by_tags
         )
 
     def export_annotations_to_file(
@@ -431,7 +434,8 @@ class SDK:
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
         append_path: bool = True,
-        export_tags: bool = True
+        export_tags: bool = True,
+        filter_by_tags: list = None
     ):
         """
         Exports annotations to a file with the chosen format.
@@ -443,13 +447,15 @@ class SDK:
             append_path: if True, appends the path to the filename (e.g. local path). Default: True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
             export_tags: if True, exports also all the tags to a CSV file. Default: True
+            filter_by_tags: allows to filter results by tags, can be list or str
         """
         content = self.export_annotations(
             annotation_set_id,
             annotation_format=annotation_format,
             export_coordinates=export_coordinates,
             append_path=append_path,
-            export_tags=export_tags
+            export_tags=export_tags,
+            filter_by_tags=filter_by_tags
         )
         self._save_to_file(content, output_file)
 

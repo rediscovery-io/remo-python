@@ -244,7 +244,8 @@ Annotation Sets: {n_annotation_sets}""".format(
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
         append_path: bool = True,
-        export_tags: bool = True
+        export_tags: bool = True,
+        filter_by_tags: list = None
     ) -> bytes:
         """
         Export annotations for a given annotation set
@@ -255,6 +256,7 @@ Annotation Sets: {n_annotation_sets}""".format(
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
             append_path: if True, it appends the image path to the filename, otherwise it uses just the filename. Default: True
             export_tags: if True, it also exports tags to a separate CSV file. Default: True
+            filter_by_tags: allows to filter results by tags, can be list or str
             
         Returns:
             annotation file content
@@ -265,7 +267,8 @@ Annotation Sets: {n_annotation_sets}""".format(
                 annotation_format=annotation_format,
                 export_coordinates=export_coordinates,
                 append_path=append_path,
-                export_tags=export_tags
+                export_tags=export_tags,
+                filter_by_tags=filter_by_tags
             )
 
         print('ERROR: annotation set not defined')
@@ -277,7 +280,8 @@ Annotation Sets: {n_annotation_sets}""".format(
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
         append_path: bool = True,
-        export_tags: bool = True
+        export_tags: bool = True,
+        filter_by_tags: list = None
     ):
         """
         Exports annotations in given format and save to output file
@@ -289,6 +293,7 @@ Annotation Sets: {n_annotation_sets}""".format(
             append_path: if True, it appends the image path to the filename, otherwise it uses just the filename. Default: True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
             export_tags: if True, it also exports tags to a separate CSV file. Default: True
+            filter_by_tags: allows to filter results by tags, can be list or str
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
@@ -298,7 +303,8 @@ Annotation Sets: {n_annotation_sets}""".format(
                 annotation_format=annotation_format,
                 append_path=append_path,
                 export_coordinates=export_coordinates,
-                export_tags=export_tags
+                export_tags=export_tags,
+                filter_by_tags=filter_by_tags
             )
         else:
             print('ERROR: annotation set not defined')
