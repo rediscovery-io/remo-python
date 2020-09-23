@@ -374,8 +374,9 @@ class API(BaseAPI):
         export_tags: bool = True, 
         filter_by_tags: list = None
     ) -> bytes:
+
         """
-        Exports annotations in a given file format. 
+        Exports annotations for a given annotation set.
         
         It offers some convenient export options, including:
         - Methods to append the full_path to image filenames, 

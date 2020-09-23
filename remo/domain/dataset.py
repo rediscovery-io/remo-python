@@ -248,9 +248,7 @@ Annotation Sets: {n_annotation_sets}""".format(
         filter_by_tags: list = None
     ) -> bytes:
         """
-        Export annotations for a given annotation set in a given file format. 
-        
-        Exports annotations in a given file format. 
+        Export annotations for a given annotation set.
         
         It offers some convenient export options, including:
         - Methods to append the full_path to image filenames, 
@@ -292,7 +290,13 @@ Annotation Sets: {n_annotation_sets}""".format(
         filter_by_tags: list = None
     ):
         """
-        Exports annotations in given format and save to output file
+        Exports annotations in a given format and saves it to a file.
+
+        It offers some convenient export options, including:
+        - Methods to append the full_path to image filenames, 
+        - Choose between coordinates in pixels or percentages,
+        - Export tags to a separate file
+        - Export annotations filtered by user-determined tags.
 
         Args:
             output_file: output file to save
@@ -301,7 +305,7 @@ Annotation Sets: {n_annotation_sets}""".format(
             append_path: if True, it appends the image path to the filename, otherwise it uses just the filename. Default: True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
             export_tags: if True, it also exports tags to a separate CSV file. Default: True
-            filter_by_tags: allows to filter results by tags, can be list or str
+            filter_by_tags: allows to export annotations only for images containing certain image tags. It can be of type List[str] or str. Default: None
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:

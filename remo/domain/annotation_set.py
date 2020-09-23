@@ -123,7 +123,7 @@ class AnnotationSet:
         filter_by_tags: list = None
     ):
         """
-        Exports annotations in a given file format.  
+        Exports annotations for a given annotation set.  
         
         It offers some convenient export options, including:
         - Methods to append the full_path to image filenames, 
@@ -160,8 +160,15 @@ class AnnotationSet:
         filter_by_tags: list = None
     ):
         """
-        Exports annotations in given format and save to output file
+        
+        Exports annotations in a given format and saves it to a file.
 
+        It offers some convenient export options, including:
+        - Methods to append the full_path to image filenames, 
+        - Choose between coordinates in pixels or percentages,
+        - Export tags to a separate file
+        - Export annotations filtered by user-determined tags.
+        
         Args:
             output_file: output file to save
             annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
