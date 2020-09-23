@@ -115,17 +115,25 @@ class AnnotationSet:
         self.sdk.add_annotation(self.id, image_id, annotation)
 
     def export_annotations(
-        self, annotation_format: str = 'json', export_coordinates: str = 'pixel', full_path: bool = True, export_tags: bool = True, filter_by_tags: list = None
+        self, 
+        annotation_format: str = 'json', 
+        export_coordinates: str = 'pixel', 
+        full_path: bool = True, 
+        export_tags: bool = True, 
+        filter_by_tags: list = None
     ):
         """
-        Exports annotations in a given format
+        Exports annotations in a given file format. 
+        
+        It offers a choice of convenient export options including appending the full_path to image filenames, choosing between coordinates in pixels or percentages, exporting a separate file for Image tags, and whether to export annotations for a list of images containing certain image tags.
 
         Args:
             annotation_format: choose format from this list ['json', 'coco', 'csv']
             full_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
             export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
-            filter_by_tags: allows to filter results by tags, can be list or str
+            filter_by_tags: allows to export annotations only for images containing certain image tags. It can be a list of strings or an individual str.
+            
         Returns:
             annotation file content
         """

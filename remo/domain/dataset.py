@@ -248,7 +248,9 @@ Annotation Sets: {n_annotation_sets}""".format(
         filter_by_tags: list = None
     ) -> bytes:
         """
-        Export annotations for a given annotation set
+        Export annotations for a given annotation set in a given file format. 
+        
+        It offers a choice of convenient export options including appending the full_path to image filenames, choosing between coordinates in pixels or percentages, exporting a separate file for Image tags, and whether to export annotations for a list of images containing certain image tags.
 
         Args:
             annotation_set_id: annotation set id, by default will be used default_annotation_set
@@ -256,7 +258,7 @@ Annotation Sets: {n_annotation_sets}""".format(
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
             append_path: if True, it appends the image path to the filename, otherwise it uses just the filename. Default: True
             export_tags: if True, it also exports tags to a separate CSV file. Default: True
-            filter_by_tags: allows to filter results by tags, can be list or str
+            filter_by_tags: allows to export annotations only for images containing certain image tags. It can be a list of strings or an individual str.
             
         Returns:
             annotation file content
