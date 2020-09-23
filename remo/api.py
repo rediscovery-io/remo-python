@@ -377,7 +377,7 @@ class API(BaseAPI):
         """
         Exports annotations in a given file format. 
         
-        It offers multiple convenient format options. In addition to this
+        It offers some convenient export options, including:
         - Methods to append the full_path to image filenames, 
         - Choose between coordinates in pixels or percentages,
         - Export tags to a separate file
