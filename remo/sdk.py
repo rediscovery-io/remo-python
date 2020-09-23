@@ -405,15 +405,21 @@ class SDK:
         filter_by_tags: list = None
     ) -> bytes:
         """
-        Exports annotations with the chosen format.
-
+        Exports annotations for a given annotation set.
+        
+        It offers some convenient export options, including:
+        - Methods to append the full_path to image filenames, 
+        - Choose between coordinates in pixels or percentages,
+        - Export tags to a separate file
+        - Export annotations filtered by user-determined tags.
+        
         Args:
             annotation_set_id: annotation set id
             annotation_format: can be one of ['json', 'coco', 'csv']. Default: 'json'
             append_path: if True, appends the path to the filename (e.g. local path). Default: True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
             export_tags: if True, exports the tags to a CSV file. Default: True
-            filter_by_tags: allows to filter results by tags, can be list or str
+            filter_by_tags: allows to export annotations only for images containing certain image tags. It can be of type List[str] or str. Default: None
             
         Returns:
             annotation file content
@@ -438,7 +444,14 @@ class SDK:
         filter_by_tags: list = None
     ):
         """
-        Exports annotations to a file with the chosen format.
+        
+        Exports annotations for a given annotation set in a given file format.
+        
+        It offers some convenient export options, including:
+        - Methods to append the full_path to image filenames, 
+        - Choose between coordinates in pixels or percentages,
+        - Export tags to a separate file
+        - Export annotations filtered by user-determined tags
 
         Args:
             output_file: output file to save
@@ -447,7 +460,7 @@ class SDK:
             append_path: if True, appends the path to the filename (e.g. local path). Default: True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
             export_tags: if True, exports also all the tags to a CSV file. Default: True
-            filter_by_tags: allows to filter results by tags, can be list or str
+            filter_by_tags: allows to export annotations only for images containing certain image tags. It can be of type List[str] or str. Default: None
         """
         content = self.export_annotations(
             annotation_set_id,
