@@ -377,7 +377,11 @@ class API(BaseAPI):
         """
         Exports annotations in a given file format. 
         
-        It offers a choice of convenient export options including appending the full_path to image filenames, choosing between coordinates in pixels or percentages, exporting a separate file for Image tags, and whether to export annotations for a list of images containing certain image tags.
+        It offers multiple convenient format options. In addition to this
+        - Methods to append the full_path to image filenames, 
+        - Choose between coordinates in pixels or percentages,
+        - Export tags to a separate file
+        - Export annotations filtered by user-determined tags.
 
         Args:
             annotation_set_id: annotation set id
@@ -385,7 +389,7 @@ class API(BaseAPI):
             full_path: if True, appends file path to the filename. uses full image path. Default: True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
             export_tags: if True, exports the tags to a separate CSV file. Default: True
-            filter_by_tags: allows to export annotations only for images containing certain image tags. It can be a list of strings or an individual str.
+            filter_by_tags: allows to export annotations only for images containing certain image tags. It can be of type List[str] or str. Default: None
             
         Returns:
             annotation file content
