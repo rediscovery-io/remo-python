@@ -168,8 +168,8 @@ Annotation Sets: {n_annotation_sets}""".format(
 
         If annotation_set_id is not provided, annotations will be added to:
 
-            - the only annotation set present, if the Dataset has exactly one Annotation Set and the tasks match
-            - a new annotation set, if the Dataset doesn't have any Annotation Sets or if create_new_annotation_set = True
+        - the only annotation set present, if the Dataset has exactly one Annotation Set and the tasks match
+        - a new annotation set, if the Dataset doesn't have any Annotation Sets or if create_new_annotation_set = True
 
         Otherwise, annotations will be added to the Annotation Set specified by annotation_set_id.
 
