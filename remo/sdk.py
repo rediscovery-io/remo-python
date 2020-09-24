@@ -830,15 +830,15 @@ class SDK:
         """
         Creates a CSV annotation file associating images with labels, starting from folders named with labels (a common folder structure for Image Classification tasks). The CSV file is saved in the same input directory where images are stored.
         Example of data structure for a dog / cat dataset: 
-              - cats_and_dogs
-                  - dog
-                     - img1.jpg
-                     - img2.jpg
-                     - ...
-                  - cat
-                     - img199.jpg
-                     - img200.jpg
-                     - ...
+        - cats_and_dogs
+            - dog
+                - img1.jpg
+                - img2.jpg
+                - ...
+            - cat
+                - img199.jpg
+                - img200.jpg
+                - ...
             
         Example::
             # Download and unzip this sample dataset: s-3.s3-eu-west-1.amazonaws.com/cats_and_dogs.zip
