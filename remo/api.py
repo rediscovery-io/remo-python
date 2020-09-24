@@ -376,7 +376,7 @@ class API(BaseAPI):
     ) -> bytes:
 
         """
-        Exports annotations for a given annotation set.
+        Exports annotations for a given annotation set in a given format.
         
         It offers some convenient export options, including:
         
