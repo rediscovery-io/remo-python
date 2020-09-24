@@ -291,7 +291,7 @@ Annotation Sets: {n_annotation_sets}""".format(
         filter_by_tags: list = None
     ):
         """
-        Exports annotations in a given format and saves it to a file.
+        Exports annotations for a given annotation set in a given format and saves it to a file.
 
         It offers some convenient export options, including:
         - Methods to append the full_path to image filenames, 
