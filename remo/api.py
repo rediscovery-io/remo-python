@@ -379,6 +379,7 @@ class API(BaseAPI):
         Exports annotations for a given annotation set.
         
         It offers some convenient export options, including:
+        
         - Methods to append the full_path to image filenames, 
         - Choose between coordinates in pixels or percentages,
         - Export tags to a separate file
