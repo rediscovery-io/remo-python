@@ -165,6 +165,7 @@ class AnnotationSet:
         Exports annotations in a given format and saves it to a file.
 
         It offers some convenient export options, including:
+        
         - Methods to append the full_path to image filenames, 
         - Choose between coordinates in pixels or percentages,
         - Export tags to a separate file
