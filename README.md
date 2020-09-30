@@ -132,7 +132,8 @@ To read more about installation and other features, visit [remo.ai](http://remo.
 
 
 ## :tada: What's new
-1-Sep-2020: Added tutorial on Remo for PyTorch Object Detection
+01-Sep-2020: Added tutorial on Remo for PyTorch Object Detection
+30-Sep-2020: Added export annotations with filtering by tags
 
 <br/>
 
