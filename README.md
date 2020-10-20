@@ -155,6 +155,31 @@ For anything else, you can write on our <a href="https://discuss.remo.ai" target
 
 ## :raising_hand: For contributors
 
+Contributions to the library are welcome!
+
+Before starting working on something, we suggest to open an issue on the repo or open a thread on the <a href="https://discuss.remo.ai" target="_blank">discuss forum.</a>   to get inputs from us. Please include:
+
+- what you plan to work on (e.g. model predictions)
+- what's the use case (e.g. I want to be able to calculate performance of my model)
+- what flow you envision (e.g. I have annotated data in Remo, I run the model and save predictions, I run some code to print performance on the prediction)
+- any mod you'd like to see in the Remo app itself (e.g. It'd be great to see an interactive chart of model performance in the app)
+
+We are looking for help with the following, but we are also open to suggestions:
+
+- integration with Deep Learning frameworks
+  - PyTorch / PyTorch lightning
+  - Tensorflow / keras
+  - Fast.ai
+  
+- expand on the design of Annotation, Image, and AnnotationSet objects
+  - general summary statistics
+  - exporting annotations
+  - statistics on comparison of two annotation sets
+  - performance statistics on comparison of two annotation sets (one being predictions)
+  
+  
+
+### Structure of the library
 The library is organized in 3 main layers:
 - api
 - sdk
