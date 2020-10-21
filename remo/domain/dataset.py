@@ -526,7 +526,7 @@ Annotation Sets: {n_annotation_sets}""".format(
 
     def search(self, classes=None, task: str = None):
         """
-        Given a list of classes and annotation task, it returns a list of all the images with mathcing annotations
+        Given a list of classes and annotation task, it returns a list of all the images with matching annotations
 
         Args:
             classes: string or list of strings - search for images which match all given classes
