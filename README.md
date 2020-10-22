@@ -157,7 +157,7 @@ For anything else, you can write on our <a href="https://discuss.remo.ai" target
 
 Contributions to the library are welcome!
 
-Before starting working on something, we suggest to open an issue on the repo or open a thread on the <a href="https://discuss.remo.ai" target="_blank">discuss forum.</a>   to get inputs from us. Please include:
+Before starting working on something, we suggest to open an issue on the repo or open a thread on the <a href="https://discuss.remo.ai" target="_blank">discuss forum</a> to present your plan. It would be great if you could include:
 
 - what you plan to work on (e.g. model predictions)
 - what's the use case (e.g. I want to be able to calculate performance of my model)
