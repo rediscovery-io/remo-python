@@ -405,15 +405,22 @@ class SDK:
         filter_by_tags: list = None
     ) -> bytes:
         """
-        Exports annotations with the chosen format.
-
+        Exports annotations for a given annotation set in a given format.
+        
+        It offers some convenient export options, including:
+        
+        - Methods to append the full_path to image filenames, 
+        - Choose between coordinates in pixels or percentages,
+        - Export tags to a separate file
+        - Export annotations filtered by user-determined tags.
+        
         Args:
             annotation_set_id: annotation set id
             annotation_format: can be one of ['json', 'coco', 'csv']. Default: 'json'
             append_path: if True, appends the path to the filename (e.g. local path). Default: True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
             export_tags: if True, exports the tags to a CSV file. Default: True
-            filter_by_tags: allows to filter results by tags, can be list or str
+            filter_by_tags: allows to export annotations only for images containing certain image tags. It can be of type List[str] or str. Default: None
             
         Returns:
             annotation file content
@@ -438,7 +445,25 @@ class SDK:
         filter_by_tags: list = None
     ):
         """
-        Exports annotations to a file with the chosen format.
+        
+        Exports annotations in a given format and saves it to a file.
+        
+        It offers some convenient export options, including:
+        - Methods to append the full_path to image filenames, 
+        - Choose between coordinates in pixels or percentages,
+        - Export tags to a separate file
+        - Export annotations filtered by user-determined tags
+
+        Example::
+                # Download and unzip this sample dataset: https://s-3.s3-eu-west-1.amazonaws.com/dogs_dataset.json
+                dogs_dataset = remo.create_dataset(name = 'dogs_dataset', 
+                         local_files = ['dogs_dataset.json'],
+                         annotation_task = 'Instance Segmentation')
+                dogs_dataset.export_annotations_to_file(output_file = 'dogs_dataset_train.json',
+                                        annotation_format = 'coco',
+                                        append_path = False,
+                                        export_tags = False,
+                                        filter_by_tags = 'train')
 
         Args:
             output_file: output file to save
@@ -447,8 +472,9 @@ class SDK:
             append_path: if True, appends the path to the filename (e.g. local path). Default: True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
             export_tags: if True, exports also all the tags to a CSV file. Default: True
-            filter_by_tags: allows to filter results by tags, can be list or str
+            filter_by_tags: allows to export annotations only for images containing certain image tags. It can be of type List[str] or str. Default: None
         """
+
         content = self.export_annotations(
             annotation_set_id,
             annotation_format=annotation_format,
@@ -804,15 +830,15 @@ class SDK:
         """
         Creates a CSV annotation file associating images with labels, starting from folders named with labels (a common folder structure for Image Classification tasks). The CSV file is saved in the same input directory where images are stored.
         Example of data structure for a dog / cat dataset: 
-              - cats_and_dogs
-                  - dog
-                     - img1.jpg
-                     - img2.jpg
-                     - ...
-                  - cat
-                     - img199.jpg
-                     - img200.jpg
-                     - ...
+        - cats_and_dogs
+            - dog
+                - img1.jpg
+                - img2.jpg
+                - ...
+            - cat
+                - img199.jpg
+                - img200.jpg
+                - ...
             
         Example::
             # Download and unzip this sample dataset: s-3.s3-eu-west-1.amazonaws.com/cats_and_dogs.zip

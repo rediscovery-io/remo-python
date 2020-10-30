@@ -115,17 +115,30 @@ class AnnotationSet:
         self.sdk.add_annotation(self.id, image_id, annotation)
 
     def export_annotations(
-        self, annotation_format: str = 'json', export_coordinates: str = 'pixel', full_path: bool = True, export_tags: bool = True, filter_by_tags: list = None
+        self, 
+        annotation_format: str = 'json', 
+        export_coordinates: str = 'pixel', 
+        full_path: bool = True, 
+        export_tags: bool = True, 
+        filter_by_tags: list = None
     ):
         """
-        Exports annotations in a given format
+        Exports annotations of the annotation set in a given format.
+        
+        It offers some convenient export options, including:
+        
+        - Methods to append the full_path to image filenames, 
+        - Choose between coordinates in pixels or percentages,
+        - Export tags to a separate file
+        - Export annotations filtered by user-determined tags.
 
         Args:
             annotation_format: choose format from this list ['json', 'coco', 'csv']
             full_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
             export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
-            filter_by_tags: allows to filter results by tags, can be list or str
+            filter_by_tags: allows to export annotations only for images containing certain image tags. It can be of type List[str] or str. Default: None
+            
         Returns:
             annotation file content
         """
@@ -148,8 +161,16 @@ class AnnotationSet:
         filter_by_tags: list = None
     ):
         """
-        Exports annotations in given format and save to output file
+        
+        Exports annotations in a given format and saves it to a file.
 
+        It offers some convenient export options, including:
+        
+        - Methods to append the full_path to image filenames, 
+        - Choose between coordinates in pixels or percentages,
+        - Export tags to a separate file
+        - Export annotations filtered by user-determined tags.
+        
         Args:
             output_file: output file to save
             annotation_format: can be one of ['json', 'coco', 'csv'], default='json'

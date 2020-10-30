@@ -168,8 +168,8 @@ Annotation Sets: {n_annotation_sets}""".format(
 
         If annotation_set_id is not provided, annotations will be added to:
 
-            - the only annotation set present, if the Dataset has exactly one Annotation Set and the tasks match
-            - a new annotation set, if the Dataset doesn't have any Annotation Sets or if create_new_annotation_set = True
+        - the only annotation set present, if the Dataset has exactly one Annotation Set and the tasks match
+        - a new annotation set, if the Dataset doesn't have any Annotation Sets or if create_new_annotation_set = True
 
         Otherwise, annotations will be added to the Annotation Set specified by annotation_set_id.
 
@@ -248,15 +248,22 @@ Annotation Sets: {n_annotation_sets}""".format(
         filter_by_tags: list = None
     ) -> bytes:
         """
-        Export annotations for a given annotation set
-
+        Export annotations for a given annotation set in a given format.
+        
+        It offers some convenient export options, including:
+        
+        - Methods to append the full_path to image filenames, 
+        - Choose between coordinates in pixels or percentages,
+        - Export tags to a separate file
+        - Export annotations filtered by user-determined tags.
+        
         Args:
             annotation_set_id: annotation set id, by default will be used default_annotation_set
             annotation_format: can be one of ['json', 'coco', 'csv']. Default: 'json'
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
             append_path: if True, it appends the image path to the filename, otherwise it uses just the filename. Default: True
             export_tags: if True, it also exports tags to a separate CSV file. Default: True
-            filter_by_tags: allows to filter results by tags, can be list or str
+            filter_by_tags: allows to export annotations only for images containing certain image tags. It can be of type List[str] or str. Default: None
             
         Returns:
             annotation file content
@@ -284,7 +291,13 @@ Annotation Sets: {n_annotation_sets}""".format(
         filter_by_tags: list = None
     ):
         """
-        Exports annotations in given format and save to output file
+        Exports annotations for a given annotation set in a given format and saves it to a file.
+
+        It offers some convenient export options, including:
+        - Methods to append the full_path to image filenames, 
+        - Choose between coordinates in pixels or percentages,
+        - Export tags to a separate file
+        - Export annotations filtered by user-determined tags.
 
         Args:
             output_file: output file to save
@@ -293,7 +306,7 @@ Annotation Sets: {n_annotation_sets}""".format(
             append_path: if True, it appends the image path to the filename, otherwise it uses just the filename. Default: True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default: 'pixel'
             export_tags: if True, it also exports tags to a separate CSV file. Default: True
-            filter_by_tags: allows to filter results by tags, can be list or str
+            filter_by_tags: allows to export annotations only for images containing certain image tags. It can be of type List[str] or str. Default: None
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         if annotation_set:
@@ -513,7 +526,7 @@ Annotation Sets: {n_annotation_sets}""".format(
 
     def search(self, classes=None, task: str = None):
         """
-        Given a list of classes and annotation task, it returns a list of all the images with mathcing annotations
+        Given a list of classes and annotation task, it returns a list of all the images with matching annotations
 
         Args:
             classes: string or list of strings - search for images which match all given classes
