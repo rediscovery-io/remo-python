@@ -106,7 +106,7 @@ Intro Notebook | [Intro to Remo-Python notebook](examples/intro_to_remo-python.i
 Uploading annotations | [Upload Annotations and Predictions Tutorial notebook](examples/tutorial_upload_annotations.ipynb) | -
 PyTorch Image Classification using Remo | [PyTorch Image Classification notebook](examples/tutorial_pytorch_image_classification.ipynb) | [![im_classification_tutorial](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/rediscovery-io/remo-python/blob/master/examples/google-colab/tutorial_pytorch_image_classification.ipynb)
 PyTorch Object Detection using Remo | [PyTorch Object Detection Notebook](examples/tutorial_pytorch_object_detection.ipynb) | [![obj_detection_tutorial](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/rediscovery-io/remo-python/blob/master/examples/google-colab/tutorial_pytorch_object_detection.ipynb)
-PyTorch Instance Segmentation with Detectron 2 and Remo | [PyTorch Instance Segmentation Notebook](examples/tutorial_pytorch_instance_segmentation.ipynb) | [![obj_detection_tutorial](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/rediscovery-io/remo-python/blob/master/examples/google-colab/tutorial_pytorch_instance_segmentation.ipynb)
+PyTorch Instance Segmentation with Detectron 2 and Remo | [PyTorch Instance Segmentation Notebook](examples/tutorial_pytorch_instance_segmentation.ipynb) | [![instance_segmentation_tutorial](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/rediscovery-io/remo-python/blob/master/examples/google-colab/tutorial_pytorch_instance_segmentation.ipynb)
 <br/>
 
 
