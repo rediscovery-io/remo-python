@@ -23,6 +23,8 @@ class Image:
         upload_date: upload date
     """
 
+    __fields = ['id', 'name', 'dataset_id', 'path', 'url', 'size', 'width', 'height', 'upload_date']
+
     def __init__(
         self,
         id: int = None,
@@ -55,6 +57,22 @@ class Image:
 
     def __repr__(self):
         return self.__str__()
+
+    def fetch_details(self):
+        """
+        Fetch image details and updating all fields
+        """
+        img = self.sdk.get_image(self.id)
+        self.update_fields(img)
+
+    def update_fields(self, img):
+        """
+        Update all fields
+        """
+        for field in self.__fields:
+            current_value = getattr(self, field)
+            new_value = getattr(img, field, current_value)
+            setattr(self, field, new_value)
 
     def get_content(self) -> bytes:
         """
@@ -99,7 +117,8 @@ class Image:
         """
         return self.sdk.list_annotation_sets(self.dataset_id)
 
-    def annotations(self, annotation_set_id: int) -> List[Annotation]:
+    # TODO: fix it
+    def list_annotations(self, annotation_set_id: int) -> List[Annotation]:
         """
         Retrieves image annotations from giving annotation set
 
@@ -147,3 +166,12 @@ class Image:
             annotation_set_id: annotation set id
         """
         return self.sdk.view_annotate_image(annotation_set_id, self.id)
+
+
+class AnnotatedImage(Image):
+    """Image with raw json annotations"""
+
+    def __init__(self, image: Image, annotations: list):
+        super().__init__()
+        self.update_fields(image)
+        self.annotations = annotations

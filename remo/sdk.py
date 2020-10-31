@@ -3,7 +3,7 @@ import time
 from typing import List
 import csv
 
-from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
+from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation, AnnotatedImage
 from .api import API
 
 from .endpoints import frontend
@@ -737,22 +737,48 @@ class SDK:
         return Image(**json_data)
 
     def search_images(
-        self, classes=None, task: str = None, dataset_id: int = None, limit: int = None,
-    ):
+            self,
+            dataset_id: int,
+            annotation_sets: int = None,
+            classes: str = None, classes_not: str = None,
+            tags: str = None, tags_not: str = None,
+            image_name_contains: str = None,
+            limit: int = None,
+    ) -> List[AnnotatedImage]:
         """
-        Search images by class and annotation task
+        Search images by classes and tags
 
         Args:
-            classes: string or list of strings - search for images which match all given classes
-            task: name of the annotation task to filter dataset
             dataset_id: narrows search result to given dataset
-            limit: limits number of search results
+            annotation_sets: narrows search result to given annotation sets (can be multiple, e.g. [1, 2])
+            classes: string or list of strings - search for images which match all given classes
+            classes_not: string or list of strings - search for images which excludes all given classes
+            tags: string or list of strings - search for images which match all given tags
+            tags_not: string or list of strings - search for images which excludes all given tags
+            image_name_contains: search for images which name contains given pattern
+            limit: limits number of search results (by default returns all results)
 
         Returns:
-            image_id, dataset_id, name, annotations
+            List[:class:`remo.AnnotatedImage`]
         """
-        # TODO: check this function
-        return self.api.search_images(classes, task, dataset_id, limit)
+
+        if any((classes, classes_not, tags, tags)) and not annotation_sets:
+            raise Exception('Failed search for images without given annotation set')
+
+        json_data = self.api.search_images(
+            dataset_id,
+            annotation_sets=annotation_sets,
+            classes=classes, classes_not=classes_not,
+            tags=tags, tags_not=tags_not,
+            image_name_contains=image_name_contains,
+            limit=limit)
+
+        result = []
+        for entry in json_data:
+            img_json = entry.get('image', {})
+            annotations_json = img_json.get('annotations', [])
+            result.append(AnnotatedImage(Image(dataset_id=dataset_id, **img_json), annotations_json))
+        return result
 
     def view_search(self):
         """

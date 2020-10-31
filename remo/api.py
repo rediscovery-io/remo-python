@@ -439,29 +439,97 @@ class API(BaseAPI):
         url = self.url(backend.v1_sdk_images, image_id, tail_slash=True)
         return self.get(url).json()
 
-    def search_images(self, classes=None, task=None, dataset_id=None, limit=None):
+    def search_images(
+            self,
+            dataset_id: int,
+            annotation_sets: int = None,
+            classes: str = None, classes_not: str = None,
+            tags: str = None, tags_not: str = None,
+            image_name_contains: str = None,
+            limit=None
+    ) -> list:
         """
         Search images given a list of classes and tasks
         Args:
+            dataset_id: narrows search result to given dataset
+            annotation_sets: narrows search result to given annotation sets (can be multiple, e.g. [1, 2])
             classes: string or list of strings - search for images which match all given classes
-            task: string - annotation task
-            dataset_id: int - performs search in given dataset otherwise in all datasets
-            limit: int - limits search result
-        Returns: dictionary of image_id, dataset_id, name, preview, annotations, classes, dimensions
-        """
-        # TODO: adding task names on return
-        params = {}
-        if task:
-            params['tasks'] = task
-        if classes:
-            params['classes'] = classes
-        if dataset_id:
-            params['dataset_id'] = dataset_id
-        if limit:
-            params['limit'] = limit
+            classes_not: string or list of strings - search for images which excludes all given classes
+            tags: string or list of strings - search for images which match all given tags
+            tags_not: string or list of strings - search for images which excludes all given tags
+            image_name_contains: search for images which name contains given pattern
+            limit: limits number of search results (by default returns all results)
 
-        url = self.url(backend.v1_search, **params)
-        return self.get(url).json()['results']
+        Returns:
+            list of JSON objects (images and annotations)
+        """
+
+        def stringify(val) -> str:
+            """
+            Converts list of string to coma separated string
+            :param val: can be int, string or list of these types
+            :return: string
+            """
+            if type(val) not in (int, str, list):
+                return ''
+
+            if isinstance(val, list):
+                if any(map(lambda v: type(v) not in (str, int), val)):
+                    return ''
+
+                return ','.join(map(str, val))
+
+            return str(val)
+
+        params = {}
+        if annotation_sets:
+            params['sets'] = stringify(annotation_sets)
+        if classes:
+            params['classes'] = stringify(classes)
+        if classes_not:
+            params['classes_not'] = stringify(classes_not)
+        if tags:
+            params['tags'] = stringify(tags)
+        if tags_not:
+            params['tags_not'] = stringify(tags_not)
+        if image_name_contains:
+            params['image_name'] = image_name_contains
+
+        page_limit = 25
+        load_all_results = True
+        if not isinstance(limit, int) or (isinstance(limit, int) and limit <= 0):
+            limit = None
+
+        if limit:
+            page_limit = limit
+            load_all_results = False
+
+        params['limit'] = page_limit
+
+        results = []
+        url = self.url(backend.v1_search_in_dataset.format(dataset_id), **params)
+
+        while url:
+            response = self.get(url)
+            if response.status_code > 200:
+                break
+
+            try:
+                data = response.json()
+            except Exception as err:
+                print('Failed to decode in JSON server response:', response.content)
+                print('ERROR:', err)
+                break
+
+            results.extend(data.get('results', []))
+            if not load_all_results:
+                break
+
+            next_url = data.get('next')
+            if not next_url:
+                break
+            url = self.url(next_url)
+        return results
 
     def delete_dataset(self, dataset_id: int):
         """
