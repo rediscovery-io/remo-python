@@ -3,7 +3,7 @@ import time
 from typing import List
 import csv
 
-from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
+from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation, AnnotatedImage
 from .api import API
 
 from .endpoints import frontend
@@ -737,22 +737,67 @@ class SDK:
         return Image(**json_data)
 
     def search_images(
-        self, classes=None, task: str = None, dataset_id: int = None, limit: int = None,
-    ):
+            self,
+            dataset_id: int,
+            annotation_sets_id: int = None,
+            classes: str = None, classes_not: str = None,
+            tags: str = None, tags_not: str = None,
+            image_name_contains: str = None,
+            limit: int = None,
+    ) -> List[AnnotatedImage]:
         """
-        Search images by class and annotation task
+        Search images by classes and tags
 
+        Examples::
+            remo.search_images(dataset_id=1, classes = ["dog","person"])
+            remo.search_images(dataset_id=1, image_name_contains = "pic2")
+            
         Args:
-            classes: string or list of strings - search for images which match all given classes
-            task: name of the annotation task to filter dataset
-            dataset_id: narrows search result to given dataset
-            limit: limits number of search results
+            dataset_id: the ID of the dataset to search into
+            annotation_sets_id: the annotation sets ID to search into (can be multiple, e.g. [1, 2]). No need to specify it if the dataset has only one annotation set
+            classes: string or list of strings - search for images which have objects of all the given classes
+            classes_not: string or list of strings - search for images excluding those that have objects of all the given classes
+            tags: string or list of strings - search for images having all the given tags
+            tags_not: string or list of strings - search for images excluding those that have all the given tags
+            image_name_contains: search for images whose name contains the given string
+            limit: limits number of search results (by default returns all results)
 
         Returns:
-            image_id, dataset_id, name, annotations
+            List[:class:`remo.AnnotatedImage`]
         """
-        # TODO: check this function
-        return self.api.search_images(classes, task, dataset_id, limit)
+
+        if not isinstance(dataset_id, int):
+            raise Exception("Enter a valid dataset_id to search into")
+            
+        if any((classes, classes_not, tags, tags)) and not annotation_sets_id:
+            
+            # logic to deal with the case where we are trying to upload annotations without specifying the annotation set id
+            # we have this as a method in Dataset class (default_annotation_set). We might want to move the whole logic as a method of the SDK object
+            annotation_sets = self.list_annotation_sets(dataset_id)
+            if len(annotation_sets) > 1:
+                raise Exception(
+                    'Define which annotation set you want to use. Dataset {} has {} annotation sets. '
+                    'You can see them with my_dataset.annotation_sets()'.format(dataset_id, len(annotation_sets))
+                )
+
+            elif len(annotation_sets) == 1:
+                annotation_sets_id = annotation_sets[0].id
+                
+
+        json_data = self.api.search_images(
+            dataset_id,
+            annotation_sets=annotation_sets_id,
+            classes=classes, classes_not=classes_not,
+            tags=tags, tags_not=tags_not,
+            image_name_contains=image_name_contains,
+            limit=limit)
+
+        result = []
+        for entry in json_data:
+            img_json = entry.get('image', {})
+            annotations_json = img_json.get('annotations', [])
+            result.append(AnnotatedImage(Image(dataset_id=dataset_id, **img_json), annotations_json))
+        return result
 
     def view_search(self):
         """
