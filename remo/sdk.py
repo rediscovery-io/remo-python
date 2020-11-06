@@ -748,6 +748,10 @@ class SDK:
         """
         Search images by classes and tags
 
+        Examples::
+            remo.search_images(dataset_id=1, classes = ["dog","person"])
+            remo.search_images(dataset_id=1, image_name_contains = "pic2")
+            
         Args:
             dataset_id: the ID of the dataset to search into
             annotation_sets_id: the annotation sets ID to search into (can be multiple, e.g. [1, 2]). No need to specify it if the dataset has only one annotation set
@@ -755,7 +759,7 @@ class SDK:
             classes_not: string or list of strings - search for images excluding those that have objects of all the given classes
             tags: string or list of strings - search for images having all the given tags
             tags_not: string or list of strings - search for images excluding those that have all the given tags
-            image_name_contains: search for images whose name contains the given pattern
+            image_name_contains: search for images whose name contains the given string
             limit: limits number of search results (by default returns all results)
 
         Returns:
@@ -768,6 +772,7 @@ class SDK:
         if any((classes, classes_not, tags, tags)) and not annotation_sets_id:
             
             # logic to deal with the case where we are trying to upload annotations without specifying the annotation set id
+            # we have this as a method in Dataset class (default_annotation_set). We might want to move the whole logic as a method of the SDK object
             annotation_sets = self.list_annotation_sets(dataset_id)
             if len(annotation_sets) > 1:
                 raise Exception(
