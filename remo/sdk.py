@@ -749,13 +749,13 @@ class SDK:
         Search images by classes and tags
 
         Args:
-            dataset_id: narrows search result to given dataset ID
-            annotation_sets_id: narrows search result to given annotation sets ID (can be multiple, e.g. [1, 2])
-            classes: string or list of strings - search for images which match all given classes
-            classes_not: string or list of strings - search for images which excludes all given classes
-            tags: string or list of strings - search for images which match all given tags
-            tags_not: string or list of strings - search for images which excludes all given tags
-            image_name_contains: search for images which name contains given pattern
+            dataset_id: the ID of the dataset to search into
+            annotation_sets_id: the annotation sets ID to search into (can be multiple, e.g. [1, 2]). No need to specify it if the dataset has only one annotation set
+            classes: string or list of strings - search for images which have objects of all the given classes
+            classes_not: string or list of strings - search for images excluding those that have objects of all the given classes
+            tags: string or list of strings - search for images having all the given tags
+            tags_not: string or list of strings - search for images excluding those that have all the given tags
+            image_name_contains: search for images whose name contains the given pattern
             limit: limits number of search results (by default returns all results)
 
         Returns:
@@ -766,7 +766,18 @@ class SDK:
             raise Exception("Enter a valid dataset_id to search into")
             
         if any((classes, classes_not, tags, tags)) and not annotation_sets_id:
-            raise Exception('Enter a valid annotation set id to search by class or tag')
+            
+            # logic to deal with the case where we are trying to upload annotations without specifying the annotation set id
+            annotation_sets = self.list_annotation_sets(dataset_id)
+            if len(annotation_sets) > 1:
+                raise Exception(
+                    'Define which annotation set you want to use. Dataset {} has {} annotation sets. '
+                    'You can see them with my_dataset.annotation_sets()'.format(dataset_id, len(annotation_sets))
+                )
+
+            elif len(annotation_sets) == 1:
+                annotation_sets_id = annotation_sets[0].id
+                
 
         json_data = self.api.search_images(
             dataset_id,

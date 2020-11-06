@@ -294,6 +294,7 @@ Annotation Sets: {n_annotation_sets}""".format(
         Exports annotations for a given annotation set in a given format and saves it to a file.
 
         It offers some convenient export options, including:
+        
         - Methods to append the full_path to image filenames, 
         - Choose between coordinates in pixels or percentages,
         - Export tags to a separate file
@@ -372,7 +373,10 @@ Annotation Sets: {n_annotation_sets}""".format(
     def get_annotation_set(self, annotation_set_id: int = None) -> AnnotationSet:
         """
         Retrieves annotation set with given id.
-        If no annotation set id is passed, it returns the default annotation set.
+        If no annotation set id is passed:
+        
+            - if the dataset has only one annotation set, it returns that one
+            - if the dataset has multiple annotation sets, it raises an error
 
         Args:
             annotation_set_id: annotation set id
