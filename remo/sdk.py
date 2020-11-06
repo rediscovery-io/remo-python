@@ -739,7 +739,7 @@ class SDK:
     def search_images(
             self,
             dataset_id: int,
-            annotation_sets: int = None,
+            annotation_sets_id: int = None,
             classes: str = None, classes_not: str = None,
             tags: str = None, tags_not: str = None,
             image_name_contains: str = None,
@@ -749,8 +749,8 @@ class SDK:
         Search images by classes and tags
 
         Args:
-            dataset_id: narrows search result to given dataset
-            annotation_sets: narrows search result to given annotation sets (can be multiple, e.g. [1, 2])
+            dataset_id: narrows search result to given dataset ID
+            annotation_sets_id: narrows search result to given annotation sets ID (can be multiple, e.g. [1, 2])
             classes: string or list of strings - search for images which match all given classes
             classes_not: string or list of strings - search for images which excludes all given classes
             tags: string or list of strings - search for images which match all given tags
@@ -765,12 +765,12 @@ class SDK:
         if not isinstance(dataset_id, int):
             raise Exception("Enter a valid dataset_id to search into")
             
-        if any((classes, classes_not, tags, tags)) and not annotation_sets:
-            raise Exception('Failed search for images without given annotation set')
+        if any((classes, classes_not, tags, tags)) and not annotation_sets_id:
+            raise Exception('Enter a valid annotation set id to search by class or tag')
 
         json_data = self.api.search_images(
             dataset_id,
-            annotation_sets=annotation_sets,
+            annotation_sets=annotation_sets_id,
             classes=classes, classes_not=classes_not,
             tags=tags, tags_not=tags_not,
             image_name_contains=image_name_contains,
