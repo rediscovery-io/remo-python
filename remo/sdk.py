@@ -762,6 +762,9 @@ class SDK:
             List[:class:`remo.AnnotatedImage`]
         """
 
+        if not isinstance(dataset_id, int):
+            raise Exception("Enter a valid dataset_id to search into")
+            
         if any((classes, classes_not, tags, tags)) and not annotation_sets:
             raise Exception('Failed search for images without given annotation set')
 
