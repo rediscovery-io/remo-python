@@ -60,14 +60,14 @@ class Image:
 
     def fetch_details(self):
         """
-        Fetch image details and updating all fields
+        Fetch the latest image details from the database and updating all fields
         """
         img = self.sdk.get_image(self.id)
         self.update_fields(img)
 
     def update_fields(self, img):
         """
-        Update all fields
+        Update all fields of the image based on the passed Image instamce
         """
         for field in self.__fields:
             current_value = getattr(self, field)
@@ -82,8 +82,7 @@ class Image:
             image binary data
         """
         if not self.url:
-            print('ERROR: image url is not set')
-            return
+            raise Exception("ERROR: image url is not set")
 
         return self.sdk.get_image_content(self.url)
 
