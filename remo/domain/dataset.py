@@ -528,7 +528,7 @@ Annotation Sets: {n_annotation_sets}""".format(
         """
         self.sdk.delete_dataset(self.id)
 
-    def search(self, annotation_sets_id: int = None,
+    def search_images(self, annotation_sets_id: int = None,
             classes: str = None, 
             classes_not: str = None,
             tags: str = None, 
