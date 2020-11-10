@@ -139,6 +139,7 @@ To read more about installation and other features, visit [remo.ai](http://remo.
 
 30-Oct-2020: Added tutorial using PyTorch's Detectron2 and Remo for Instance Segmentation
 
+06-Nov-2020: Added ability to search images by filename, class or tag - you can now do dataset.search_images() or remo.search_images()
 
 <br/>
 
