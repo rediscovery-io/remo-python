@@ -536,7 +536,7 @@ Annotation Sets: {n_annotation_sets}""".format(
             image_name_contains: str = None,
             limit: int = None):
         """
-        Search images by classes and tags
+        Search images by filename, classes and tags
 
         Examples::
             my_dataset.search_images(classes = ["dog","person"])
