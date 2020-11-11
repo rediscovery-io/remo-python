@@ -123,7 +123,7 @@ class AnnotationSet:
         filter_by_tags: list = None
     ):
         """
-        Exports annotations in Binary format for the annotation set.
+        Exports annotations for the annotation set in Binary format.
         To export to file, use export_annotations_to_file.
         
         It offers some convenient export options, including:
