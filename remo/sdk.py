@@ -395,7 +395,7 @@ class SDK:
             total_classes=len(annotation_set['classes']),
         )
 
-    def export_annotations(
+    def _export_annotations(
         self,
         annotation_set_id: int,
         annotation_format: str = 'json',
@@ -405,7 +405,8 @@ class SDK:
         filter_by_tags: list = None
     ) -> bytes:
         """
-        Exports annotations for a given annotation set in a given format.
+        Exports annotations in a Binary format for a given annotation set.
+        To export to file, use export_annotations_to_file.
         
         It offers some convenient export options, including:
         
@@ -445,10 +446,11 @@ class SDK:
         filter_by_tags: list = None
     ):
         """
-        
         Exports annotations in a given format and saves it to a file.
-        
+        If export_tags = True, output_file needs to be a .zip file.
+
         It offers some convenient export options, including:
+
         - Methods to append the full_path to image filenames, 
         - Choose between coordinates in pixels or percentages,
         - Export tags to a separate file
@@ -459,14 +461,14 @@ class SDK:
                 dogs_dataset = remo.create_dataset(name = 'dogs_dataset', 
                          local_files = ['dogs_dataset.json'],
                          annotation_task = 'Instance Segmentation')
-                dogs_dataset.export_annotations_to_file(output_file = 'dogs_dataset_train.json',
+                dogs_dataset.export_annotations_to_file(output_file = './dogs_dataset_train.json',
                                         annotation_format = 'coco',
                                         append_path = False,
                                         export_tags = False,
                                         filter_by_tags = 'train')
 
         Args:
-            output_file: output file to save
+            output_file: output file to save. Includes file extension and can include file path. If export_tags = True, output_file needs to be a .zip file
             annotation_set_id: annotation set id
             annotation_format: can be one of ['json', 'coco', 'csv']. Default: 'json'
             append_path: if True, appends the path to the filename (e.g. local path). Default: True
@@ -475,7 +477,11 @@ class SDK:
             filter_by_tags: allows to export annotations only for images containing certain image tags. It can be of type List[str] or str. Default: None
         """
 
-        content = self.export_annotations(
+        _, file_extension = os.path.splitext(output_file)
+        if (export_tags and file_extension is not '.zip'):
+            raise Exception("If export_tags = True, output_file needs to be a ZIP file. \nChange {} to be .zip or set export_tags = False".format(output_file))
+
+        content = self._export_annotations(
             annotation_set_id,
             annotation_format=annotation_format,
             export_coordinates=export_coordinates,
