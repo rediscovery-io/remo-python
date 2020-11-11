@@ -238,12 +238,12 @@ Annotation Sets: {n_annotation_sets}""".format(
         except:
             pass
 
-    def export_annotations(
+    def _export_annotations(
         self,
         annotation_set_id: int = None,
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
-        full_path: bool = True,
+        append_path: bool = True,
         export_tags: bool = True,
         filter_by_tags: list = None
     ) -> bytes:
@@ -271,10 +271,10 @@ Annotation Sets: {n_annotation_sets}""".format(
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
         
-        return annotation_set.export_annotations(
+        return annotation_set._export_annotations(
             annotation_format=annotation_format,
             export_coordinates=export_coordinates,
-            full_path=full_path,
+            append_path=append_path,
             export_tags=export_tags,
             filter_by_tags=filter_by_tags
         )

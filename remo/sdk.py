@@ -395,7 +395,7 @@ class SDK:
             total_classes=len(annotation_set['classes']),
         )
 
-    def export_annotations(
+    def _export_annotations(
         self,
         annotation_set_id: int,
         annotation_format: str = 'json',
@@ -476,7 +476,7 @@ class SDK:
             filter_by_tags: allows to export annotations only for images containing certain image tags. It can be of type List[str] or str. Default: None
         """
 
-        content = self.export_annotations(
+        content = self._export_annotations(
             annotation_set_id,
             annotation_format=annotation_format,
             export_coordinates=export_coordinates,

@@ -91,7 +91,7 @@ class AnnotationSet:
             
         """
             
-        temp_path, list_of_classes = create_tempfile(annotations)
+        temp_path, _ = create_tempfile(annotations)
         
             
         self.sdk.add_data_to_dataset(
@@ -100,9 +100,6 @@ class AnnotationSet:
             annotation_task=self.task,
             annotation_set_id=self.id
         )
-
-    
-    
     
     def add_image_annotation(self, image_id: int, annotation: Annotation):
         """
@@ -112,13 +109,13 @@ class AnnotationSet:
             image_id: image id
             annotation: annotation data
         """
-        self.sdk.add_annotation(self.id, image_id, annotation)
+        self.sdk.add_annotations_to_image(self.id, image_id, annotation)
 
-    def export_annotations(
+    def _export_annotations(
         self, 
         annotation_format: str = 'json', 
         export_coordinates: str = 'pixel', 
-        full_path: bool = True, 
+        append_path: bool = True, 
         export_tags: bool = True, 
         filter_by_tags: list = None
     ):
@@ -135,19 +132,19 @@ class AnnotationSet:
 
         Args:
             annotation_format: choose format from this list ['json', 'coco', 'csv']
-            full_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
-            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
-            export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
+            append_path: if True, appends the path to the filename (e.g. local path). Default: True
+            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default='pixel'
+            export_tags: exports the tags to a CSV file, it can be one of [True, False]. Default=True
             filter_by_tags: allows to export annotations only for images containing certain image tags. It can be of type List[str] or str. Default: None
             
         Returns:
             annotation file content
         """
-        return self.sdk.export_annotations(
+        return self.sdk._export_annotations(
             self.id,
             annotation_format=annotation_format,
             export_coordinates=export_coordinates,
-            append_path=full_path,
+            append_path=append_path,
             export_tags=export_tags,
             filter_by_tags=filter_by_tags
         )
@@ -157,7 +154,7 @@ class AnnotationSet:
         output_file: str,
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
-        full_path: bool = True,
+        append_path: bool = True,
         export_tags: bool = True,
         filter_by_tags: list = None
     ):
@@ -174,17 +171,17 @@ class AnnotationSet:
         
         Args:
             output_file: output file to save
-            annotation_format: can be one of ['json', 'coco', 'csv'], default='json'
-            full_path: uses full image path (e.g. local path),  it can be one of [True, False], default=True
-            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent'], default='pixel'
-            export_tags: exports the tags to a CSV file, it can be one of [True, False], default=True
+            annotation_format: can be one of ['json', 'coco', 'csv']. Default='json'
+            append_path: if True, appends the path to the filename (e.g. local path). Default: True
+            export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default='pixel'
+            export_tags: exports the tags to a CSV file, it can be one of [True, False. Default=True
             filter_by_tags: allows to filter results by tags, can be list or str
         """
         self.sdk.export_annotations_to_file(
             output_file,
             self.id,
             annotation_format=annotation_format,
-            full_path=full_path,
+            append_path=append_path,
             export_coordinates=export_coordinates,
             export_tags=export_tags,
             filter_by_tags=filter_by_tags
