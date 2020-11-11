@@ -159,8 +159,8 @@ class AnnotationSet:
         filter_by_tags: list = None
     ):
         """
-        
         Exports annotations in a given format and saves it to a file.
+        If export_tags = True, output_file needs to be a .zip file.
 
         It offers some convenient export options, including:
         
@@ -170,7 +170,7 @@ class AnnotationSet:
         - Export annotations filtered by user-determined tags.
         
         Args:
-            output_file: output file to save
+            output_file: output file to save. Includes file extension and can include file path. If export_tags = True, output_file needs to be a .zip file
             annotation_format: can be one of ['json', 'coco', 'csv']. Default='json'
             append_path: if True, appends the path to the filename (e.g. local path). Default: True
             export_coordinates: converts output values to percentage or pixels, can be one of ['pixel', 'percent']. Default='pixel'

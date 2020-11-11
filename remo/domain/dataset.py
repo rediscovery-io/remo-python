@@ -291,7 +291,8 @@ Annotation Sets: {n_annotation_sets}""".format(
     ):
         """
         Exports annotations for a given annotation set in a given format and saves it to a file.
-
+        If export_tags = True, output_file needs to be a .zip file.
+        
         It offers some convenient export options, including:
         
         - Methods to append the full_path to image filenames, 
@@ -299,8 +300,19 @@ Annotation Sets: {n_annotation_sets}""".format(
         - Export tags to a separate file
         - Export annotations filtered by user-determined tags.
 
+        Example::
+                # Download and unzip this sample dataset: https://s-3.s3-eu-west-1.amazonaws.com/dogs_dataset.json
+                dogs_dataset = remo.create_dataset(name = 'dogs_dataset', 
+                         local_files = ['dogs_dataset.json'],
+                         annotation_task = 'Instance Segmentation')
+                dogs_dataset.export_annotations_to_file(output_file = './dogs_dataset_train.json',
+                                        annotation_format = 'coco',
+                                        append_path = False,
+                                        export_tags = False,
+                                        filter_by_tags = 'train')
+                                        
         Args:
-            output_file: output file to save
+            output_file: output file to save. Includes file extension and can include file path. If export_tags = True, output_file needs to be a .zip file
             annotation_set_id: annotation set id
             annotation_format: can be one of ['json', 'coco', 'csv']. Default: 'json'
             append_path: if True, it appends the image path to the filename, otherwise it uses just the filename. Default: True
