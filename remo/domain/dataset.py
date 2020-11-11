@@ -270,16 +270,14 @@ Annotation Sets: {n_annotation_sets}""".format(
             annotation file content
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
-        if annotation_set:
-            return annotation_set.export_annotations(
-                annotation_format=annotation_format,
-                export_coordinates=export_coordinates,
-                full_path=full_path,
-                export_tags=export_tags,
-                filter_by_tags=filter_by_tags
-            )
-
-        print('ERROR: annotation set not defined')
+        
+        return annotation_set.export_annotations(
+            annotation_format=annotation_format,
+            export_coordinates=export_coordinates,
+            full_path=full_path,
+            export_tags=export_tags,
+            filter_by_tags=filter_by_tags
+        )
 
     def export_annotations_to_file(
         self,
@@ -311,18 +309,16 @@ Annotation Sets: {n_annotation_sets}""".format(
             filter_by_tags: allows to export annotations only for images containing certain image tags. It can be of type List[str] or str. Default: None
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
-        if annotation_set:
-            self.sdk.export_annotations_to_file(
-                output_file,
-                annotation_set.id,
-                annotation_format=annotation_format,
-                append_path=append_path,
-                export_coordinates=export_coordinates,
-                export_tags=export_tags,
-                filter_by_tags=filter_by_tags
-            )
-        else:
-            print('ERROR: annotation set not defined')
+        
+        self.sdk.export_annotations_to_file(
+            output_file,
+            annotation_set.id,
+            annotation_format=annotation_format,
+            append_path=append_path,
+            export_coordinates=export_coordinates,
+            export_tags=export_tags,
+            filter_by_tags=filter_by_tags
+        )
 
     def list_image_annotations(self, annotation_set_id: int, image_id: int) -> List[Annotation]:
         """
