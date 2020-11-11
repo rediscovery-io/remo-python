@@ -243,12 +243,13 @@ Annotation Sets: {n_annotation_sets}""".format(
         annotation_set_id: int = None,
         annotation_format: str = 'json',
         export_coordinates: str = 'pixel',
-        append_path: bool = True,
+        full_path: bool = True,
         export_tags: bool = True,
         filter_by_tags: list = None
     ) -> bytes:
         """
-        Export annotations for a given annotation set in a given format.
+        Export annotations in Binary format, for a given annotation set.
+        To export to file, use export_annotations_to_file.
         
         It offers some convenient export options, including:
         
@@ -273,7 +274,7 @@ Annotation Sets: {n_annotation_sets}""".format(
             return annotation_set.export_annotations(
                 annotation_format=annotation_format,
                 export_coordinates=export_coordinates,
-                append_path=append_path,
+                full_path=full_path,
                 export_tags=export_tags,
                 filter_by_tags=filter_by_tags
             )
@@ -423,14 +424,13 @@ Annotation Sets: {n_annotation_sets}""".format(
 
     def get_annotation_statistics(self, annotation_set_id: int = None):
         """
-        Prints annotation statistics of all the available annotation sets within the dataset
+        Retrieves annotation statistics of a given annotation set. If annotation_set_id is not provided, it retrieves the statistics of all the available annotation sets within the dataset.
 
         Returns:
             list of dictionaries with fields annotation set id, name, num of images, num of classes, num of objects, top3 classes, release and update dates
         """
 
         # TODO: ALR - Improve output formatting
-        # TODO: ALR - Optional annotation set id as input
         statistics = []
         for ann_set in self.annotation_sets():
 

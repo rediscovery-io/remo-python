@@ -405,7 +405,8 @@ class SDK:
         filter_by_tags: list = None
     ) -> bytes:
         """
-        Exports annotations for a given annotation set in a given format.
+        Exports annotations in a Binary format for a given annotation set.
+        To export to file, use export_annotations_to_file.
         
         It offers some convenient export options, including:
         
