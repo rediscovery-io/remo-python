@@ -161,13 +161,15 @@ For anything else, you can write on our <a href="https://discuss.remo.ai" target
 
 ## :bookmark: Cite
 
+
+```bash
 @misc{remo2019,
   author =       {Remo.ai},
-  title =        {{remo.ai: Images Datasets management}},
+  title =        {{Remo.ai: Image Datasets management}},
   howpublished = {\url{https://github.com/rediscovery-io/remo-python}},
   year =         {2019}
 }
-
+```
 
 ## :raising_hand: For contributors
 
