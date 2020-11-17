@@ -13,9 +13,10 @@
     <a href="#welcome-to-remo">Welcome</a> •
   <a href="#deciduous_tree-features">Features</a> •
   <a href="#smirk-quick-installation">Installation</a> •
-  <a href="#rabbit-remo-python-library">Remo-python</a> •
+  <a href="#rabbit-remo-python-library">Python library</a> •
   <a href="#tada-whats-new">What's new</a> •
   <a href="#gift-what-we-are-working-on-next">What's next</a> •
+  <a href="#bookmark-cite">Cite</a> •
   <a href="#bug-get-in-touch">Get in touch</a>
 </p>
 
@@ -157,6 +158,16 @@ If you have any issues around the library, feel free to open an issue in the rep
 For anything else, you can write on our <a href="https://discuss.remo.ai" target="_blank">discuss forum.</a>  
 
 <br/>
+
+## :bookmark: Cite
+
+@misc{remo2019,
+  author =       {Remo.ai},
+  title =        {{remo.ai: Images Datasets management}},
+  howpublished = {\url{https://github.com/rediscovery-io/remo-python}},
+  year =         {2019}
+}
+
 
 ## :raising_hand: For contributors
 
