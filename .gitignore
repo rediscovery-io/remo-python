@@ -24,4 +24,4 @@ examples/open_images_sample_dataset
 examples/*.zip
 examples/object_detection_dataset
 examples/coco_instance_segmentation_dataset
-
+examples/detectron2_repo
