@@ -3,7 +3,7 @@ import time
 from typing import List
 import csv
 
-from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation
+from .domain import Image, Dataset, AnnotationSet, class_encodings, Annotation, AnnotatedImage
 from .api import API
 
 from .endpoints import frontend
@@ -395,7 +395,7 @@ class SDK:
             total_classes=len(annotation_set['classes']),
         )
 
-    def export_annotations(
+    def _export_annotations(
         self,
         annotation_set_id: int,
         annotation_format: str = 'json',
@@ -405,7 +405,8 @@ class SDK:
         filter_by_tags: list = None
     ) -> bytes:
         """
-        Exports annotations for a given annotation set in a given format.
+        Exports annotations in a Binary format for a given annotation set.
+        To export to file, use export_annotations_to_file.
         
         It offers some convenient export options, including:
         
@@ -445,10 +446,11 @@ class SDK:
         filter_by_tags: list = None
     ):
         """
-        
         Exports annotations in a given format and saves it to a file.
-        
+        If export_tags = True, output_file needs to be a .zip file.
+
         It offers some convenient export options, including:
+
         - Methods to append the full_path to image filenames, 
         - Choose between coordinates in pixels or percentages,
         - Export tags to a separate file
@@ -459,14 +461,14 @@ class SDK:
                 dogs_dataset = remo.create_dataset(name = 'dogs_dataset', 
                          local_files = ['dogs_dataset.json'],
                          annotation_task = 'Instance Segmentation')
-                dogs_dataset.export_annotations_to_file(output_file = 'dogs_dataset_train.json',
+                dogs_dataset.export_annotations_to_file(output_file = './dogs_dataset_train.json',
                                         annotation_format = 'coco',
                                         append_path = False,
                                         export_tags = False,
                                         filter_by_tags = 'train')
 
         Args:
-            output_file: output file to save
+            output_file: output file to save. Includes file extension and can include file path. If export_tags = True, output_file needs to be a .zip file
             annotation_set_id: annotation set id
             annotation_format: can be one of ['json', 'coco', 'csv']. Default: 'json'
             append_path: if True, appends the path to the filename (e.g. local path). Default: True
@@ -475,7 +477,11 @@ class SDK:
             filter_by_tags: allows to export annotations only for images containing certain image tags. It can be of type List[str] or str. Default: None
         """
 
-        content = self.export_annotations(
+        _, file_extension = os.path.splitext(output_file)
+        if (export_tags and file_extension is not '.zip'):
+            raise Exception("If export_tags = True, output_file needs to be a ZIP file. \nChange {} to be .zip or set export_tags = False".format(output_file))
+
+        content = self._export_annotations(
             annotation_set_id,
             annotation_format=annotation_format,
             export_coordinates=export_coordinates,
@@ -737,22 +743,67 @@ class SDK:
         return Image(**json_data)
 
     def search_images(
-        self, classes=None, task: str = None, dataset_id: int = None, limit: int = None,
-    ):
+            self,
+            dataset_id: int,
+            annotation_sets_id: int = None,
+            classes: str = None, classes_not: str = None,
+            tags: str = None, tags_not: str = None,
+            image_name_contains: str = None,
+            limit: int = None,
+    ) -> List[AnnotatedImage]:
         """
-        Search images by class and annotation task
+        Search images by classes and tags
 
+        Examples::
+            remo.search_images(dataset_id=1, classes = ["dog","person"])
+            remo.search_images(dataset_id=1, image_name_contains = "pic2")
+            
         Args:
-            classes: string or list of strings - search for images which match all given classes
-            task: name of the annotation task to filter dataset
-            dataset_id: narrows search result to given dataset
-            limit: limits number of search results
+            dataset_id: the ID of the dataset to search into
+            annotation_sets_id: the annotation sets ID to search into (can be multiple, e.g. [1, 2]). No need to specify it if the dataset has only one annotation set
+            classes: string or list of strings - search for images which have objects of all the given classes
+            classes_not: string or list of strings - search for images excluding those that have objects of all the given classes
+            tags: string or list of strings - search for images having all the given tags
+            tags_not: string or list of strings - search for images excluding those that have all the given tags
+            image_name_contains: search for images whose name contains the given string
+            limit: limits number of search results (by default returns all results)
 
         Returns:
-            image_id, dataset_id, name, annotations
+            List[:class:`remo.AnnotatedImage`]
         """
-        # TODO: check this function
-        return self.api.search_images(classes, task, dataset_id, limit)
+
+        if not isinstance(dataset_id, int):
+            raise Exception("Enter a valid dataset_id to search into")
+            
+        if any((classes, classes_not, tags, tags)) and not annotation_sets_id:
+            
+            # logic to deal with the case where we are trying to upload annotations without specifying the annotation set id
+            # we have this as a method in Dataset class (default_annotation_set). We might want to move the whole logic as a method of the SDK object
+            annotation_sets = self.list_annotation_sets(dataset_id)
+            if len(annotation_sets) > 1:
+                raise Exception(
+                    'Define which annotation set you want to use. Dataset {} has {} annotation sets. '
+                    'You can see them with my_dataset.annotation_sets()'.format(dataset_id, len(annotation_sets))
+                )
+
+            elif len(annotation_sets) == 1:
+                annotation_sets_id = annotation_sets[0].id
+                
+
+        json_data = self.api.search_images(
+            dataset_id,
+            annotation_sets=annotation_sets_id,
+            classes=classes, classes_not=classes_not,
+            tags=tags, tags_not=tags_not,
+            image_name_contains=image_name_contains,
+            limit=limit)
+
+        result = []
+        for entry in json_data:
+            img_json = entry.get('image', {})
+            annotations_json = img_json.get('annotations', [])
+            result.append(AnnotatedImage(Image(dataset_id=dataset_id, **img_json), annotations_json))
+        return result
 
     def view_search(self):
         """

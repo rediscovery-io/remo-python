@@ -238,7 +238,7 @@ Annotation Sets: {n_annotation_sets}""".format(
         except:
             pass
 
-    def export_annotations(
+    def _export_annotations(
         self,
         annotation_set_id: int = None,
         annotation_format: str = 'json',
@@ -248,7 +248,8 @@ Annotation Sets: {n_annotation_sets}""".format(
         filter_by_tags: list = None
     ) -> bytes:
         """
-        Export annotations for a given annotation set in a given format.
+        Export annotations in Binary format, for a given annotation set.
+        To export to file, use export_annotations_to_file.
         
         It offers some convenient export options, including:
         
@@ -269,16 +270,14 @@ Annotation Sets: {n_annotation_sets}""".format(
             annotation file content
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
-        if annotation_set:
-            return annotation_set.export_annotations(
-                annotation_format=annotation_format,
-                export_coordinates=export_coordinates,
-                append_path=append_path,
-                export_tags=export_tags,
-                filter_by_tags=filter_by_tags
-            )
-
-        print('ERROR: annotation set not defined')
+        
+        return annotation_set._export_annotations(
+            annotation_format=annotation_format,
+            export_coordinates=export_coordinates,
+            append_path=append_path,
+            export_tags=export_tags,
+            filter_by_tags=filter_by_tags
+        )
 
     def export_annotations_to_file(
         self,
@@ -292,15 +291,28 @@ Annotation Sets: {n_annotation_sets}""".format(
     ):
         """
         Exports annotations for a given annotation set in a given format and saves it to a file.
-
+        If export_tags = True, output_file needs to be a .zip file.
+        
         It offers some convenient export options, including:
+        
         - Methods to append the full_path to image filenames, 
         - Choose between coordinates in pixels or percentages,
         - Export tags to a separate file
         - Export annotations filtered by user-determined tags.
 
+        Example::
+                # Download and unzip this sample dataset: https://s-3.s3-eu-west-1.amazonaws.com/dogs_dataset.json
+                dogs_dataset = remo.create_dataset(name = 'dogs_dataset', 
+                         local_files = ['dogs_dataset.json'],
+                         annotation_task = 'Instance Segmentation')
+                dogs_dataset.export_annotations_to_file(output_file = './dogs_dataset_train.json',
+                                        annotation_format = 'coco',
+                                        append_path = False,
+                                        export_tags = False,
+                                        filter_by_tags = 'train')
+                                        
         Args:
-            output_file: output file to save
+            output_file: output file to save. Includes file extension and can include file path. If export_tags = True, output_file needs to be a .zip file
             annotation_set_id: annotation set id
             annotation_format: can be one of ['json', 'coco', 'csv']. Default: 'json'
             append_path: if True, it appends the image path to the filename, otherwise it uses just the filename. Default: True
@@ -309,18 +321,16 @@ Annotation Sets: {n_annotation_sets}""".format(
             filter_by_tags: allows to export annotations only for images containing certain image tags. It can be of type List[str] or str. Default: None
         """
         annotation_set = self.get_annotation_set(annotation_set_id)
-        if annotation_set:
-            self.sdk.export_annotations_to_file(
-                output_file,
-                annotation_set.id,
-                annotation_format=annotation_format,
-                append_path=append_path,
-                export_coordinates=export_coordinates,
-                export_tags=export_tags,
-                filter_by_tags=filter_by_tags
-            )
-        else:
-            print('ERROR: annotation set not defined')
+        
+        self.sdk.export_annotations_to_file(
+            output_file,
+            annotation_set.id,
+            annotation_format=annotation_format,
+            append_path=append_path,
+            export_coordinates=export_coordinates,
+            export_tags=export_tags,
+            filter_by_tags=filter_by_tags
+        )
 
     def list_image_annotations(self, annotation_set_id: int, image_id: int) -> List[Annotation]:
         """
@@ -372,7 +382,10 @@ Annotation Sets: {n_annotation_sets}""".format(
     def get_annotation_set(self, annotation_set_id: int = None) -> AnnotationSet:
         """
         Retrieves annotation set with given id.
-        If no annotation set id is passed, it returns the default annotation set.
+        If no annotation set id is passed:
+        
+            - if the dataset has only one annotation set, it returns that one
+            - if the dataset has multiple annotation sets, it raises an error
 
         Args:
             annotation_set_id: annotation set id
@@ -419,14 +432,13 @@ Annotation Sets: {n_annotation_sets}""".format(
 
     def get_annotation_statistics(self, annotation_set_id: int = None):
         """
-        Prints annotation statistics of all the available annotation sets within the dataset
+        Retrieves annotation statistics of a given annotation set. If annotation_set_id is not provided, it retrieves the statistics of all the available annotation sets within the dataset.
 
         Returns:
             list of dictionaries with fields annotation set id, name, num of images, num of classes, num of objects, top3 classes, release and update dates
         """
 
         # TODO: ALR - Improve output formatting
-        # TODO: ALR - Optional annotation set id as input
         statistics = []
         for ann_set in self.annotation_sets():
 
@@ -524,19 +536,41 @@ Annotation Sets: {n_annotation_sets}""".format(
         """
         self.sdk.delete_dataset(self.id)
 
-    def search(self, classes=None, task: str = None):
+    def search_images(self, annotation_sets_id: int = None,
+            classes: str = None, 
+            classes_not: str = None,
+            tags: str = None, 
+            tags_not: str = None,
+            image_name_contains: str = None,
+            limit: int = None):
         """
-        Given a list of classes and annotation task, it returns a list of all the images with matching annotations
+        Search images by filename, classes and tags
 
+        Examples::
+            my_dataset.search_images(classes = ["dog","person"])
+            my_dataset.search_images(image_name_contains = "pic2")
+            
         Args:
-            classes: string or list of strings - search for images which match all given classes
-            task: annotation task. See also: :class:`remo.task`
+            annotation_sets_id: the annotation sets ID to search into (can be multiple, e.g. [1, 2]). No need to specify it if the dataset has only one annotation set
+            classes: string or list of strings - search for images which have objects of all the given classes
+            classes_not: string or list of strings - search for images excluding those that have objects of all the given classes
+            tags: string or list of strings - search for images having all the given tags
+            tags_not: string or list of strings - search for images excluding those that have all the given tags
+            image_name_contains: search for images whose name contains the given string
+            limit: limits number of search results (by default returns all results)
 
         Returns:
-            subset of the dataset
+            List[:class:`remo.AnnotatedImage`]
         """
-        # TODO: add implementation
-        return self.sdk.search_images(classes, task, self.id)
+        
+        return self.sdk.search_images(dataset_id = self.id,
+                                      annotation_sets_id = annotation_sets_id, 
+                                      classes = classes, 
+                                      classes_not = classes_not,  
+                                      tags = tags,
+                                      tags_not = tags_not,
+                                      image_name_contains = image_name_contains,
+                                      limit = limit)
 
     def view(self):
         """

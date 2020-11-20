@@ -9,6 +9,11 @@ __pycache__
 # Virtual env
 venv
 
+
+
+# Virtual env
+venv
+
 # remo package
 config.json
 build
