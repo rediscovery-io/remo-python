@@ -1,18 +1,21 @@
 # IDE
 .idea
+.ipynb_checkpoints
+.pyc
+.DS_Store
 .vscode
+__pycache__
 
 # Virtual env
 venv
 
-__pycache__
 
-.ipynb_checkpoints
-.pyc
-.DS_Store
 
+# Virtual env
+venv
+
+# remo package
 config.json
-
 build
 dist
 remo_sdk.egg-info
@@ -25,3 +28,5 @@ examples/small_flowers.zip
 examples/open_images_sample_dataset
 examples/*.zip
 examples/object_detection_dataset
+examples/coco_instance_segmentation_dataset
+examples/detectron2_repo
