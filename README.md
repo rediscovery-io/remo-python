@@ -41,6 +41,8 @@ It has been designed to be your team's private platform to manage images, in an 
 Remo runs on Windows, Linux, Mac or directly in Google Colab Notebooks. 
 It can also be served on a private server for team collaboration, or embedded in Jupyter Notebooks.
 
+It's installed via pip or via Docker.
+
 This repo is the open source repo for the Remo python library. To access the docs and try the online demo: https://remo.ai
 
 <br/>
@@ -113,6 +115,10 @@ PyTorch Instance Segmentation with Detectron 2 and Remo | [PyTorch Instance Segm
 
 ## :smirk: Quick installation
 
+You can install Remo via Pip or via Docker
+
+### Pip installation
+
 1. In a Python 3.6+ environment: `pip install remo` 
 
 This will install both the Python library and the remo app.
@@ -125,8 +131,18 @@ That's it!
 To launch Remo, run `python -m remo_app`. 
 To call Remo from python once you have a server running, use `import remo`.
 
+### Docker installation
 
-To read more about installation and other features, visit [remo.ai](http://remo.ai)
+Here are the main steps to install Remo via Docker. For more options and detailed instructions, you can refer to the [Remo Docker installation page](https://remo.ai/docs/#install-using-docker).
+
+1. Download [docker-compose.yml](https://remo.ai/docs/assets/docker-compose.yml)
+2. Make sure you are using the latest tag available in [Docker Hub](https://hub.docker.com/r/rediscoveryio/remo/tags)
+3. Run the following from the same directory where the file lives:
+
+```
+    docker-compose up -d
+```
+4. Access Remo by browsing to http://localhost:8123/
 
 
 <br/>
