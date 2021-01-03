@@ -89,7 +89,7 @@ Read more here: https://remo.ai/docs/annotation-formats/
 - **Centralized access to your data** - link directly to your images, in whatever folder they are
 - **Easily query your data**, searching by filename, class, tag
 - Immediately **visualize aggregated statistics** on your datasets
-- Manage **mupltiple versions of your annotations** using Annotation Sets
+- Manage **multiple versions of your annotations** using Annotation Sets
 
 <br/>
 
